@@ -11,4 +11,4 @@ This is Howard's final bachelor thesis.
 5. Run the code:
 - For client: `cd client && npm run dev` or `cd client && yarn run dev`
 - For server: Do similarly with client server, but replace "client" by "server" in the command.
-6. Open Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
