@@ -1,8 +1,8 @@
-import { Schema, model } from 'mongoose'
+import { Document, Schema, model } from 'mongoose'
 
-import { Content } from '../../types/helper'
+import { Content } from 'types/helper'
 
-const schema = new Schema<Content>({
+const schema = new Schema({
   title: {
     type: String,
     required: true,
@@ -21,5 +21,8 @@ const schema = new Schema<Content>({
     }
   ]
 })
+export type IContentModel = Content & Document
 
-export default model<Content>("Content", schema)
+const LessonContent = model<IContentModel>("Content", schema)
+
+export default LessonContent

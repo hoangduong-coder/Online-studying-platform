@@ -1,22 +1,12 @@
 import { ApolloServer } from '@apollo/server'
-import CourseModels from './models/course'
+import CourseModels from "models/Course"
 import { GraphQLError } from "graphql"
-import StudentModels from './models/student'
-import TeacherModels from './models/teacher'
-import config from "./config"
+import StudentModels from 'models/Student'
+import TeacherModels from 'models/Teacher'
+import config from "config"
 import dotenv from "dotenv"
 import mongoose from "mongoose"
 import { startStandaloneServer } from "@apollo/server/standalone"
-
-//@ts-ignore
-
-
-
-
-
-
-
-
 
 mongoose.set("strictQuery", false)
 dotenv.config()

@@ -1,8 +1,8 @@
-import { Schema, model } from 'mongoose'
+import { Document, Schema, model } from 'mongoose'
 
-import { Quiz } from '../../types/helper'
+import { Quiz } from 'types/helper'
 
-const schema = new Schema<Quiz>({
+const schema = new Schema({
   question: {
     type: String,
     required: true,
@@ -18,5 +18,8 @@ const schema = new Schema<Quiz>({
     minlength: 5
   },
 })
+export type IQuizModel = Quiz & Document
 
-export default model<Quiz>("Quiz", schema)
+const QuizModel = model<IQuizModel>("Quiz", schema)
+
+export default QuizModel

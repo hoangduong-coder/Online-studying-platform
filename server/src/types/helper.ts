@@ -1,7 +1,7 @@
 import { Types } from "mongoose"
 
 export type Lesson = {
-  title: String
+  title: string
   content?: Array<Types.ObjectId> | Array<Content>
   quiz?: Array<Types.ObjectId> | Array<Quiz>
 }
@@ -19,7 +19,7 @@ export type Material = {
 }
 
 export type Quiz = {
-  question: String,
-  choices: Array<String>,
-  answer: String
+  question: string,
+  choices: Array<string>,
+  answer: string
 }

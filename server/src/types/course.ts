@@ -1,22 +1,19 @@
-import { Student, Teacher } from './user'
-
-import { Lesson } from './helper'
 import { Types } from 'mongoose'
 
 export interface Course {
-  name: String,
-  category: String[],
-  teacher: Types.ObjectId | Teacher,
-  description: String,
+  name: string,
+  category: string[],
+  teacher: Types.ObjectId,
+  description: string,
   students?: Array<StudentInCourse>,
-  lessons?: Array<Types.ObjectId> | Array<Lesson>,
-  estimateTime: Number
+  lessons?: Array<Types.ObjectId>,
+  estimateTime: number
 }
 
 export interface StudentInCourse {
-  student: Types.ObjectId | Student,
+  student: Types.ObjectId,
   status: "PASSED" | "FAILED" | "ONGOING"
-  overall?: Number,
-  finishedDate?: String,
+  overall?: number,
+  finishedDate?: string,
   progress?: number
 }

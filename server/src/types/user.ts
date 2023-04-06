@@ -1,12 +1,12 @@
 export interface Student {
-  name: String,
-  email: String,
-  username: String
+  name: string,
+  email: string,
+  username: string
 }
 
 export interface Teacher {
-  name: String,
-  email: String,
-  username: String,
-  organization: String
+  name: string,
+  email: string,
+  username: string,
+  organization: string
 }

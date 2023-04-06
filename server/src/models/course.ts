@@ -1,21 +1,21 @@
-import { Schema, model } from "mongoose"
+import { Document, Schema, model } from "mongoose"
 
-import { Course } from './../types/course'
-import EnrolledStudent from "./helper/enrolled_student"
+import { Course } from 'types/course'
+import EnrolledStudent from "./helper/Enrolled_student"
 
-const courseSchema = new Schema<Course>({
+const courseSchema: Schema = new Schema({
   name: {
     type: String,
     required: true,
     minlength: 5
   },
-  category: [{
-    type: String,
+  category: {
+    type: [String],
     required: true,
-  }],
+  },
   teacher: {
     type: Schema.Types.ObjectId,
-    ref: 'Teacher',
+    ref: 'TeacherModels',
     required: true
   },
   description: {
@@ -26,10 +26,12 @@ const courseSchema = new Schema<Course>({
   estimateTime: Number,
   lessons: [{
     type: Schema.Types.ObjectId,
-    ref: "Lesson"
+    ref: "LessonModel"
   }]
 })
 
-const CourseModels = model<Course>("Course", courseSchema)
+export type ICourseModel = Course & Document
+
+const CourseModels = model<ICourseModel>("Course", courseSchema)
 
 export default CourseModels

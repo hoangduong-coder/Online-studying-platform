@@ -1,8 +1,8 @@
-import { Schema, model } from "mongoose"
+import { Document, Schema, model } from "mongoose"
 
-import { Teacher } from "../types/user"
+import { Teacher } from "types/user"
 
-const schema = new Schema<Teacher>({
+const schema: Schema = new Schema<Teacher>({
   name: {
     type: String,
     minlength: 5,
@@ -25,5 +25,7 @@ const schema = new Schema<Teacher>({
     unique: true
   }
 })
-const TeacherModels = model<Teacher>("Teacher", schema)
+
+export type ITeacherModel = Teacher & Document
+const TeacherModels = model<ITeacherModel>("Teacher", schema)
 export default TeacherModels
