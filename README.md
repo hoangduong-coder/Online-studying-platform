@@ -6,8 +6,9 @@ This is Howard's final bachelor thesis.
 2. Install node packages.
 - For client: `cd client && npm install` or `cd client && yarn install`
 - For server: Do similarly with client server, but replace "client" by "server" in the command.
-3. Create a MongoDB database and a `.env` file in the root. Then declare the necessary environment variables.
-4. Run the code:
+3. Create a MongoDB database. There are some sample data in the `src/dummy` folder, you can add them to your own database.
+4. Create a `.env` file in the root directory and declare the necessary environment variables.
+5. Run the code:
 - For client: `cd client && npm run dev` or `cd client && yarn run dev`
 - For server: Do similarly with client server, but replace "client" by "server" in the command.
-5. Open Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. Open Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
