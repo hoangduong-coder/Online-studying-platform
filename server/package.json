@@ -5,9 +5,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon --exec ts-node ./index.ts",
+    "dev": "ts-node ./src/index.ts",
     "lint": "eslint --ext .ts .",
-    "tsc": "tsc",
+    "tsc": "tsc -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

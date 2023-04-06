@@ -1,11 +1,22 @@
-import { Course, Student, Teacher } from './src/models'
-
 import { ApolloServer } from '@apollo/server'
+import CourseModels from './models/course'
 import { GraphQLError } from "graphql"
-import config from "./src/config"
+import StudentModels from './models/student'
+import TeacherModels from './models/teacher'
+import config from "./config"
 import dotenv from "dotenv"
 import mongoose from "mongoose"
 import { startStandaloneServer } from "@apollo/server/standalone"
+
+//@ts-ignore
+
+
+
+
+
+
+
+
 
 mongoose.set("strictQuery", false)
 dotenv.config()
@@ -112,25 +123,25 @@ const resolvers = {
   Query: {
     allCourses: async (_root: any, args: { name?: string, category?: string }) => {
       if (args.name) {
-        return Course.find({ name: { $in: args.name } })
+        return CourseModels.find({ name: { $in: args.name } })
       }
       else if (args.category) {
-        return Course.find({ category: { $in: args.category } })
+        return CourseModels.find({ category: { $in: args.category } })
       }
-      return Course.find({})
+      return CourseModels.find({})
     },
     getCourseById: async (_root: any, args: { id: string }) => {
-      return Course.find({ _id: args.id })
+      return CourseModels.find({ _id: args.id })
     }
   },
   EnrolledStudent: {
     student: async (parent: any) => {
-      return Student.findOne({ _id: parent.student.id })
+      return StudentModels.findOne({ _id: parent.student.id })
     }
   },
   Course: {
     teacher: async (parent: any) => {
-      return Teacher.findOne({ _id: parent.teacher.id })
+      return TeacherModels.findOne({ _id: parent.teacher.id })
     },
   },
   Mutation: {
@@ -142,8 +153,8 @@ const resolvers = {
     //     }
     //   }
     addCourse: async (_root: any, args: { name: string, category: string[], teacherUsername: string, description: string }) => {
-      const teacherData = await Teacher.findOne({ username: args.teacherUsername })
-      const course = new Course({
+      const teacherData = TeacherModels.findOne({ username: args.teacherUsername })
+      const course = new CourseModels({
         ...args,
         teacher: teacherData
       })

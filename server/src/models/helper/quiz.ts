@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose'
 
-import { Quiz } from 'types/helper'
+import { Quiz } from '../../types/helper'
 
 const schema = new Schema<Quiz>({
   question: {

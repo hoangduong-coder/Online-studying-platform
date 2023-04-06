@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose"
 
-import { Lesson } from "types/helper"
+import { Lesson } from "../../types/helper"
 
 const schema = new Schema<Lesson>({
   title: {

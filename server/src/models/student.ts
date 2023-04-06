@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose"
 
-import { Student } from "types/user"
+import { Student } from "../types/user"
 
 const schema = new Schema<Student>({
   name: {

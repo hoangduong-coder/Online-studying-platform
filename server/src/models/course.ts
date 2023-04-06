@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose"
 
-import { Course } from "types/course"
+import { Course } from './../types/course'
 import EnrolledStudent from "./helper/enrolled_student"
 
 const courseSchema = new Schema<Course>({

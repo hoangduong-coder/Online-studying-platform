@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose'
 
-import { Content } from 'types/helper'
+import { Content } from '../../types/helper'
 
 const schema = new Schema<Content>({
   title: {
