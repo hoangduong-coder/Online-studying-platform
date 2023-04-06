@@ -1,0 +1,13 @@
+.main {
+  min-height: 100vh;
+}
+.mainPart {
+  display: flex;
+  flex-direction: column;
+  right: 0;
+  width: 85%;
+  position: absolute;
+}
+.content {
+  padding: 16px 30px;
+}

@@ -1,0 +1,24 @@
+.welcome {
+  background-color: var(--medium);
+  border-radius: var(--border-radius);
+  padding: 40px 24px;
+}
+
+.currentCourses {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+
+  div {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+/* Mobile */
+@media (max-width: 700px) {
+}
+
+/* Tablet and Smaller Desktop */
+@media (min-width: 701px) and (max-width: 1120px) {
+}
