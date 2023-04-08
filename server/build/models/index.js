@@ -1,3 +1,4 @@
-export { default as Course } from "./course";
-export { default as Student } from "./student";
-export { default as Teacher } from "./teacher";
+export { default as CourseModel } from "./course";
+export { default as StudentModel } from "./student";
+export { default as TeacherModel } from "./teacher";
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvbW9kZWxzL2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sRUFBRSxPQUFPLElBQUksV0FBVyxFQUFFLE1BQU0sVUFBVSxDQUFBO0FBQ2pELE9BQU8sRUFBRSxPQUFPLElBQUksWUFBWSxFQUFFLE1BQU0sV0FBVyxDQUFBO0FBQ25ELE9BQU8sRUFBRSxPQUFPLElBQUksWUFBWSxFQUFFLE1BQU0sV0FBVyxDQUFBIn0=

@@ -1,24 +1,29 @@
-import { ApolloServer } from '@apollo/server'
-import CourseModels from "models/Course"
-import { GraphQLError } from "graphql"
-import StudentModels from 'models/Student'
-import TeacherModels from 'models/Teacher'
-import config from "config"
-import dotenv from "dotenv"
-import mongoose from "mongoose"
-import { startStandaloneServer } from "@apollo/server/standalone"
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-mongoose.set("strictQuery", false)
-dotenv.config()
+import { CourseModel, StudentModel, TeacherModel } from '../src/models/index';
 
-const MONGO_URI = config.MONGO_URI
-const PORT = config.PORT
+import { ApolloServer } from '@apollo/server';
+import { GraphQLError } from "graphql";
+import config from "../src/config";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import { startStandaloneServer } from "@apollo/server/standalone";
+
+mongoose.set("strictQuery", false);
+dotenv.config();
+
+const MONGO_URI = config.MONGO_URI;
+const PORT = config.PORT;
 
 try {
-  await mongoose.connect(MONGO_URI)
-  console.log('successfully connected to', MONGO_URI)
+  await mongoose.connect(MONGO_URI);
+  console.log('successfully connected to', MONGO_URI);
 } catch (error) {
-  console.log('error connection to', MONGO_URI)
+  console.log('error connection to', MONGO_URI);
 }
 
 const typeDefs = `#graphql
@@ -108,30 +113,30 @@ const typeDefs = `#graphql
     addStudent(name: String!, email: String!): Student
     addCourse(name: String!, category: [String!]!, teacherUsername: String!, description: String!): Course
   }
-`
+`;
 const resolvers = {
   Query: {
-    allCourses: async (_root: any, args: { name?: string, category?: string }) => {
+    allCourses: (_root: any, args: { name?: string, category?: string }) => {
       if (args.name) {
-        return CourseModels.find({ name: { $in: args.name } })
+        return CourseModel.find({ name: { $in: args.name } });
       }
       else if (args.category) {
-        return CourseModels.find({ category: { $in: args.category } })
+        return CourseModel.find({ category: { $in: args.category } });
       }
-      return CourseModels.find({})
+      return CourseModel.find({});
     },
-    getCourseById: async (_root: any, args: { id: string }) => {
-      return CourseModels.find({ _id: args.id })
+    getCourseById: (_root: any, args: { id: string }) => {
+      return CourseModel.find({ _id: args.id });
     }
   },
   EnrolledStudent: {
-    student: async (parent: any) => {
-      return StudentModels.findOne({ _id: parent.student.id })
+    student: (parent: any) => {
+      return StudentModel.findOne({ _id: parent.student.id });
     }
   },
   Course: {
-    teacher: async (parent: any) => {
-      return TeacherModels.findOne({ _id: parent.teacher.id })
+    teacher: (parent: any) => {
+      return TeacherModel.findOne({ _id: parent.teacher.id });
     },
   },
   Mutation: {
@@ -143,13 +148,13 @@ const resolvers = {
     //     }
     //   }
     addCourse: async (_root: any, args: { name: string, category: string[], teacherUsername: string, description: string }) => {
-      const teacherData = TeacherModels.findOne({ username: args.teacherUsername })
-      const course = new CourseModels({
+      const teacherData = TeacherModel.findOne({ username: args.teacherUsername });
+      const course = new CourseModel({
         ...args,
         teacher: teacherData
-      })
+      });
       try {
-        await course.save()
+        await course.save();
       } catch (error) {
         throw new GraphQLError("Create new course failed!", {
           extensions: {
@@ -157,20 +162,20 @@ const resolvers = {
             invalidArgs: args.name,
             error
           }
-        })
+        });
       }
-      return course
+      return course;
     }
   }
-}
+};
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-})
+});
 
 const url = await startStandaloneServer(server, {
   listen: { port: PORT },
-})
+});
 
-console.log(`Server is ready. Go to ${url.url} for more details.`)
+console.log(`Server is ready. Go to ${url.url} for more details.`);

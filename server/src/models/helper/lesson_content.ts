@@ -1,6 +1,4 @@
-import { Document, Schema, model } from 'mongoose'
-
-import { Content } from 'types/helper'
+import { Schema, model } from 'mongoose';
 
 const schema = new Schema({
   title: {
@@ -20,9 +18,8 @@ const schema = new Schema({
       link: String
     }
   ]
-})
-export type IContentModel = Content & Document
+});
 
-const LessonContent = model<IContentModel>("Content", schema)
+const Content = model("Content", schema);
 
-export default LessonContent
+export default Content;

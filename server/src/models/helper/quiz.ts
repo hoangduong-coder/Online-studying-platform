@@ -1,6 +1,4 @@
-import { Document, Schema, model } from 'mongoose'
-
-import { Quiz } from 'types/helper'
+import { Schema, model } from 'mongoose';
 
 const schema = new Schema({
   question: {
@@ -17,9 +15,5 @@ const schema = new Schema({
     required: true,
     minlength: 5
   },
-})
-export type IQuizModel = Quiz & Document
-
-const QuizModel = model<IQuizModel>("Quiz", schema)
-
-export default QuizModel
+});
+export default model("Quiz", schema);

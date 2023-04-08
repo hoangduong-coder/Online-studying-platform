@@ -1,11 +1,9 @@
-import { Document, Schema, model } from 'mongoose'
+import { Schema, model } from 'mongoose';
 
-import { StudentInCourse } from 'types/course'
-
-const schema = new Schema<StudentInCourse>({
+const schema = new Schema({
   student: {
     type: Schema.Types.ObjectId,
-    ref: "StudentModels",
+    ref: "Student",
     required: true
   },
   status: {
@@ -15,9 +13,8 @@ const schema = new Schema<StudentInCourse>({
   overall: Number,
   finishedDate: String,
   progress: Number
-})
+});
 
-export type IEnrolledStudentModel = StudentInCourse & Document
-const EnrolledStudent = model<IEnrolledStudentModel>('EnrolledStudent', schema)
+const EnrolledStudent = model('EnrolledStudent', schema);
 
-export default EnrolledStudent
+export default EnrolledStudent;

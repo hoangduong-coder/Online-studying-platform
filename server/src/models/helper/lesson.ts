@@ -1,6 +1,4 @@
-import { Document, Schema, model } from "mongoose"
-
-import { Lesson } from "types/helper"
+import { Schema, model } from "mongoose";
 
 const schema = new Schema({
   title: {
@@ -11,17 +9,15 @@ const schema = new Schema({
   content: [
     {
       type: Schema.Types.ObjectId,
-      ref: "LessonContent"
+      ref: "Lesson"
     }
   ],
   quiz: [
     {
       type: Schema.Types.ObjectId,
-      ref: "QuizModel"
+      ref: "Quiz"
     }
   ]
-})
-export type ILessonModel = Lesson & Document
+});
 
-const LessonModel = model<ILessonModel>("Lesson", schema)
-export default LessonModel
+export default model("Lesson", schema);

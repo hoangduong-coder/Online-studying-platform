@@ -1,6 +1,4 @@
-import { Document, Schema, model } from "mongoose"
-
-import { Student } from "types/user"
+import { Schema, model } from "mongoose";
 
 const schema = new Schema({
   name: {
@@ -19,9 +17,6 @@ const schema = new Schema({
     required: true,
     unique: true
   }
-})
+});
 
-export type IStudentModel = Student & Document
-
-const StudentModels = model<IStudentModel>("Student", schema)
-export default StudentModels
+export default model("Student", schema);
