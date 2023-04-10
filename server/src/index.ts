@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import { CourseModel, StudentModel, TeacherModel } from '../src/models/index';
+import { CourseModel, StudentModel, TeacherModel } from '../src/models';
 
 import { ApolloServer } from '@apollo/server';
 import { GraphQLError } from "graphql";
@@ -20,7 +20,7 @@ const MONGO_URI = config.MONGO_URI;
 const PORT = config.PORT;
 
 try {
-  await mongoose.connect(MONGO_URI);
+  mongoose.connect(MONGO_URI);
   console.log('successfully connected to', MONGO_URI);
 } catch (error) {
   console.log('error connection to', MONGO_URI);
@@ -174,8 +174,9 @@ const server = new ApolloServer({
   resolvers,
 });
 
-const url = await startStandaloneServer(server, {
+startStandaloneServer(server, {
   listen: { port: PORT },
-});
+}).then(
+  ({ url }) => console.log(`Server is ready. Go to ${url} for more details.`)
+);
 
-console.log(`Server is ready. Go to ${url.url} for more details.`);

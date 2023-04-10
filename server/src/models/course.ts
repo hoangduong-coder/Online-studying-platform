@@ -21,7 +21,7 @@ const courseSchema = new Schema({
     type: String,
     required: true,
   },
-  students: [EnrolledStudent],
+  students: [EnrolledStudent.schema],
   estimateTime: Number,
   lessons: [{
     type: Schema.Types.ObjectId,
