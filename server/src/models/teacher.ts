@@ -13,7 +13,7 @@ const schema = new Schema({
   },
   organization: {
     type: String,
-    minlength: 5,
+    minlength: 2,
     required: true
   },
   username: {
