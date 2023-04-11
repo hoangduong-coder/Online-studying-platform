@@ -6,25 +6,26 @@ const typeDefs = `#graphql
   }
 
   type EnrolledStudent {
-    student: User!
+    student: Student!
     status: Status!
     overall: Int
     finishedDate: String
     progress: Float
   }
 
-  enum Role {
-    TEACHER
-    STUDENT
+  type Student {
+    id: ID!
+    name: String!
+    username: String!
+    email: String!
   }
 
-  type User {
+  type Teacher {
     id: ID!
     name: String!
     username: String!
     email: String!
     organization: String
-    role: Role!
   }
 
   type Lesson {
@@ -64,13 +65,20 @@ const typeDefs = `#graphql
     id: ID!
     name: String!
     category: [String!]!
-    teacher: User!
+    teacher: Teacher!
     students: [EnrolledStudent!]
     description: String!
     lessons: [Lesson!]
     
     # calculate in hours
     estimateTime: Float
+  }
+
+  union User = Student | Teacher
+
+  enum Role {
+    TEACHER
+    STUDENT
   }
 
   type Query {
@@ -80,9 +88,14 @@ const typeDefs = `#graphql
 
   type Mutation {
     enrollCourse(studentID: ID!, courseID: ID!): EnrolledStudent
-    createUser(name: String!, email: String!, username: String!, organization: String): User!
-    addCourse(name: String!, category: [String!]!, teacherUsername: String!, description: String!): Course
+    createStudent(name: String!, email: String!, username: String!): Student
+    addCourse(
+      name: String!, 
+      category: [String!]!, 
+      teacherUsername: String!, 
+      description: String!
+    ): Course
   }
-`;
+`
 
 export default typeDefs
