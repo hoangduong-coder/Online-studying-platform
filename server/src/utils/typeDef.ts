@@ -89,6 +89,12 @@ const typeDefs = `#graphql
   type Mutation {
     enrollCourse(studentID: ID!, courseID: ID!): EnrolledStudent
     createStudent(name: String!, email: String!, username: String!): Student
+    createTeacher(
+      name: String!, 
+      email: String!, 
+      username: String!, 
+      organization: String!
+    ): Teacher
     addCourse(
       name: String!, 
       category: [String!]!, 

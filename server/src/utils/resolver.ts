@@ -1,5 +1,6 @@
 import { CourseModel, StudentModel, TeacherModel } from "../models"
 
+import EnrolledStudent from "models/helper/enrolled_student";
 import { GraphQLError } from "graphql"
 
 interface UserArgsType {
@@ -7,7 +8,6 @@ interface UserArgsType {
   email: string,
   username: string,
   organization?: string,
-  role: "TEACHER" | "STUDENT"
 }
 
 const resolvers = {
@@ -35,13 +35,31 @@ const resolvers = {
     },
   },
   Mutation: {
-    //   enrollCourse: (_root: any, args: {studentID: string, courseID: string}) => {
-    //     const student = users.find(user => user.id === args.studentID)
-    //     const course = courses.find(course => course.id === args.courseID)
-    //     if(course?.students.includes(student)) {
+    enrollCourse: async (_root: any, args: { studentID: string, courseID: string }) => {
+      const requestedStudent = StudentModel.findById(args.studentID)
+      // const course = CourseModel.findById(args.courseID).populate("students")
 
-    //     }
-    //   }
+      const newStudent = new EnrolledStudent({
+        student: requestedStudent,
+        status: "ONGOING",
+        overall: 0,
+        progress: 0
+      })
+
+      try {
+        await newStudent.save()
+      } catch (error) {
+        throw new GraphQLError('Enrollment failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args,
+            error
+          }
+        })
+      }
+
+      return newStudent
+    },
     addCourse: async (
       _root: any,
       args: {
@@ -75,12 +93,12 @@ const resolvers = {
       _root: any,
       args: UserArgsType
     ) => {
-      const newStudent = new StudentModel({ ...args })
+      const newStudent = new StudentModel({ name: args.name, email: args.email, username: args.username })
 
       try {
         await newStudent.save()
       } catch (error) {
-        throw new GraphQLError("Creating new user failed", {
+        throw new GraphQLError("Creating new student failed", {
           extensions: {
             code: "GRAPHQL_VALIDATION_FAILED",
             error,
@@ -89,6 +107,33 @@ const resolvers = {
       }
 
       return newStudent
+    },
+    createTeacher: async (
+      _root: any,
+      args: UserArgsType
+    ) => {
+      const newTeacher = new TeacherModel({ ...args })
+
+      if (!args.organization) {
+        throw new GraphQLError('Missing organization', {
+          extensions: {
+            code: "BAD_USER_INPUT",
+          }
+        })
+      }
+
+      try {
+        await newTeacher.save()
+      } catch (error) {
+        throw new GraphQLError("Creating new teacher failed", {
+          extensions: {
+            code: "GRAPHQL_VALIDATION_FAILED",
+            error,
+          },
+        })
+      }
+
+      return newTeacher
     },
   },
 }
