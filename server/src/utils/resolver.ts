@@ -27,11 +27,6 @@ const resolvers = {
       return await CourseModel.find({ _id: args.id });
     },
   },
-  // EnrolledStudent: {
-  //   student: (parent: any) => {
-  //     return StudentModel.findOne({ _id: parent.student.id });
-  //   },
-  // },
   Mutation: {
     enrollCourse: async (_root: any, args: { studentID: string, courseID: string }) => {
       const requestedStudent = await StudentModel.findById(args.studentID);
