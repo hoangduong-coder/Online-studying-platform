@@ -1,7 +1,10 @@
-import { CourseModel, StudentModel, TeacherModel } from "../models"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import EnrolledStudent from "models/helper/enrolled_student";
-import { GraphQLError } from "graphql"
+import { CourseModel, StudentModel, TeacherModel } from "../models";
+
+import { GraphQLError } from "graphql";
+import { StudentInCourse } from "types/course";
 
 interface UserArgsType {
   name: string,
@@ -12,42 +15,49 @@ interface UserArgsType {
 
 const resolvers = {
   Query: {
-    allCourses: (_root: any, args: { name?: string; category?: string }) => {
+    allCourses: async (_root: any, args: { name?: string; category?: string }) => {
       if (args.name) {
-        return CourseModel.find({ name: { $in: args.name } })
+        return await CourseModel.find({ name: { $in: args.name } }).populate("teacher");
       } else if (args.category) {
-        return CourseModel.find({ category: { $in: args.category } })
+        return await CourseModel.find({ category: { $in: args.category } }).populate("teacher");
       }
-      return CourseModel.find({})
+      return await CourseModel.find({}).populate("teacher");
     },
-    getCourseById: (_root: any, args: { id: string }) => {
-      return CourseModel.find({ _id: args.id })
-    },
-  },
-  EnrolledStudent: {
-    student: (parent: any) => {
-      return StudentModel.findOne({ _id: parent.student.id })
+    getCourseById: async (_root: any, args: { id: string }) => {
+      return await CourseModel.find({ _id: args.id });
     },
   },
-  Course: {
-    teacher: (parent: any) => {
-      return TeacherModel.findOne({ _id: parent.teacher.id })
-    },
-  },
+  // EnrolledStudent: {
+  //   student: (parent: any) => {
+  //     return StudentModel.findOne({ _id: parent.student.id });
+  //   },
+  // },
   Mutation: {
     enrollCourse: async (_root: any, args: { studentID: string, courseID: string }) => {
-      const requestedStudent = StudentModel.findById(args.studentID)
-      // const course = CourseModel.findById(args.courseID).populate("students")
+      const requestedStudent = await StudentModel.findById(args.studentID);
+      const course = await CourseModel.findOne({ _id: args.courseID });
 
-      const newStudent = new EnrolledStudent({
+      if (!course || !requestedStudent) {
+        throw new GraphQLError('No course or student found', {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args
+          }
+        });
+      }
+
+      const newStudent: StudentInCourse = {
         student: requestedStudent,
         status: "ONGOING",
         overall: 0,
         progress: 0
-      })
+      };
 
       try {
-        await newStudent.save()
+        await CourseModel.findByIdAndUpdate(args.courseID, {
+          ...course,
+          students: course.students.push({ ...newStudent })
+        }, { new: true });
       } catch (error) {
         throw new GraphQLError('Enrollment failed', {
           extensions: {
@@ -55,10 +65,10 @@ const resolvers = {
             invalidArgs: args,
             error
           }
-        })
+        });
       }
 
-      return newStudent
+      return newStudent;
     },
     addCourse: async (
       _root: any,
@@ -67,17 +77,20 @@ const resolvers = {
         category: string[]
         teacherUsername: string
         description: string
+        estimateTime: number
       }
     ) => {
-      const teacherData = TeacherModel.findOne({
+      const teacherData = await TeacherModel.findOne({
         username: args.teacherUsername,
-      })
+      });
       const course = new CourseModel({
         ...args,
         teacher: teacherData,
-      })
+        students: [],
+        lessons: [],
+      });
       try {
-        await course.save()
+        await course.save();
       } catch (error) {
         throw new GraphQLError("Create new course failed!", {
           extensions: {
@@ -85,57 +98,57 @@ const resolvers = {
             invalidArgs: args.name,
             error,
           },
-        })
+        });
       }
-      return course
+      return course;
     },
     createStudent: async (
       _root: any,
       args: UserArgsType
     ) => {
-      const newStudent = new StudentModel({ name: args.name, email: args.email, username: args.username })
+      const newStudent = new StudentModel({ name: args.name, email: args.email, username: args.username });
 
       try {
-        await newStudent.save()
+        await newStudent.save();
       } catch (error) {
         throw new GraphQLError("Creating new student failed", {
           extensions: {
             code: "GRAPHQL_VALIDATION_FAILED",
             error,
           },
-        })
+        });
       }
 
-      return newStudent
+      return newStudent;
     },
     createTeacher: async (
       _root: any,
       args: UserArgsType
     ) => {
-      const newTeacher = new TeacherModel({ ...args })
+      const newTeacher = new TeacherModel({ ...args });
 
       if (!args.organization) {
         throw new GraphQLError('Missing organization', {
           extensions: {
             code: "BAD_USER_INPUT",
           }
-        })
+        });
       }
 
       try {
-        await newTeacher.save()
+        await newTeacher.save();
       } catch (error) {
         throw new GraphQLError("Creating new teacher failed", {
           extensions: {
             code: "GRAPHQL_VALIDATION_FAILED",
             error,
           },
-        })
+        });
       }
 
-      return newTeacher
+      return newTeacher;
     },
   },
-}
+};
 
-export default resolvers
+export default resolvers;
