@@ -12,6 +12,7 @@
   "author": "",
   "devDependencies": {
     "@types/node": "^18.15.11",
+    "eslint": "^8.38.0",
     "nodemon": "^2.0.21",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0"

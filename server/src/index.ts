@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
+
 import { ApolloServer } from '@apollo/server';
 import config from "./utils/config";
 import dotenv from "dotenv";
