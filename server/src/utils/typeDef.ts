@@ -99,9 +99,10 @@ const typeDefs = `#graphql
       name: String!, 
       category: [String!]!, 
       teacherUsername: String!, 
-      description: String!
+      description: String!,
+      estimateTime: Float
     ): Course
   }
-`
+`;
 
-export default typeDefs
+export default typeDefs;

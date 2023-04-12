@@ -1,6 +1,9 @@
-import { Schema, model } from "mongoose";
+import { Document, Schema, model } from "mongoose";
 
+import { Course } from "types/course";
 import EnrolledStudent from "./helper/enrolled_student";
+
+export type CourseDocument = Document & Course;
 
 const courseSchema = new Schema({
   name: {
@@ -29,4 +32,4 @@ const courseSchema = new Schema({
   }]
 });
 
-export default model("Course", courseSchema);
+export default model<CourseDocument>("Course", courseSchema);

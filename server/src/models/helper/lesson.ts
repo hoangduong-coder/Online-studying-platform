@@ -1,4 +1,8 @@
-import { Schema, model } from "mongoose";
+import { Document, Schema, model } from "mongoose";
+
+import { Lesson } from "types/helper";
+
+export type LessonDocument = Document & Lesson;
 
 const schema = new Schema({
   title: {
@@ -20,4 +24,4 @@ const schema = new Schema({
   ]
 });
 
-export default model("Lesson", schema);
+export default model<LessonDocument>("Lesson", schema);

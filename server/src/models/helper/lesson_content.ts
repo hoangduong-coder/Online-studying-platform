@@ -1,5 +1,8 @@
-import { Schema, model } from 'mongoose';
+import { Document, Schema, model } from 'mongoose';
 
+import { Content } from 'types/helper';
+
+export type ContentDocument = Document & Content;
 const schema = new Schema({
   title: {
     type: String,
@@ -20,6 +23,4 @@ const schema = new Schema({
   ]
 });
 
-const Content = model("Content", schema);
-
-export default Content;
+export default model<ContentDocument>("Content", schema);

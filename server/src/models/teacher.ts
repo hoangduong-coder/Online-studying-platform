@@ -1,5 +1,8 @@
-import { Schema, model } from "mongoose";
+import { Document, Schema, model } from "mongoose";
 
+import { Teacher } from "types/user";
+
+export type TeacherDocument = Teacher & Document;
 const schema = new Schema({
   name: {
     type: String,
@@ -24,4 +27,4 @@ const schema = new Schema({
   }
 });
 
-export default model("Teacher", schema);
+export default model<TeacherDocument>("Teacher", schema);

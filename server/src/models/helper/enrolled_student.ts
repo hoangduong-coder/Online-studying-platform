@@ -1,4 +1,8 @@
-import { Schema, model } from 'mongoose';
+import { Document, Schema, model } from 'mongoose';
+
+import { StudentInCourse } from 'types/course';
+
+export type EnrolledStudentDocument = Document & StudentInCourse;
 
 const schema = new Schema({
   student: {
@@ -15,6 +19,4 @@ const schema = new Schema({
   progress: Number
 });
 
-const EnrolledStudent = model('EnrolledStudent', schema);
-
-export default EnrolledStudent;
+export default model<EnrolledStudentDocument>('EnrolledStudent', schema);
