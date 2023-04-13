@@ -18,6 +18,7 @@ const typeDefs = `#graphql
     name: String!
     username: String!
     email: String!
+    passwordHash: String!
   }
 
   type Teacher {
@@ -26,6 +27,7 @@ const typeDefs = `#graphql
     username: String!
     email: String!
     organization: String
+    passwordHash: String!
   }
 
   type Lesson {
@@ -74,16 +76,18 @@ const typeDefs = `#graphql
     estimateTime: Float
   }
 
+  type Token {
+    value: String!
+  }
+
   union User = Student | Teacher
 
-  enum Role {
-    TEACHER
-    STUDENT
-  }
 
   type Query {
     allCourses(name: String, category: String): [Course!]
     getCourseById(id: ID!): Course!
+    getLesson(id: ID!): Lesson!
+    me: User
   }
 
   type Mutation {
@@ -101,7 +105,8 @@ const typeDefs = `#graphql
       teacherUsername: String!, 
       description: String!,
       estimateTime: Float
-    ): Course
+    ): Course,
+    login(username: String!, password: String!): Token
   }
 `;
 

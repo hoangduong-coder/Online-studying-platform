@@ -1,6 +1,7 @@
 import { Document, Schema, model } from "mongoose";
 
 import { Teacher } from "types/user";
+import mongooseUniqueValidator from "mongoose-unique-validator";
 
 export type TeacherDocument = Teacher & Document;
 const schema = new Schema({
@@ -24,7 +25,12 @@ const schema = new Schema({
     minlength: 2,
     required: true,
     unique: true
+  },
+  passwordHash: {
+    type: String,
+    required: true,
   }
 });
 
+schema.plugin(mongooseUniqueValidator);
 export default model<TeacherDocument>("Teacher", schema);
