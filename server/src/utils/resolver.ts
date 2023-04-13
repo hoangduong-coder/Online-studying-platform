@@ -26,6 +26,9 @@ const resolvers = {
     getCourseById: async (_root: any, args: { id: string }) => {
       return await CourseModel.find({ _id: args.id });
     },
+    getLesson: async (_root: any, args: { id: string }) => {
+      return await CourseModel.find({ "lessons._id": args.id });
+    },
   },
   Mutation: {
     enrollCourse: async (_root: any, args: { studentID: string, courseID: string }) => {
