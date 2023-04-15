@@ -1,12 +1,7 @@
-export interface Student {
+export interface User {
   name: string,
   email: string,
-  username: string
-}
-
-export interface Teacher {
-  name: string,
-  email: string,
-  username: string,
-  organization: string
+  role: "TEACHER" | "STUDENT",
+  organization?: string,
+  passwordHash: string
 }

@@ -6,28 +6,25 @@ const typeDefs = `#graphql
   }
 
   type EnrolledStudent {
-    student: Student!
+    student: User!
     status: Status!
     overall: Int
     finishedDate: String
     progress: Float
   }
-
-  type Student {
-    id: ID!
-    name: String!
-    username: String!
-    email: String!
-    passwordHash: String!
+  
+  enum Role {
+    TEACHER
+    STUDENT
   }
 
-  type Teacher {
+  type User {
     id: ID!
     name: String!
-    username: String!
     email: String!
-    organization: String
     passwordHash: String!
+    organization: String
+    role: Role!
   }
 
   type Lesson {
@@ -67,7 +64,7 @@ const typeDefs = `#graphql
     id: ID!
     name: String!
     category: [String!]!
-    teacher: Teacher!
+    teacher: User!
     students: [EnrolledStudent!]
     description: String!
     lessons: [Lesson!]
@@ -75,13 +72,6 @@ const typeDefs = `#graphql
     # calculate in hours
     estimateTime: Float
   }
-
-  type Token {
-    value: String!
-  }
-
-  union User = Student | Teacher
-
 
   type Query {
     allCourses(name: String, category: String): [Course!]
@@ -92,21 +82,21 @@ const typeDefs = `#graphql
 
   type Mutation {
     enrollCourse(studentID: ID!, courseID: ID!): EnrolledStudent
-    createStudent(name: String!, email: String!, username: String!): Student
-    createTeacher(
+    createUser(
       name: String!, 
       email: String!, 
-      username: String!, 
-      organization: String!
-    ): Teacher
+      organization: String,
+      password: String!
+      role: Role!
+    ): User
     addCourse(
       name: String!, 
       category: [String!]!, 
-      teacherUsername: String!, 
+      teacherID: ID!, 
       description: String!,
       estimateTime: Float
     ): Course,
-    login(username: String!, password: String!): Token
+    login(username: String!, password: String!): String
   }
 `;
 

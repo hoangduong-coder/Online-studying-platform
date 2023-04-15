@@ -1,12 +1,11 @@
-import { Student, Teacher } from './user';
-
 import { Lesson } from './helper';
 import { Types } from 'mongoose';
+import { User } from './user';
 
 export interface Course {
   name: string,
   category: string[],
-  teacher: Types.ObjectId | Teacher,
+  teacher: Types.ObjectId | User,
   description: string,
   students: Array<StudentInCourse>,
   lessons: Array<Types.ObjectId> | Array<Lesson>,
@@ -14,7 +13,7 @@ export interface Course {
 }
 
 export interface StudentInCourse {
-  student: Types.ObjectId | Student,
+  student: Types.ObjectId | User,
   status: "PASSED" | "FAILED" | "ONGOING"
   overall?: number,
   finishedDate?: string,

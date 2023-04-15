@@ -1,7 +1,6 @@
 import { Document, Schema, model } from "mongoose";
 
 import { Course } from "types/course";
-import EnrolledStudent from "./helper/enrolled_student";
 
 export type CourseDocument = Document & Course;
 
@@ -17,14 +16,17 @@ const courseSchema = new Schema({
   },
   teacher: {
     type: Schema.Types.ObjectId,
-    ref: 'Teacher',
+    ref: 'User',
     required: true
   },
   description: {
     type: String,
     required: true,
   },
-  students: [EnrolledStudent.schema],
+  students: [{
+    type: Schema.Types.ObjectId,
+    ref: "EnrolledStudent"
+  }],
   estimateTime: Number,
   lessons: [{
     type: Schema.Types.ObjectId,

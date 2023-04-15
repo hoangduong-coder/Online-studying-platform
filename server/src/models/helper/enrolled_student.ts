@@ -7,7 +7,7 @@ export type EnrolledStudentDocument = Document & StudentInCourse;
 const schema = new Schema({
   student: {
     type: Schema.Types.ObjectId,
-    ref: "Student",
+    ref: "User",
     required: true
   },
   status: {

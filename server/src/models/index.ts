@@ -1,3 +1,2 @@
 export { default as CourseModel } from "./course";
-export { default as StudentModel } from "./student";
-export { default as TeacherModel } from "./teacher";
+export { default as UserModel } from "./user";
