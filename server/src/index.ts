@@ -1,16 +1,19 @@
+/* eslint-disable @typescript-eslint/require-await */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
 import { ApolloServer } from "@apollo/server";
-import { UserModel } from "models";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import config from "./utils/config";
+import cors from "cors";
 import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
+import express from "express";
+import { expressMiddleware } from "@apollo/server/express4";
+import http from "http";
 import mongoose from "mongoose";
 import resolvers from "./utils/resolver";
-import { startStandaloneServer } from "@apollo/server/standalone";
 import typeDefs from "./utils/typeDef";
 
 mongoose.set("strictQuery", false);
@@ -18,30 +21,42 @@ dotenv.config();
 
 const MONGO_URI = config.MONGO_URI;
 const PORT = config.PORT;
-const SECRET = config.SECRET;
+const app = express();
+const httpServer = http.createServer(app);
 
-try {
-  mongoose.connect(MONGO_URI);
-  console.log("successfully connected to", MONGO_URI);
-} catch (error) {
-  console.log("error connection to", MONGO_URI);
-}
+mongoose
+  .connect(MONGO_URI)
+  .then(() => {
+    console.log("successfully connected to", MONGO_URI);
+  })
+  .catch((_error) => {
+    console.log("error connection to", MONGO_URI);
+  });
 
-const server = new ApolloServer({
+const server = new ApolloServer<{
+  tokenDetails?: string
+}>({
   typeDefs,
   resolvers,
+  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
-const { url } = await startStandaloneServer(server, {
-  listen: { port: PORT },
-  context: async ({ req }) => {
-    const auth = req ? req.headers.authorization : null;
-    if (auth && auth.startsWith("Bearer ")) {
-      const decodedToken = jwt.verify(auth.substring(7), SECRET);
-      const currentUser = await UserModel.findById(decodedToken);
-      return { currentUser };
-    }
-  },
-});
+(async () => {
+  await server.start();
 
-console.log(`Server is ready. Go to ${url} for more details.`);
+  app.use(
+    "/",
+    cors<cors.CorsRequest>(),
+    express.json(),
+    expressMiddleware(server, {
+      context: async ({ req }) => {
+        const auth = req ? req.headers.authorization : "";
+        return { tokenDetails: auth };
+      },
+    })
+  );
+
+  await new Promise<void>((resolve) => httpServer.listen({ port: PORT }, resolve));
+})();
+
+console.log(`Server is now running on http://localhost:${PORT}`);

@@ -4,12 +4,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import { CourseModel, UserModel } from "../models";
-import { Document, Types } from "mongoose";
 
 import { GraphQLError } from "graphql";
 import { StudentInCourse } from "types/course";
-import { User } from "types/user";
-import { UserDocument } from "models/user";
 import bcrypt from "bcrypt";
 import config from "./config";
 import jwt from "jsonwebtoken";
@@ -37,10 +34,18 @@ const resolvers = {
     getLesson: async (_root: any, args: { id: string }) => {
       return await CourseModel.find({ "lessons._id": args.id });
     },
-    me: (_root: any, context: Document<unknown, {}, UserDocument> & Omit<User & Document<any, any, any> & {
-      _id: Types.ObjectId;
-    }, never>) => {
-      return context.currentUser;
+    me: async (_root: any, context: { tokenDetails?: string }) => {
+      if (context.tokenDetails && context.tokenDetails.startsWith("Bearer ")) {
+        const token = jwt.verify(context.tokenDetails.substring(7), config.SECRET);
+        const currentUser = await UserModel.findById(token);
+        if (!currentUser) throw new GraphQLError('User is not authenticated', {
+          extensions: {
+            code: 'UNAUTHENTICATED',
+            http: { status: 401 },
+          },
+        });
+        return currentUser;
+      }
     }
   },
   Mutation: {
@@ -142,7 +147,7 @@ const resolvers = {
 
       const newUser = new UserModel({ name, email, role, passwordHash });
       if (args.organization && role === "TEACHER") {
-        newUser.organization === args.organization;
+        newUser['organization'] = args.organization;
       }
 
       try {
