@@ -77,6 +77,7 @@ const typeDefs = `#graphql
     allCourses(name: String, category: String): [Course!]
     getCourseById(id: ID!): Course!
     getLesson(id: ID!): Lesson!
+    getLessonContent(id: ID!): Content!
     me: User
   }
 
@@ -96,7 +97,8 @@ const typeDefs = `#graphql
       description: String!,
       estimateTime: Float
     ): Course,
-    login(username: String!, password: String!): String
+    login(email: String!, password: String!): String
+    answerQuiz(quizID: ID!, answer: String!): Quiz
   }
 `;
 
