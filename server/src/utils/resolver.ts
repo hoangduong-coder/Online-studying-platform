@@ -4,9 +4,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import { CourseModel, UserModel } from "../models";
+import { Document, Types } from "mongoose";
 
 import { GraphQLError } from "graphql";
 import { StudentInCourse } from "types/course";
+import { User } from "types/user";
+import { UserDocument } from "models/user";
 import bcrypt from "bcrypt";
 import config from "./config";
 import jwt from "jsonwebtoken";
@@ -18,21 +21,17 @@ const resolvers = {
       args: { name?: string; category?: string }
     ) => {
       if (args.name) {
-        return await CourseModel.find({ name: { $in: args.name } }).populate(
-          "teacher"
-        );
+        return await CourseModel.find({ name: { $in: args.name } }).populate("teacher");
       } else if (args.category) {
-        return await CourseModel.find({
-          category: { $in: args.category },
-        }).populate("teacher");
+        return await CourseModel.find({ category: { $in: args.category }, }).populate("teacher");
       }
       return await CourseModel.find({}).populate("teacher");
     },
     getCourseById: async (_root: any, args: { id: string }) => {
-      return await CourseModel.find({ _id: args.id });
+      return await CourseModel.findOne({ _id: args.id });
     },
     getLesson: async (_root: any, args: { id: string }) => {
-      return await CourseModel.find({ "lessons._id": args.id });
+      return await CourseModel.findOne({ "lessons._id": args.id });
     },
     me: async (_root: any, context: { tokenDetails?: string }) => {
       if (context.tokenDetails && context.tokenDetails.startsWith("Bearer ")) {
@@ -51,10 +50,18 @@ const resolvers = {
   Mutation: {
     enrollCourse: async (
       _root: any,
-      args: { studentID: string; courseID: string }
+      args: { courseID: string },
+      context: {
+        currentUser: Document<unknown, {}, UserDocument> & Omit<User & Document<any, any, any> & {
+          _id: Types.ObjectId;
+        }, never>
+      }
     ) => {
-      const requestedStudent = await UserModel.findById(args.studentID);
       const course = await CourseModel.findOne({ _id: args.courseID });
+      const requestedStudent = context.currentUser;
+      const studentData = await CourseModel.findOne({
+        'students.student._id': requestedStudent._id
+      });
 
       if (!course || !requestedStudent || requestedStudent.role !== "STUDENT") {
         throw new GraphQLError("No course or student found", {
@@ -62,6 +69,13 @@ const resolvers = {
             code: "BAD_USER_INPUT",
             invalidArgs: args,
           },
+        });
+      }
+      if (studentData) {
+        throw new GraphQLError("Student has already enrolled", {
+          extensions: {
+            code: "BAD_USER_INPUT"
+          }
         });
       }
 
