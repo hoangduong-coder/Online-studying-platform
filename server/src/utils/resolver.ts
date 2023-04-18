@@ -16,14 +16,15 @@ import jwt from "jsonwebtoken";
 
 const resolvers = {
   Query: {
-    allCourses: async (
-      _root: any,
-      args: { name?: string; category?: string }
-    ) => {
+    allCourses: async (_root: any, args: { name?: string; category?: string }) => {
       if (args.name) {
-        return await CourseModel.find({ name: { $in: args.name } }).populate("teacher");
+        return await CourseModel.find({ name: { $in: args.name } }).populate(
+          "teacher"
+        );
       } else if (args.category) {
-        return await CourseModel.find({ category: { $in: args.category }, }).populate("teacher");
+        return await CourseModel.find({
+          category: { $in: args.category },
+        }).populate("teacher");
       }
       return await CourseModel.find({}).populate("teacher");
     },
@@ -33,35 +34,40 @@ const resolvers = {
     getLesson: async (_root: any, args: { id: string }) => {
       return await CourseModel.findOne({ "lessons._id": args.id });
     },
+    getTeacherCourses: async (_root: any, args: { teacherID: string }) => {
+      return await CourseModel.find({ "teacher": args.teacherID }).populate("teacher");
+    },
     me: async (_root: any, context: { tokenDetails?: string }) => {
       if (context.tokenDetails && context.tokenDetails.startsWith("Bearer ")) {
         const token = jwt.verify(context.tokenDetails.substring(7), config.SECRET);
         const currentUser = await UserModel.findById(token);
-        if (!currentUser) throw new GraphQLError('User is not authenticated', {
-          extensions: {
-            code: 'UNAUTHENTICATED',
-            http: { status: 401 },
-          },
-        });
+        if (!currentUser)
+          throw new GraphQLError("User is not authenticated", {
+            extensions: {
+              code: "UNAUTHENTICATED",
+              http: { status: 401 },
+            },
+          });
         return currentUser;
       }
-    }
+    },
   },
   Mutation: {
     enrollCourse: async (
       _root: any,
       args: { courseID: string },
       context: {
-        currentUser: Document<unknown, {}, UserDocument> & Omit<User & Document<any, any, any> & {
-          _id: Types.ObjectId;
-        }, never>
+        currentUser: Document<unknown, {}, UserDocument> &
+        Omit<User & Document<any, any, any> & { _id: Types.ObjectId }, never>
       }
     ) => {
-      const course = await CourseModel.findOne({ _id: args.courseID });
+      const course = await CourseModel.findOne({ _id: args.courseID }).populate(
+        {
+          path: "students",
+          populate: { path: "student" },
+        }
+      );
       const requestedStudent = context.currentUser;
-      const studentData = await CourseModel.findOne({
-        'students.student._id': requestedStudent._id
-      });
 
       if (!course || !requestedStudent || requestedStudent.role !== "STUDENT") {
         throw new GraphQLError("No course or student found", {
@@ -71,11 +77,16 @@ const resolvers = {
           },
         });
       }
-      if (studentData) {
+
+      if (
+        course.students.filter(
+          (obj) => obj.student.toString === requestedStudent._id
+        )
+      ) {
         throw new GraphQLError("Student has already enrolled", {
           extensions: {
-            code: "BAD_USER_INPUT"
-          }
+            code: "BAD_USER_INPUT",
+          },
         });
       }
 
@@ -155,19 +166,45 @@ const resolvers = {
         role: "TEACHER" | "STUDENT"
       }
     ) => {
+      if (
+        args.password.length < 8 ||
+        !/\d/.test(args.password) ||
+        !/[a-zA-Z]/.test(args.password)
+      ) {
+        throw new GraphQLError(
+          "Wrong password format (>=8 and contains at least 1 letter and 1 digit)",
+          {
+            extensions: {
+              code: "GRAPHQL_VALIDATION_FAILED",
+            },
+          }
+        );
+      }
+
       const saltRounds = 10;
-      const passwordHash = bcrypt.hash(args.password, saltRounds);
+      const passwordHash = await bcrypt.hash(args.password, saltRounds);
       const { name, email, role } = args;
 
       const newUser = new UserModel({ name, email, role, passwordHash });
-      if (args.organization && role === "TEACHER") {
-        newUser['organization'] = args.organization;
+      if (role === "TEACHER") {
+        if (args.organization) {
+          newUser["organization"] = args.organization;
+        } else {
+          throw new GraphQLError("Must have organization for teachers", {
+            extensions: { code: "BAD_USER_INPUT" },
+          });
+        }
+      }
+      if (role === "STUDENT" && args.organization) {
+        throw new GraphQLError("Only teacher can have a teaching organization", {
+          extensions: { code: "BAD_USER_INPUT" },
+        });
       }
 
       try {
         await newUser.save();
       } catch (error) {
-        throw new GraphQLError("Creating new student failed", {
+        throw new GraphQLError("Creating new user failed", {
           extensions: {
             code: "GRAPHQL_VALIDATION_FAILED",
             error,
@@ -181,7 +218,7 @@ const resolvers = {
       const user = await UserModel.findOne({ email: args.email });
       const password = !user
         ? false
-        : await bcrypt.compare(user.passwordHash, args.password);
+        : await bcrypt.compare(args.password, user.passwordHash);
       if (!(user && password)) {
         throw new GraphQLError("Invalid username or password", {
           extensions: {

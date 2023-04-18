@@ -76,13 +76,13 @@ const typeDefs = `#graphql
   type Query {
     allCourses(name: String, category: String): [Course!]
     getCourseById(id: ID!): Course!
+    getTeacherCourses(teacherID: ID!): [Course!]
     getLesson(id: ID!): Lesson!
-    getLessonContent(id: ID!): Content!
     me: User
   }
 
   type Mutation {
-    enrollCourse(studentID: ID!, courseID: ID!): EnrolledStudent
+    enrollCourse(courseID: ID!): EnrolledStudent
     createUser(
       name: String!, 
       email: String!, 
@@ -98,7 +98,7 @@ const typeDefs = `#graphql
       estimateTime: Float
     ): Course,
     login(email: String!, password: String!): String
-    answerQuiz(quizID: ID!, answer: String!): Quiz
+    answerQuiz(quizID: ID!, answer: String!): String
   }
 `;
 

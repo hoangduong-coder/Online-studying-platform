@@ -4,7 +4,7 @@
   "main": "index.ts",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node ./src/index.ts",
+    "dev": "ts-node-dev ./src/index.ts",
     "lint": "eslint --ext .ts .",
     "tsc": "tsc",
     "build": "esbuild index.ts --bundle --platform=node --target=node18.15 --outfile=out.ts"
