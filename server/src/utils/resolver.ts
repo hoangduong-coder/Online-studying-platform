@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { CourseModel, UserModel } from "../models";
 import { Document, Types } from "mongoose";
@@ -37,17 +37,11 @@ const resolvers = {
     getTeacherCourses: async (_root: any, args: { teacherID: string }) => {
       return await CourseModel.find({ "teacher": args.teacherID }).populate("teacher");
     },
-    me: async (_root: any, context: { tokenDetails?: string }) => {
-      if (context.tokenDetails && context.tokenDetails.startsWith("Bearer ")) {
-        const token = jwt.verify(context.tokenDetails.substring(7), config.SECRET);
-        const currentUser = await UserModel.findById(token);
-        if (!currentUser)
-          throw new GraphQLError("User is not authenticated", {
-            extensions: {
-              code: "UNAUTHENTICATED",
-              http: { status: 401 },
-            },
-          });
+    me: async (_root: any, _args: any, contextValue: { token?: string }) => {
+      if (contextValue.token && contextValue.token.startsWith("Bearer ")) {
+        const decodedToken = jwt.verify(contextValue.token.substring(7), config.SECRET);
+        //@ts-ignore
+        const currentUser = await UserModel.findById(decodedToken.id);
         return currentUser;
       }
     },
@@ -56,7 +50,7 @@ const resolvers = {
     enrollCourse: async (
       _root: any,
       args: { courseID: string },
-      context: {
+      contextValue: {
         currentUser: Document<unknown, {}, UserDocument> &
         Omit<User & Document<any, any, any> & { _id: Types.ObjectId }, never>
       }
@@ -67,7 +61,7 @@ const resolvers = {
           populate: { path: "student" },
         }
       );
-      const requestedStudent = context.currentUser;
+      const requestedStudent = contextValue.currentUser;
 
       if (!course || !requestedStudent || requestedStudent.role !== "STUDENT") {
         throw new GraphQLError("No course or student found", {
@@ -228,7 +222,7 @@ const resolvers = {
         });
       }
       const token = jwt.sign(
-        { user: user._id, email: user.email },
+        { id: user._id, email: user.email },
         config.SECRET
       );
       return token;

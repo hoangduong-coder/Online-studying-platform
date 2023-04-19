@@ -33,15 +33,15 @@ mongoose
     console.log("error connection to", MONGO_URI);
   });
 
-const server = new ApolloServer<{
-  tokenDetails?: string
-}>({
-  typeDefs,
-  resolvers,
-  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-});
+const start = async () => {
+  const server = new ApolloServer<{
+    token?: string
+  }>({
+    typeDefs,
+    resolvers,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  });
 
-(async () => {
   await server.start();
 
   app.use(
@@ -51,12 +51,15 @@ const server = new ApolloServer<{
     expressMiddleware(server, {
       context: async ({ req }) => {
         const auth = req ? req.headers.authorization : "";
-        return { tokenDetails: auth };
+        return { token: auth };
       },
     })
   );
 
-  await new Promise<void>((resolve) => httpServer.listen({ port: PORT }, resolve));
-})();
+  await new Promise<void>((resolve) => {
+    httpServer.listen({ port: PORT }, resolve);
+    console.log(`Server is now running on http://localhost:${PORT}`);
+  });
+};
 
-console.log(`Server is now running on http://localhost:${PORT}`);
+start();

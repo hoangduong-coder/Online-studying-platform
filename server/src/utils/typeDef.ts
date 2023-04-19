@@ -97,8 +97,8 @@ const typeDefs = `#graphql
       description: String!,
       estimateTime: Float
     ): Course,
-    login(email: String!, password: String!): String
-    answerQuiz(quizID: ID!, answer: String!): String
+    login(email: String!, password: String!): String!
+    answerQuiz(quizID: ID!, answer: String!): String!
   }
 `;
 
