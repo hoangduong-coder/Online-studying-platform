@@ -1,9 +1,9 @@
 import { Document, Schema, model } from "mongoose";
 
-import { User } from "types/user";
+import { Teacher } from "types/user";
 import mongooseUniqueValidator from "mongoose-unique-validator";
 
-export type UserDocument = User & Document;
+export type TeacherDocument = Teacher & Document;
 const schema = new Schema({
   name: {
     type: String,
@@ -22,7 +22,6 @@ const schema = new Schema({
   },
   role: {
     type: String,
-    enum: ["TEACHER", "STUDENT"],
     required: true
   },
   organization: {
@@ -32,4 +31,4 @@ const schema = new Schema({
 });
 
 schema.plugin(mongooseUniqueValidator);
-export default model<UserDocument>("User", schema);
+export default model<TeacherDocument>("Teacher", schema);

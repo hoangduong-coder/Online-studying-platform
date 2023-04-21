@@ -1,22 +1,24 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { CourseModel, UserModel } from "../models";
-import { Document, Types } from "mongoose";
+import { CourseModel, StudentModel, TeacherModel } from "../models";
 
 import { GraphQLError } from "graphql";
-import { StudentInCourse } from "types/course";
-import { User } from "types/user";
-import { UserDocument } from "models/user";
+import { StudyProgress } from "types/helper";
 import bcrypt from "bcrypt";
 import config from "./config";
 import jwt from "jsonwebtoken";
 
 const resolvers = {
   Query: {
-    allCourses: async (_root: any, args: { name?: string; category?: string }) => {
+    allCourses: async (
+      _root: any,
+      args: { name?: string; category?: string }
+    ) => {
       if (args.name) {
         return await CourseModel.find({ name: { $in: args.name } }).populate(
           "teacher"
@@ -31,18 +33,36 @@ const resolvers = {
     getCourseById: async (_root: any, args: { id: string }) => {
       return await CourseModel.findOne({ _id: args.id });
     },
-    getLesson: async (_root: any, args: { id: string }) => {
-      return await CourseModel.findOne({ "lessons._id": args.id });
+    getLesson: async (
+      _root: any,
+      args: { id: string },
+      contextValue: { token?: string }
+    ) => {
+      const requestedStudent = contextValue.token
+        ? await StudentModel.findById(contextValue.token)
+        : null;
+      if (requestedStudent) {
+        return await CourseModel.findOne({ "lessons._id": args.id });
+      }
     },
-    getTeacherCourses: async (_root: any, args: { teacherID: string }) => {
-      return await CourseModel.find({ "teacher": args.teacherID }).populate("teacher");
-    },
-    me: async (_root: any, _args: any, contextValue: { token?: string }) => {
-      if (contextValue.token && contextValue.token.startsWith("Bearer ")) {
-        const decodedToken = jwt.verify(contextValue.token.substring(7), config.SECRET);
-        //@ts-ignore
-        const currentUser = await UserModel.findById(decodedToken.id);
-        return currentUser;
+    getUserCourses: async (_root: any, args: { userID: string }) => {
+      const teacher = await TeacherModel.findById(args.userID);
+      if (teacher) {
+        return await CourseModel.find({ teacher: args.userID }).populate(
+          "teacher"
+        );
+      } else {
+        const result: any[] = [];
+        const user = await StudentModel.findById(args.userID).populate(
+          "studyProgress"
+        );
+        if (user && user.studyProgress) {
+          user.studyProgress.forEach((progress) => {
+            const course = CourseModel.findById(progress.course.toString());
+            result.push(course);
+          });
+        }
+        return result;
       }
     },
   },
@@ -50,31 +70,23 @@ const resolvers = {
     enrollCourse: async (
       _root: any,
       args: { courseID: string },
-      contextValue: {
-        currentUser: Document<unknown, {}, UserDocument> &
-        Omit<User & Document<any, any, any> & { _id: Types.ObjectId }, never>
-      }
+      contextValue: { token?: string }
     ) => {
-      const course = await CourseModel.findOne({ _id: args.courseID }).populate(
-        {
-          path: "students",
-          populate: { path: "student" },
-        }
-      );
-      const requestedStudent = contextValue.currentUser;
-
-      if (!course || !requestedStudent || requestedStudent.role !== "STUDENT") {
+      const course = await CourseModel.findOne({ _id: args.courseID });
+      const requestedStudent = contextValue.token
+        ? await StudentModel.findById(contextValue.token)
+        : null;
+      if (!course || !requestedStudent) {
         throw new GraphQLError("No course or student found", {
           extensions: {
             code: "BAD_USER_INPUT",
-            invalidArgs: args,
+            args: args,
           },
         });
       }
-
       if (
-        course.students.filter(
-          (obj) => obj.student.toString === requestedStudent._id
+        requestedStudent.studyProgress.find(
+          (obj) => obj.course.toString() === course._id
         )
       ) {
         throw new GraphQLError("Student has already enrolled", {
@@ -83,23 +95,16 @@ const resolvers = {
           },
         });
       }
-
-      const newStudent: StudentInCourse = {
-        student: requestedStudent,
+      const newProgress: StudyProgress = {
+        course: course,
         status: "ONGOING",
         overall: 0,
         progress: 0,
       };
-
       try {
-        await CourseModel.findByIdAndUpdate(
-          args.courseID,
-          {
-            ...course,
-            students: course.students.push({ ...newStudent }),
-          },
-          { new: true }
-        );
+        requestedStudent.studyProgress =
+          requestedStudent.studyProgress.concat(newProgress);
+        await requestedStudent.save();
       } catch (error) {
         throw new GraphQLError("Enrollment failed", {
           extensions: {
@@ -109,8 +114,7 @@ const resolvers = {
           },
         });
       }
-
-      return newStudent;
+      return newProgress;
     },
     addCourse: async (
       _root: any,
@@ -122,9 +126,9 @@ const resolvers = {
         estimateTime: number
       }
     ) => {
-      const teacherData = await UserModel.findById(args.teacherID);
+      const teacherData = await TeacherModel.findById(args.teacherID);
       if (!teacherData || teacherData.role !== "TEACHER") {
-        throw new GraphQLError("No course or student found", {
+        throw new GraphQLError("No teacher found!", {
           extensions: {
             code: "BAD_USER_INPUT",
             invalidArgs: args,
@@ -142,7 +146,7 @@ const resolvers = {
       } catch (error) {
         throw new GraphQLError("Create new course failed!", {
           extensions: {
-            code: "BAD_INPUT",
+            code: "BAD_USER_INPUT",
             invalidArgs: args.name,
             error,
           },
@@ -150,14 +154,53 @@ const resolvers = {
       }
       return course;
     },
-    createUser: async (
+    createStudent: async (
+      _root: any,
+      args: { name: string; email: string; password: string }
+    ) => {
+      if (
+        args.password.length < 8 ||
+        !/\d/.test(args.password) ||
+        !/[a-zA-Z]/.test(args.password)
+      ) {
+        throw new GraphQLError(
+          "Wrong password format (>=8 and contains at least 1 letter and 1 digit)",
+          {
+            extensions: {
+              code: "GRAPHQL_VALIDATION_FAILED",
+            },
+          }
+        );
+      }
+      const saltRounds = 10;
+      const passwordHash = await bcrypt.hash(args.password, saltRounds);
+      const { name, email } = args;
+      const newUser = new StudentModel({
+        name,
+        email,
+        role: "STUDENT",
+        passwordHash,
+        studyProgress: [],
+      });
+      try {
+        await newUser.save();
+      } catch (error) {
+        throw new GraphQLError("Create new student failed!", {
+          extensions: {
+            code: "GRAPHQL_VALIDATION_FAILED",
+            error,
+          },
+        });
+      }
+      return newUser;
+    },
+    createTeacher: async (
       _root: any,
       args: {
         name: string
         email: string
-        organization?: string
+        organization: string
         password: string
-        role: "TEACHER" | "STUDENT"
       }
     ) => {
       if (
@@ -174,42 +217,51 @@ const resolvers = {
           }
         );
       }
-
       const saltRounds = 10;
       const passwordHash = await bcrypt.hash(args.password, saltRounds);
-      const { name, email, role } = args;
-
-      const newUser = new UserModel({ name, email, role, passwordHash });
-      if (role === "TEACHER") {
-        if (args.organization) {
-          newUser["organization"] = args.organization;
-        } else {
-          throw new GraphQLError("Must have organization for teachers", {
-            extensions: { code: "BAD_USER_INPUT" },
-          });
-        }
-      }
-      if (role === "STUDENT" && args.organization) {
-        throw new GraphQLError("Only teacher can have a teaching organization", {
-          extensions: { code: "BAD_USER_INPUT" },
-        });
-      }
-
+      const { name, email, organization } = args;
+      const newUser = new TeacherModel({
+        name,
+        email,
+        role: "TEACHER",
+        organization,
+        passwordHash,
+      });
       try {
         await newUser.save();
       } catch (error) {
-        throw new GraphQLError("Creating new user failed", {
+        throw new GraphQLError("Create new teacher failed!", {
           extensions: {
             code: "GRAPHQL_VALIDATION_FAILED",
             error,
           },
         });
       }
-
       return newUser;
     },
+    // updateProfile: async (
+    //   _root: any,
+    //   args: {
+    //     name?: string
+    //     email?: string
+    //     courseID?: string
+    //     lessonID?: string
+    //     answers?: Array<{
+    //       quizID: string,
+    //       answer: string
+    //     }>
+    //   },
+    //   contextValue: { token?: string }
+    // ) => {
+    //   switch (args) {
+
+    //   }
+    // },
     login: async (_root: any, args: { email: string; password: string }) => {
-      const user = await UserModel.findOne({ email: args.email });
+      const findTeacher = await TeacherModel.findOne({ email: args.email });
+      const user = findTeacher
+        ? findTeacher
+        : await StudentModel.findOne({ email: args.email });
       const password = !user
         ? false
         : await bcrypt.compare(args.password, user.passwordHash);
@@ -217,14 +269,12 @@ const resolvers = {
         throw new GraphQLError("Invalid username or password", {
           extensions: {
             code: "BAD_USER_INPUT",
-            args,
-          },
-        });
+            invalidArgs: args,
+          }
+        }
+        );
       }
-      const token = jwt.sign(
-        { id: user._id, email: user.email },
-        config.SECRET
-      );
+      const token = jwt.sign({ id: user._id, email: user.email }, config.SECRET);
       return token;
     },
   },

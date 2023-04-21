@@ -12,6 +12,7 @@ import dotenv from "dotenv";
 import express from "express";
 import { expressMiddleware } from "@apollo/server/express4";
 import http from "http";
+import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import resolvers from "./utils/resolver";
 import typeDefs from "./utils/typeDef";
@@ -21,6 +22,7 @@ dotenv.config();
 
 const MONGO_URI = config.MONGO_URI;
 const PORT = config.PORT;
+const SECRET = config.SECRET;
 const app = express();
 const httpServer = http.createServer(app);
 
@@ -51,6 +53,9 @@ const start = async () => {
     expressMiddleware(server, {
       context: async ({ req }) => {
         const auth = req ? req.headers.authorization : "";
+        if (auth && auth.startsWith("Bearer ")) {
+          return { token: jwt.verify(auth.substring(7), SECRET) };
+        }
         return { token: auth };
       },
     })

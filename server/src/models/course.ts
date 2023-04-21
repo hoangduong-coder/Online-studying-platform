@@ -23,10 +23,6 @@ const courseSchema = new Schema({
     type: String,
     required: true,
   },
-  students: [{
-    type: Schema.Types.ObjectId,
-    ref: "EnrolledStudent"
-  }],
   estimateTime: Number,
   lessons: [{
     type: Schema.Types.ObjectId,

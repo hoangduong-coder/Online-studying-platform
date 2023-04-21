@@ -5,8 +5,8 @@ const typeDefs = `#graphql
     ONGOING
   }
 
-  type EnrolledStudent {
-    student: User!
+  type StudyProgress {
+    course: Course!
     status: Status!
     overall: Int
     finishedDate: String
@@ -18,13 +18,22 @@ const typeDefs = `#graphql
     STUDENT
   }
 
-  type User {
+  type Teacher {
     id: ID!
     name: String!
     email: String!
     passwordHash: String!
     organization: String
     role: Role!
+  }
+
+  type Student {
+    id: ID!
+    name: String!
+    email: String!
+    passwordHash: String!
+    role: Role!
+    studyProgress: [StudyProgress!]
   }
 
   type Lesson {
@@ -64,8 +73,7 @@ const typeDefs = `#graphql
     id: ID!
     name: String!
     category: [String!]!
-    teacher: User!
-    students: [EnrolledStudent!]
+    teacher: Teacher!
     description: String!
     lessons: [Lesson!]
     
@@ -73,32 +81,40 @@ const typeDefs = `#graphql
     estimateTime: Float
   }
 
+  type StudentAnswer {
+    quizID: ID!
+    answer: String!
+  }
+
   type Query {
     allCourses(name: String, category: String): [Course!]
     getCourseById(id: ID!): Course!
     getTeacherCourses(teacherID: ID!): [Course!]
     getLesson(id: ID!): Lesson!
-    me: User
   }
 
   type Mutation {
     enrollCourse(courseID: ID!): EnrolledStudent
-    createUser(
+    createStudent(
+      name: String!, 
+      email: String!, 
+      password: String!
+    ): Student
+    createTeacher(
       name: String!, 
       email: String!, 
       organization: String,
       password: String!
-      role: Role!
-    ): User
+    ): Student
     addCourse(
       name: String!, 
       category: [String!]!, 
       teacherID: ID!, 
       description: String!,
       estimateTime: Float
-    ): Course,
+    ): Course
+    updateProfile(name: String, email: String, courseID: ID, lessonID: ID, answers: [StudentAnswer!]): User!
     login(email: String!, password: String!): String!
-    answerQuiz(quizID: ID!, answer: String!): String!
   }
 `;
 

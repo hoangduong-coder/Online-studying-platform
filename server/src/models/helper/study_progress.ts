@@ -1,13 +1,13 @@
 import { Document, Schema, model } from 'mongoose';
 
-import { StudentInCourse } from 'types/course';
+import { StudyProgress } from 'types/helper';
 
-export type EnrolledStudentDocument = Document & StudentInCourse;
+export type StudyProgressDocument = Document & StudyProgress;
 
 const schema = new Schema({
-  student: {
+  course: {
     type: Schema.Types.ObjectId,
-    ref: "User",
+    ref: "Course",
     required: true
   },
   status: {
@@ -19,4 +19,4 @@ const schema = new Schema({
   progress: Number
 });
 
-export default model<EnrolledStudentDocument>('EnrolledStudent', schema);
+export default model<StudyProgressDocument>('StudyProgress', schema);
