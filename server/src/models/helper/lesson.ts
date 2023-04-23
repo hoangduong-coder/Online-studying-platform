@@ -12,8 +12,15 @@ const schema = new Schema({
   },
   content: [
     {
-      type: Schema.Types.ObjectId,
-      ref: "Lesson"
+      title: {
+        type: String,
+        required: true,
+        minlength: 5
+      },
+      body: {
+        type: String,
+        required: true
+      }
     }
   ],
   quiz: [

@@ -12,6 +12,7 @@ const schema = new Schema({
   },
   status: {
     type: String,
+    enum: ["ONGOING", "PASSED", "FAILED"],
     required: true
   },
   overall: Number,

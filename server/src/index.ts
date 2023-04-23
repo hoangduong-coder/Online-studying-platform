@@ -56,7 +56,7 @@ const start = async () => {
         if (auth && auth.startsWith("Bearer ")) {
           return { token: jwt.verify(auth.substring(7), SECRET) };
         }
-        return { token: auth };
+        else return { token: auth };
       },
     })
   );

@@ -43,30 +43,22 @@ const typeDefs = `#graphql
     quiz: [Quiz!]
   }
 
-  enum MaterialType {
-    PDF
-    VIDEO
-  }
-
-  type Material {
-    id: ID!
-    materialType: MaterialType!
-    link: String
-  }
-
   type Quiz {
     id: ID!
     question: String!
-    choices: [String!]!
+    choices: [String!]
     answer: String!
   }
 
   type Content {
     id: ID!
     title: String!
-    description: String!
-    body: String
-    material: [Material!]
+    body: String!
+  }
+
+  input StudentAnswer {
+    quizID: ID!
+    answer: String!
   }
 
   type Course {
@@ -81,31 +73,23 @@ const typeDefs = `#graphql
     estimateTime: Float
   }
 
-  type StudentAnswer {
-    quizID: ID!
-    answer: String!
-  }
-
   type Query {
     allCourses(name: String, category: String): [Course!]
     getCourseById(id: ID!): Course!
-    getTeacherCourses(teacherID: ID!): [Course!]
+    getUserCourses(userID: ID!): [Course!]
     getLesson(id: ID!): Lesson!
+    getOverallResult(courseID: ID!): Float!
   }
 
   type Mutation {
-    enrollCourse(courseID: ID!): EnrolledStudent
-    createStudent(
-      name: String!, 
-      email: String!, 
-      password: String!
-    ): Student
+    enrollCourse(courseID: ID!): StudyProgress
+    createStudent(name: String!, email: String!, password: String!): Student
     createTeacher(
       name: String!, 
       email: String!, 
       organization: String,
       password: String!
-    ): Student
+    ): Teacher
     addCourse(
       name: String!, 
       category: [String!]!, 
@@ -113,9 +97,25 @@ const typeDefs = `#graphql
       description: String!,
       estimateTime: Float
     ): Course
-    updateProfile(name: String, email: String, courseID: ID, lessonID: ID, answers: [StudentAnswer!]): User!
+    addLesson(courseID: ID!, title: String!): Lesson
+    addNewLessonContent(
+      courseID: ID!,
+      lessonID: ID!,
+      title: String!,
+      body: String!,
+    ): Content
+    addQuiz(
+      courseID: ID!,
+      lessonID: ID!,
+      question: String!,
+      choices: [String!],
+      answer: String!
+    ): Quiz
+    updateStudentProfile(name: String, email: String): Student
+    updateTeacherProfile(name: String, email: String, organization: String): Teacher
+    answerQuiz(courseID: ID!): Course
     login(email: String!, password: String!): String!
   }
 `;
-
+//answerQuiz params: lessonID: ID!, answers: [StudentAnswer!]!
 export default typeDefs;

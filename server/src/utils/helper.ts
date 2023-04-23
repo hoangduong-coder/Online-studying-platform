@@ -1,17 +1,21 @@
-import { CourseModel } from "models";
-import middleware from "./middleware";
+import { CourseModel } from "../models";
+import { GraphQLError } from "graphql";
 
-const quizPoints = async (params: { courseID: string, answers: Array<{ quizID: string, answer: string }> }) => {
-  const course = await CourseModel.findById(params.courseID);
+const quizPoints = async (params: {
+  courseID: string
+  // lessonID: string
+  // answers: Array<{ quizID: string; answer: string }>
+}) => {
+  const course = await CourseModel.findById(params.courseID).populate({
+    path: "lessons",
+    populate: { path: "quiz" }
+  });
   if (!course) {
-    return middleware.errorHandler({
-      errorMessage: "No course found",
-      code: "BAD_USER_INPUT",
-      args: params.courseID
+    throw new GraphQLError("No course or lesson found", {
+      extensions: { code: "BAD_USER_INPUT", invalidArgs: params.courseID },
     });
   }
-
-  return 0;
+  return course;
 };
 const progressCalculation = () => {
   return 0;

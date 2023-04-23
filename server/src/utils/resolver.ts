@@ -8,9 +8,11 @@
 import { CourseModel, StudentModel, TeacherModel } from "../models";
 
 import { GraphQLError } from "graphql";
+import LessonModel from "../models/helper/lesson";
 import { StudyProgress } from "types/helper";
 import bcrypt from "bcrypt";
 import config from "./config";
+import helper from "./helper";
 import jwt from "jsonwebtoken";
 
 const resolvers = {
@@ -72,9 +74,10 @@ const resolvers = {
       args: { courseID: string },
       contextValue: { token?: string }
     ) => {
-      const course = await CourseModel.findOne({ _id: args.courseID });
+      const course = await CourseModel.findById(args.courseID).populate("teacher");
       const requestedStudent = contextValue.token
-        ? await StudentModel.findById(contextValue.token)
+        //@ts-ignore
+        ? await StudentModel.findById(contextValue.token.id)
         : null;
       if (!course || !requestedStudent) {
         throw new GraphQLError("No course or student found", {
@@ -86,7 +89,7 @@ const resolvers = {
       }
       if (
         requestedStudent.studyProgress.find(
-          (obj) => obj.course.toString() === course._id
+          (obj) => obj.course.toString() === course._id.toString()
         )
       ) {
         throw new GraphQLError("Student has already enrolled", {
@@ -102,14 +105,12 @@ const resolvers = {
         progress: 0,
       };
       try {
-        requestedStudent.studyProgress =
-          requestedStudent.studyProgress.concat(newProgress);
+        requestedStudent.studyProgress = requestedStudent.studyProgress.concat([newProgress]);
         await requestedStudent.save();
       } catch (error) {
         throw new GraphQLError("Enrollment failed", {
           extensions: {
             code: "BAD_USER_INPUT",
-            invalidArgs: args,
             error,
           },
         });
@@ -127,7 +128,7 @@ const resolvers = {
       }
     ) => {
       const teacherData = await TeacherModel.findById(args.teacherID);
-      if (!teacherData || teacherData.role !== "TEACHER") {
+      if (!teacherData) {
         throw new GraphQLError("No teacher found!", {
           extensions: {
             code: "BAD_USER_INPUT",
@@ -239,24 +240,122 @@ const resolvers = {
       }
       return newUser;
     },
-    // updateProfile: async (
-    //   _root: any,
-    //   args: {
-    //     name?: string
-    //     email?: string
-    //     courseID?: string
-    //     lessonID?: string
-    //     answers?: Array<{
-    //       quizID: string,
-    //       answer: string
-    //     }>
-    //   },
-    //   contextValue: { token?: string }
-    // ) => {
-    //   switch (args) {
-
-    //   }
-    // },
+    updateStudentProfile: async (
+      _root: any,
+      args: { name?: string; email?: string },
+      contextValue: { token?: string }
+    ) => {
+      const requestedStudent = contextValue.token
+        ? await StudentModel.findById(contextValue.token)
+        : null;
+      if (!requestedStudent) {
+        throw new GraphQLError("Invalid User", {
+          extensions: {
+            code: "GRAPHQL_VALIDATION_FAILED",
+          },
+        });
+      }
+      if (args.name) requestedStudent.name = args.name;
+      if (args.email) requestedStudent.email = args.email;
+      try {
+        await requestedStudent.save();
+      } catch (error) {
+        throw new GraphQLError("Update student failed!", {
+          extensions: {
+            code: "GRAPHQL_VALIDATION_FAILED",
+            error,
+          },
+        });
+      }
+      return requestedStudent;
+    },
+    updateTeacherProfile: async (
+      _root: any,
+      args: { name?: string; email?: string; organization?: string },
+      contextValue: { token?: string }
+    ) => {
+      const requestedTeacher = contextValue.token
+        ? await TeacherModel.findById(contextValue.token)
+        : null;
+      if (!requestedTeacher) {
+        throw new GraphQLError("Invalid User", {
+          extensions: {
+            code: "GRAPHQL_VALIDATION_FAILED",
+          },
+        });
+      }
+      if (args.name) requestedTeacher.name = args.name;
+      if (args.email) requestedTeacher.email = args.email;
+      if (args.organization) requestedTeacher.organization = args.organization;
+      try {
+        await requestedTeacher.save();
+      } catch (error) {
+        throw new GraphQLError("Update teacher failed!", {
+          extensions: {
+            code: "GRAPHQL_VALIDATION_FAILED",
+            error,
+          },
+        });
+      }
+    },
+    addLesson: async (_root: any, args: { courseID: string, title: string }) => {
+      const course = await CourseModel.findById(args.courseID).populate("lessons");
+      if (!course) throw new GraphQLError("No course found", {
+        extensions: {
+          code: "BAD_USER_INPUT",
+          args: args,
+        },
+      });
+      const newLesson = new LessonModel({
+        title: args.title,
+        content: [],
+        quiz: []
+      });
+      try {
+        await newLesson.save();
+        //@ts-ignore
+        course.lessons = course.lessons.concat(newLesson);
+        await course.save();
+      } catch (error) {
+        throw new GraphQLError("Create new course failed", {
+          extensions: {
+            code: "GRAPHQL_VALIDATION_FAILED",
+            error,
+          },
+        });
+      }
+    },
+    answerQuiz: async (
+      _root: any,
+      args: {
+        courseID: string
+        // lessonID: string
+        // answers: Array<{
+        //   quizID: string
+        //   answer: string
+        // }>
+      },
+      contextValue: { token?: string }
+    ) => {
+      const user = contextValue.token
+        ? await StudentModel.findById(contextValue.token)
+        : null;
+      const course = await CourseModel.findById(args.courseID).populate(
+        "lessons"
+      );
+      if (
+        !user ||
+        !course ||
+        !user.studyProgress.find(
+          (obj) => obj.course.toString() === args.courseID
+        )
+      ) {
+        throw new GraphQLError("No user or course found", {
+          extensions: { code: "BAD_USER_INPUT" },
+        });
+      }
+      return helper.quizPoints({ courseID: args.courseID });
+    },
     login: async (_root: any, args: { email: string; password: string }) => {
       const findTeacher = await TeacherModel.findOne({ email: args.email });
       const user = findTeacher
@@ -270,9 +369,8 @@ const resolvers = {
           extensions: {
             code: "BAD_USER_INPUT",
             invalidArgs: args,
-          }
-        }
-        );
+          },
+        });
       }
       const token = jwt.sign({ id: user._id, email: user.email }, config.SECRET);
       return token;
