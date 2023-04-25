@@ -1,12 +1,10 @@
-import { Lesson } from './helper';
-import { Teacher } from './user';
 import { Types } from 'mongoose';
 
 export interface Course {
   name: string,
   category: string[],
-  teacher: Types.ObjectId | Teacher,
+  teacher: Types.ObjectId,
   description: string,
-  lessons: Array<Types.ObjectId> | Array<Lesson>,
+  lessons: Array<Types.ObjectId>,
   estimateTime: number
 }

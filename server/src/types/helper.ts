@@ -1,25 +1,31 @@
-import { Course } from "./course";
 import { Types } from "mongoose";
 
 export type Lesson = {
   title: string
-  content?: Array<{
-    title: string
-    body: string
-  }>
-  quiz?: Array<Types.ObjectId> | Array<Quiz>
+  content: string
+  quiz: Array<Types.ObjectId>
 };
 
 export type Quiz = {
-  question: string,
-  choices: Array<string>,
+  question: string
+  choices: Array<string>
   answer: string
 };
 
+export type Comment = {
+  quiz: Types.ObjectId,
+  answer: string,
+  comment: string
+};
+
 export type StudyProgress = {
-  course: Types.ObjectId | Course
+  course: Types.ObjectId
   status: "PASSED" | "FAILED" | "ONGOING"
-  overall?: number,
-  finishedDate?: string,
-  progress?: number
+  finishedDate?: string
+  progressPercentage: number
+  lessonCompleted: Array<{
+    lesson: Types.ObjectId,
+    point: number,
+    comments: Array<Comment>
+  }>
 };
