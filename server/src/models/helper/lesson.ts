@@ -10,19 +10,10 @@ const schema = new Schema({
     required: true,
     minlength: 5
   },
-  content: [
-    {
-      title: {
-        type: String,
-        required: true,
-        minlength: 5
-      },
-      body: {
-        type: String,
-        required: true
-      }
-    }
-  ],
+  content: {
+    type: String,
+    required: true
+  },
   quiz: [
     {
       type: Schema.Types.ObjectId,

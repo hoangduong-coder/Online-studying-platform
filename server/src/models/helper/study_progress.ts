@@ -15,9 +15,23 @@ const schema = new Schema({
     enum: ["ONGOING", "PASSED", "FAILED"],
     required: true
   },
-  overall: Number,
   finishedDate: String,
-  progress: Number
+  progressPercentage: Number,
+  lessonCompleted: [{
+    lesson: {
+      type: Schema.Types.ObjectId,
+      ref: "Lesson",
+    },
+    point: Number,
+    comments: [{
+      quiz: {
+        type: Schema.Types.ObjectId,
+        ref: "Quiz"
+      },
+      answer: String,
+      comment: String
+    }]
+  }]
 });
 
 export default model<StudyProgressDocument>('StudyProgress', schema);

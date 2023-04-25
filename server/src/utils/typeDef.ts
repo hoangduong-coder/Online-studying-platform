@@ -8,9 +8,22 @@ const typeDefs = `#graphql
   type StudyProgress {
     course: Course!
     status: Status!
-    overall: Int
+    overallPoint: Int
     finishedDate: String
-    progress: Float
+    progressPercentage: Float!
+    lessonCompleted: [LessonCompleted!]
+  }
+
+  type Comment {
+    quiz: Quiz!
+    answer: String!
+    comment: String!
+  }
+
+  type LessonCompleted {
+    lesson: Lesson!
+    point: Float!
+    comments: [Comment!]
   }
   
   enum Role {
@@ -39,7 +52,7 @@ const typeDefs = `#graphql
   type Lesson {
     id: ID!
     title: String!
-    content: [Content!]
+    content: String!
     quiz: [Quiz!]
   }
 
@@ -48,12 +61,6 @@ const typeDefs = `#graphql
     question: String!
     choices: [String!]
     answer: String!
-  }
-
-  type Content {
-    id: ID!
-    title: String!
-    body: String!
   }
 
   input StudentAnswer {
@@ -78,7 +85,7 @@ const typeDefs = `#graphql
     getCourseById(id: ID!): Course!
     getUserCourses(userID: ID!): [Course!]
     getLesson(id: ID!): Lesson!
-    getOverallResult(courseID: ID!): Float!
+    getOverallResult(courseID: ID!): Float
   }
 
   type Mutation {
@@ -97,15 +104,8 @@ const typeDefs = `#graphql
       description: String!,
       estimateTime: Float
     ): Course
-    addLesson(courseID: ID!, title: String!): Lesson
-    addNewLessonContent(
-      courseID: ID!,
-      lessonID: ID!,
-      title: String!,
-      body: String!,
-    ): Content
+    addLesson(courseID: ID!, title: String!, content: String!): Lesson
     addQuiz(
-      courseID: ID!,
       lessonID: ID!,
       question: String!,
       choices: [String!],
@@ -113,9 +113,8 @@ const typeDefs = `#graphql
     ): Quiz
     updateStudentProfile(name: String, email: String): Student
     updateTeacherProfile(name: String, email: String, organization: String): Teacher
-    answerQuiz(courseID: ID!): Course
+    answerQuiz(courseID: ID!, lessonID: ID!, answers: [StudentAnswer!]!): Float
     login(email: String!, password: String!): String!
   }
 `;
-//answerQuiz params: lessonID: ID!, answers: [StudentAnswer!]!
 export default typeDefs;
