@@ -66,7 +66,7 @@ export const Mutation = {
         },
       });
     }
-    return newProgress;
+    return "Successfully enrolled";
   },
   addCourse: async (
     _root: any,
@@ -341,7 +341,7 @@ export const Mutation = {
     const index = user.studyProgress.indexOf(course);
     try {
       const result = await helper.quizPoints({ data: args.answers });
-      user.studyProgress[index].lessonCompleted.concat({
+      user.studyProgress[index].lessonCompleted = user.studyProgress[index].lessonCompleted.concat({
         lesson: lesson._id,
         point: result.point,
         comments: result.commentArray

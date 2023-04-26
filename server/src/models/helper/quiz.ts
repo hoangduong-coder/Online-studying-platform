@@ -7,7 +7,6 @@ const schema = new Schema({
   question: {
     type: String,
     required: true,
-    minlength: 5
   },
   choices: [{
     type: String,
@@ -16,7 +15,6 @@ const schema = new Schema({
   answer: {
     type: String,
     required: true,
-    minlength: 5
   },
 });
 export default model<QuizDocument>("Quiz", schema);

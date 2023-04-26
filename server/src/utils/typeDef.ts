@@ -84,12 +84,11 @@ const typeDefs = `#graphql
     allCourses(name: String, category: String): [Course!]
     getCourseById(id: ID!): Course!
     getUserCourses(userID: ID!): [Course!]
-    getLesson(id: ID!): Lesson!
     getOverallResult(courseID: ID!): Float
   }
 
   type Mutation {
-    enrollCourse(courseID: ID!): StudyProgress
+    enrollCourse(courseID: ID!): String
     createStudent(name: String!, email: String!, password: String!): Student
     createTeacher(
       name: String!, 

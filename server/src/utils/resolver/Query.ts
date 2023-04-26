@@ -4,8 +4,7 @@
 
 import { CourseModel, StudentModel, TeacherModel } from "../../models";
 
-import LessonModel from "../../models/helper/lesson";
-import helper from "utils/helper";
+import helper from "../helper";
 
 export const Query = {
   allCourses: async (
@@ -23,10 +22,7 @@ export const Query = {
     }
     return await CourseModel.find({}).populate("teacher");
   },
-  getCourseById: async (_root: any, args: { id: string }) => {
-    return await CourseModel.findOne({ _id: args.id });
-  },
-  getLesson: async (
+  getCourseById: async (
     _root: any,
     args: { id: string },
     contextValue: { token?: string }
@@ -35,8 +31,21 @@ export const Query = {
       ? //@ts-ignore
       await StudentModel.findById(contextValue.token.id)
       : null;
-    if (requestedStudent) {
-      return await LessonModel.findOne({ _id: args.id });
+    if (
+      requestedStudent &&
+      requestedStudent.studyProgress.find(
+        (obj) => obj.course._id.toString() === args.id
+      )
+    ) {
+      return await CourseModel.findOne({ _id: args.id }).populate([
+        "teacher",
+        {
+          path: "lessons",
+          populate: { path: "quiz" },
+        },
+      ]);
+    } else {
+      return await CourseModel.findOne({ _id: args.id }).populate("teacher");
     }
   },
   getUserCourses: async (_root: any, args: { userID: string }) => {
@@ -70,7 +79,7 @@ export const Query = {
       : null;
     if (requestedStudent) {
       const selectedCourse = requestedStudent.studyProgress.find(
-        (obj) => obj.course._id.toString() === args.courseID
+        (obj) => obj.course.toString() === args.courseID
       );
       if (selectedCourse && selectedCourse.progressPercentage === 100) {
         const index = requestedStudent.studyProgress.indexOf(selectedCourse);
