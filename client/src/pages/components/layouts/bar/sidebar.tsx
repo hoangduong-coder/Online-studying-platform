@@ -1,15 +1,9 @@
-import {
-  AccountBox,
-  Category,
-  Dashboard,
-  Logout,
-  Settings,
-} from "@mui/icons-material"
+import { AccountBox, Category, Dashboard, Logout } from "@mui/icons-material"
 
 import Logo from "../../widgets/Logo"
 import SideBarSelection from "./sidebar-selection"
 
-const Sidebar = () => {
+const Sidebar = ({ logout }: { logout: () => void }) => {
   return (
     <div className="sidebar">
       <Logo />
@@ -33,14 +27,8 @@ const Sidebar = () => {
         </li>
         <li>
           <SideBarSelection
-            url="/settings"
-            icon={<Settings />}
-            title="Settings"
-          />
-        </li>
-        <li>
-          <SideBarSelection
-            url="/auth/login"
+            url="/login"
+            logout={logout}
             icon={<Logout />}
             title="Logout"
           />

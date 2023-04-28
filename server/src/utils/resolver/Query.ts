@@ -7,6 +7,17 @@ import { CourseModel, StudentModel, TeacherModel } from "../../models";
 import helper from "../helper";
 
 export const Query = {
+  getStudent: async (_root: any, _args: any, contextValue: { token?: string }
+  ) => {
+    const requestedStudent = contextValue.token
+      ? //@ts-ignore
+      await StudentModel.findById(contextValue.token.id).populate({ path: "studyProgress", populate: ["course", "lessonCompleted"] })
+      : null;
+    return requestedStudent;
+  },
+  getTeacher: async (_root: any, args: { userID: string }) => {
+    return await TeacherModel.findById(args.userID);
+  },
   allCourses: async (
     _root: any,
     args: { name?: string; category?: string }
@@ -34,7 +45,7 @@ export const Query = {
     if (
       requestedStudent &&
       requestedStudent.studyProgress.find(
-        (obj) => obj.course._id.toString() === args.id
+        (obj) => obj.course.toString() === args.id
       )
     ) {
       return await CourseModel.findOne({ _id: args.id }).populate([
@@ -75,7 +86,7 @@ export const Query = {
   ) => {
     const requestedStudent = contextValue.token
       ? //@ts-ignore
-      await StudentModel.findById(contextValue.token.id)
+      await StudentModel.findById(contextValue.token.id).populate({ path: "studyProgress", populate: ["course", "lessonCompleted"] })
       : null;
     if (requestedStudent) {
       const selectedCourse = requestedStudent.studyProgress.find(

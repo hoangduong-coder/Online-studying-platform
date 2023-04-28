@@ -191,64 +191,6 @@ export const Mutation = {
     }
     return newUser;
   },
-  updateStudentProfile: async (
-    _root: any,
-    args: { name?: string; email?: string },
-    contextValue: { token?: string }
-  ) => {
-    const requestedStudent = contextValue.token
-      ? await StudentModel.findById(contextValue.token)
-      : null;
-    if (!requestedStudent) {
-      throw new GraphQLError("Invalid User", {
-        extensions: {
-          code: "GRAPHQL_VALIDATION_FAILED",
-        },
-      });
-    }
-    if (args.name) requestedStudent.name = args.name;
-    if (args.email) requestedStudent.email = args.email;
-    try {
-      await requestedStudent.save();
-    } catch (error) {
-      throw new GraphQLError("Update student failed!", {
-        extensions: {
-          code: "GRAPHQL_VALIDATION_FAILED",
-          error,
-        },
-      });
-    }
-    return requestedStudent;
-  },
-  updateTeacherProfile: async (
-    _root: any,
-    args: { name?: string; email?: string; organization?: string },
-    contextValue: { token?: string }
-  ) => {
-    const requestedTeacher = contextValue.token
-      ? await TeacherModel.findById(contextValue.token)
-      : null;
-    if (!requestedTeacher) {
-      throw new GraphQLError("Invalid User", {
-        extensions: {
-          code: "GRAPHQL_VALIDATION_FAILED",
-        },
-      });
-    }
-    if (args.name) requestedTeacher.name = args.name;
-    if (args.email) requestedTeacher.email = args.email;
-    if (args.organization) requestedTeacher.organization = args.organization;
-    try {
-      await requestedTeacher.save();
-    } catch (error) {
-      throw new GraphQLError("Update teacher failed!", {
-        extensions: {
-          code: "GRAPHQL_VALIDATION_FAILED",
-          error,
-        },
-      });
-    }
-  },
   addLesson: async (
     _root: any,
     args: { courseID: string; title: string, content: string }

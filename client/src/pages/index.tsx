@@ -2,13 +2,15 @@ import { content, heading } from "@/styles/font"
 
 import ContinueLink from "./components/widgets/ContinueLink"
 import CourseCard from "./components/widgets/CourseCard"
+import { GET_STUDENT } from "@/graphql/query"
 import Head from "next/head"
 import SuggestedCourses from "./components/dashboard/SuggestedCourses"
 import TopicList from "./components/dashboard/TopicList"
-import data from "@/pages/api/dummy.json"
 import styles from "@/styles/Home.module.scss"
+import { useQuery } from "@apollo/client"
 
 export default function Home() {
+  const user = useQuery(GET_STUDENT)
   return (
     <>
       <Head>
@@ -17,22 +19,32 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div>
-        <div className={styles.welcome}>
-          <h1 style={heading.style}>Hello {data.user[0].name}!</h1>
-          <p style={content.style}>It&#39;s nice to see you again!</p>
-        </div>
-        <div className={styles.currentCourses}>
-          <h2 style={heading.style}>Ready to jump back on?</h2>
-          <div>
-            <CourseCard />
-            <CourseCard />
+      {user && (
+        <div>
+          <div className={styles.welcome}>
+            <h1 style={heading.style}>Hello {user.data.name}!</h1>
+            <p style={content.style}>It&#39;s nice to see you again!</p>
           </div>
-          <ContinueLink url="/profile" title="View more &#8594;" />
+          <div className={styles.currentCourses}>
+            <h2 style={heading.style}>Ready to jump back on?</h2>
+            <div>
+              {user.data.studyProgress.map(
+                (obj: any) =>
+                  obj.status === "ONGOING" && (
+                    <CourseCard
+                      key={obj.course.id}
+                      courseID={obj.course.id}
+                      percentage={obj.progressPercentage}
+                    />
+                  )
+              )}
+            </div>
+            <ContinueLink url="/profile" title="View more &#8594;" />
+          </div>
+          <TopicList />
+          <SuggestedCourses />
         </div>
-        <TopicList />
-        <SuggestedCourses />
-      </div>
+      )}
     </>
   )
 }

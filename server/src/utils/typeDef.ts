@@ -81,6 +81,8 @@ const typeDefs = `#graphql
   }
 
   type Query {
+    getStudent: Student
+    getTeacher(userID: ID!): Teacher
     allCourses(name: String, category: String): [Course!]
     getCourseById(id: ID!): Course!
     getUserCourses(userID: ID!): [Course!]
@@ -110,8 +112,6 @@ const typeDefs = `#graphql
       choices: [String!],
       answer: String!
     ): Quiz
-    updateStudentProfile(name: String, email: String): Student
-    updateTeacherProfile(name: String, email: String, organization: String): Teacher
     answerQuiz(courseID: ID!, lessonID: ID!, answers: [StudentAnswer!]!): Float
     login(email: String!, password: String!): String!
   }
