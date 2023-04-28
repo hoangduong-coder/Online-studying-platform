@@ -316,6 +316,6 @@ export const Mutation = {
       });
     }
     const token = jwt.sign({ id: user._id, email: user.email }, config.SECRET);
-    return token;
+    return `Bearer ${token}`;
   },
 };

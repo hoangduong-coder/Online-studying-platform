@@ -10,7 +10,8 @@ import styles from "@/styles/Home.module.scss"
 import { useQuery } from "@apollo/client"
 
 export default function Home() {
-  const user = useQuery(GET_STUDENT)
+  const { loading, error, data } = useQuery(GET_STUDENT)
+
   return (
     <>
       <Head>
@@ -19,16 +20,26 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {user && (
+      {loading && (
+        <div>
+          <p style={content.style}>Loading, please wait ...</p>
+        </div>
+      )}
+      {error && (
+        <div>
+          <p style={content.style}>{`There is an error: ${error.message}`}</p>
+        </div>
+      )}
+      {data && (
         <div>
           <div className={styles.welcome}>
-            <h1 style={heading.style}>Hello {user.data.name}!</h1>
+            <h1 style={heading.style}>Hello {data.getStudent.name}!</h1>
             <p style={content.style}>It&#39;s nice to see you again!</p>
           </div>
           <div className={styles.currentCourses}>
             <h2 style={heading.style}>Ready to jump back on?</h2>
             <div>
-              {user.data.studyProgress.map(
+              {data.getStudent.studyProgress.map(
                 (obj: any) =>
                   obj.status === "ONGOING" && (
                     <CourseCard

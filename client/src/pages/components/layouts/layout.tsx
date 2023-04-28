@@ -16,7 +16,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   if (!token) {
     return (
       <main className={styles.main}>
-        <LoginPage />
+        <LoginPage setToken={setToken} />
       </main>
     )
   }

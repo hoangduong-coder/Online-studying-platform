@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/require-await */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -6,6 +7,7 @@
 
 import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import { StudentModel } from "./models";
 import config from "./utils/config";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -36,9 +38,7 @@ mongoose
   });
 
 const start = async () => {
-  const server = new ApolloServer<{
-    token?: string
-  }>({
+  const server = new ApolloServer({
     typeDefs,
     resolvers,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
@@ -54,9 +54,16 @@ const start = async () => {
       context: async ({ req }) => {
         const auth = req ? req.headers.authorization : null;
         if (auth && auth.startsWith("Bearer ")) {
-          return { token: jwt.verify(auth.substring(7), SECRET) };
-        }
-        else return { token: auth };
+          const decodedToken = jwt.verify(auth.substring(7), SECRET);
+          const currentUser = await StudentModel.findById(
+            //@ts-ignore
+            decodedToken.id
+          ).populate({
+            path: "studyProgress",
+            populate: ["course", "lessonCompleted"],
+          });
+          return { currentUser };
+        } else return { currentUser: null };
       },
     })
   );

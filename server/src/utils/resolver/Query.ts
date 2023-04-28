@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -7,13 +10,10 @@ import { CourseModel, StudentModel, TeacherModel } from "../../models";
 import helper from "../helper";
 
 export const Query = {
-  getStudent: async (_root: any, _args: any, contextValue: { token?: string }
-  ) => {
-    const requestedStudent = contextValue.token
-      ? //@ts-ignore
-      await StudentModel.findById(contextValue.token.id).populate({ path: "studyProgress", populate: ["course", "lessonCompleted"] })
-      : null;
-    return requestedStudent;
+  getStudent: (_root: any, _args: any, contextValue: { currentUser?: any }) => {
+    if (contextValue.currentUser) {
+      return contextValue.currentUser;
+    }
   },
   getTeacher: async (_root: any, args: { userID: string }) => {
     return await TeacherModel.findById(args.userID);
@@ -36,15 +36,12 @@ export const Query = {
   getCourseById: async (
     _root: any,
     args: { id: string },
-    contextValue: { token?: string }
+    contextValue: { currentUser?: any }
   ) => {
-    const requestedStudent = contextValue.token
-      ? //@ts-ignore
-      await StudentModel.findById(contextValue.token.id)
-      : null;
     if (
-      requestedStudent &&
-      requestedStudent.studyProgress.find(
+      contextValue.currentUser &&
+      contextValue.currentUser.studyProgress.find(
+        //@ts-ignore
         (obj) => obj.course.toString() === args.id
       )
     ) {
@@ -82,23 +79,26 @@ export const Query = {
   getOverallResult: async (
     _root: any,
     args: { courseID: string },
-    contextValue: { token?: string }
+    contextValue: { currentUser?: any }
   ) => {
-    const requestedStudent = contextValue.token
-      ? //@ts-ignore
-      await StudentModel.findById(contextValue.token.id).populate({ path: "studyProgress", populate: ["course", "lessonCompleted"] })
-      : null;
-    if (requestedStudent) {
-      const selectedCourse = requestedStudent.studyProgress.find(
+    if (contextValue.currentUser) {
+      const selectedCourse = contextValue.currentUser.studyProgress.find(
+        //@ts-ignore
         (obj) => obj.course.toString() === args.courseID
       );
       if (selectedCourse && selectedCourse.progressPercentage === 100) {
-        const index = requestedStudent.studyProgress.indexOf(selectedCourse);
-        requestedStudent.studyProgress[index].status === "PASSED";
-        await requestedStudent.save();
-        return helper.overallPointCalculation(
-          requestedStudent.studyProgress[index].lessonCompleted
+        const index = contextValue.currentUser.studyProgress.indexOf(selectedCourse);
+        const overallPoint = helper.overallPointCalculation(
+          contextValue.currentUser.studyProgress[index].lessonCompleted
         );
+        if (overallPoint >= 5) {
+          contextValue.currentUser.studyProgress[index].status === "PASSED";
+        }
+        else {
+          contextValue.currentUser.studyProgress[index].status === "FAILED";
+        }
+        await contextValue.currentUser.save();
+        return overallPoint;
       }
     }
   },

@@ -7,23 +7,23 @@ export const LOGIN = gql`
 `
 
 export const GET_STUDENT = gql`
-query Query {
-  getStudent {
-    email
-    id
-    name
-    role
-    studyProgress {
-      course {
-        id
+  query Query {
+    getStudent {
+      email
+      id
+      name
+      role
+      studyProgress {
+        course {
+          id
+        }
+        status
+        overallPoint
+        finishedDate
+        progressPercentage
       }
-      status
-      overallPoint
-      finishedDate
-      progressPercentage
     }
-  }
-}`
+  }`
 
 export const GET_COURSE_BY_ID = gql`
 query Query($getCourseByIdId: ID!) {

@@ -7,13 +7,14 @@ import styles from "@/styles/Login.module.scss"
 import { useMutation } from "@apollo/client"
 import { useState } from "react"
 
-const LoginPage = () => {
+const LoginPage = ({ setToken }: { setToken: any }) => {
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
   const [loginMutation] = useMutation(LOGIN, {
     onError: (error) => console.error(error),
     onCompleted: (data) => {
       console.log(data)
+      setToken(data.login)
       localStorage.setItem("new-user-token", data.login)
     },
   })
