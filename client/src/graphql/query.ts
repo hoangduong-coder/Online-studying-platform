@@ -28,28 +28,21 @@ export const GET_STUDENT = gql`
 export const GET_COURSE_BY_ID = gql`
 query Query($getCourseByIdId: ID!) {
   getCourseById(id: $getCourseByIdId) {
-    name
-    lessons {
-      id
-      title
-      content
-      quiz {
-        id
-        question
-        choices
-        answer
-      }
-    }
     category
     description
     estimateTime
     id
+    name
     teacher {
-      id
-      name
       email
+      name
       organization
       role
+      id
+    }
+    lessons {
+      id
     }
   }
-}`
+}
+`

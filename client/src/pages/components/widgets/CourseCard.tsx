@@ -12,23 +12,18 @@ const CourseCard = ({
   courseID: string
   percentage: number
 }) => {
-  const course = useQuery(GET_COURSE_BY_ID, {
+  const { data } = useQuery(GET_COURSE_BY_ID, {
     variables: {
-      id: courseID,
+      getCourseByIdId: courseID,
     },
   })
-  if (!course) {
-    return (
-      <div>
-        <p style={content.style}>No courses found!</p>
-      </div>
-    )
-  }
+  console.log(data)
+
   return (
     <div className="courseCard">
       <div className="name">
-        <h3 style={heading.style}>{course.data.name}</h3>
-        <p style={content.style}>By {course.data.teacher.name}</p>
+        {/* <h3 style={heading.style}>{data.getCourseById.name}</h3>
+        <p style={content.style}>By {data.getCourseById.teacher.name}</p> */}
       </div>
       <div>
         <ProgressPercentage value={Math.round(percentage)} />
