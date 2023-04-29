@@ -1,3 +1,5 @@
+import { Course } from "./course";
+
 export type Lesson = {
   _id: string
   title: string
@@ -20,7 +22,7 @@ export type Comment = {
 
 export type StudyProgress = {
   _id: string
-  course: string
+  course: Course
   status: "PASSED" | "FAILED" | "ONGOING"
   finishedDate?: string
   progressPercentage: number

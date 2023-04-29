@@ -13,7 +13,6 @@ const LoginPage = ({ setToken }: { setToken: any }) => {
   const [loginMutation] = useMutation(LOGIN, {
     onError: (error) => console.error(error),
     onCompleted: (data) => {
-      console.log(data)
       setToken(data.login)
       localStorage.setItem("new-user-token", data.login)
     },

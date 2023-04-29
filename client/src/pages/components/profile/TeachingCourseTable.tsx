@@ -1,9 +1,9 @@
 import { Box, Tab, Tabs } from "@mui/material"
 import { ReactNode, SyntheticEvent, useState } from "react"
-import { content, heading } from "@/styles/font"
 
 import Button from "../widgets/Button"
 import CourseCard from "../widgets/CourseCard"
+import { heading } from "@/styles/font"
 
 const Panel = ({
   children,

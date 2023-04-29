@@ -1,0 +1,27 @@
+.course {
+  :nth-child(n) {
+    margin-bottom: 8px;
+  }
+  .header {
+    border-bottom: 6px solid var(--hover);
+  }
+}
+.lesson {
+  .lessonNavBar {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    margin-bottom: 8px;
+  }
+
+  .lessonHeader {
+    display: flex;
+    align-items: center;
+    margin-block: 30px;
+    margin-left: -20px;
+  }
+
+  .lessonContent {
+    margin-bottom: 10px;
+  }
+}

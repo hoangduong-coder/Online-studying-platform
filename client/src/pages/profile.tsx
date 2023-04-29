@@ -1,12 +1,14 @@
 import { content, heading } from "@/styles/font"
 
+import { GET_STUDENT } from "@/graphql/query"
 import Head from "next/head"
 import StudyCourseTable from "./components/profile/StudyCourseTable"
-import TeachingCourseTable from "./components/profile/TeachingCourseTable"
-import data from "@/pages/api/dummy.json"
-import styles from "@/styles/Profile.module.scss"
+import styles from "@/styles/Profile.module.css"
+import { useQuery } from "@apollo/client"
 
 export default function Profile() {
+  const { loading, error, data } = useQuery(GET_STUDENT)
+
   return (
     <>
       <Head>
@@ -16,41 +18,40 @@ export default function Profile() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div>
-        <div className={styles.header}>
-          <h1 style={heading.style}>{data.user[0].name}</h1>
-        </div>
-        <div className={styles.profileInfo}>
-          <table>
-            <tbody>
-              {data.user[0].roles == "TEACHER" && (
-                <tr>
-                  <th style={heading.style}>Organization</th>
-                  <td style={content.style}>{data.user[0].organization}</td>
-                </tr>
-              )}
-              <tr>
-                <th style={heading.style}>Roles</th>
-                <td style={content.style}>
-                  {data.user[0].roles.toLowerCase()}
-                </td>
-              </tr>
-              <tr>
-                <th style={heading.style}>Email</th>
-                <td style={content.style}>{data.user[0].email}</td>
-              </tr>
-              <tr>
-                <th style={heading.style}>Municipality</th>
-                <td style={content.style}>{data.user[0].municipality}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div className={styles.study}>
-          <StudyCourseTable />
-        </div>
-        <div className={styles.teaching}>
-          <TeachingCourseTable />
-        </div>
+        {loading && (
+          <div>
+            <p style={content.style}>Loading, please wait ...</p>
+          </div>
+        )}
+        {error && (
+          <div>
+            <p style={content.style}>{`There is an error: ${error.message}`}</p>
+          </div>
+        )}
+        {data && (
+          <>
+            <div className={styles.header}>
+              <h1 style={heading.style}>{data.getStudent.name}</h1>
+            </div>
+            <div className="informationTable">
+              <table>
+                <tbody>
+                  <tr>
+                    <th style={heading.style}>Roles</th>
+                    <td style={content.style}>Student</td>
+                  </tr>
+                  <tr>
+                    <th style={heading.style}>Email</th>
+                    <td style={content.style}>{data.getStudent.email}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className={styles.study}>
+              <StudyCourseTable progress={data.getStudent.studyProgress} />
+            </div>
+          </>
+        )}
       </div>
     </>
   )

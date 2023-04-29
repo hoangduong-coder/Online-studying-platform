@@ -6,7 +6,7 @@ import SideBarSelection from "./sidebar-selection"
 const Sidebar = ({ logout }: { logout: () => void }) => {
   return (
     <div className="sidebar">
-      <Logo />
+      <Logo content="HD" theme="light" />
       <ul>
         <li>
           <SideBarSelection url="/" icon={<Dashboard />} title="Dashboard" />
@@ -27,7 +27,7 @@ const Sidebar = ({ logout }: { logout: () => void }) => {
         </li>
         <li>
           <SideBarSelection
-            url="/login"
+            url="/"
             logout={logout}
             icon={<Logout />}
             title="Logout"

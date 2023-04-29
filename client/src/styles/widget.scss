@@ -22,7 +22,7 @@
     margin-right: 5%;
   }
 }
-.logo {
+.lightLogo {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -33,12 +33,28 @@
   height: 50px;
   cursor: default;
 
-  .logoContent {
+  .lightLogoContent {
     color: var(--light);
     font-size: 32px;
   }
 }
 
+.darkLogo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid var(--dark);
+  padding: 2px;
+  margin: 0 20px;
+  width: 60px;
+  height: 50px;
+  cursor: default;
+
+  .darkLogoContent {
+    color: var(--dark);
+    font-size: 32px;
+  }
+}
 .button {
   background-color: var(--dark);
   text-decoration: none;
@@ -67,5 +83,21 @@
   &:hover {
     text-decoration: underline;
     transition: 0.2s;
+  }
+}
+
+.informationTable {
+  table {
+    width: 100%;
+    margin-top: 8px;
+  }
+  th {
+    text-align: left;
+    padding-block: 8px;
+    width: 20%;
+  }
+  td {
+    text-align: left;
+    padding-block: 8px;
   }
 }

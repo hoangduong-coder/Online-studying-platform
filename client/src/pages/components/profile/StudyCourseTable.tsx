@@ -20,11 +20,19 @@ const Panel = ({
   )
 }
 
-const StudyCourseTable = () => {
+const StudyCourseTable = ({ progress }: { progress: any[] }) => {
   const [value, setValue] = useState<number>(0)
+  const [courses, setCourses] = useState<any[]>([
+    ...progress.filter((obj) => obj.status === "ONGOING"),
+  ])
   const tabs = ["Ongoing", "Finished"]
   const handleChange = (event: SyntheticEvent, newValue: number) => {
     setValue(newValue)
+    if (newValue === 1) {
+      setCourses(progress.filter((obj) => obj.status !== "ONGOING"))
+    } else {
+      setCourses(progress.filter((obj) => obj.status === "ONGOING"))
+    }
   }
   return (
     <>
@@ -48,10 +56,30 @@ const StudyCourseTable = () => {
           </Tabs>
         </Box>
         <Panel value={value} index={0}>
-          <CourseCard />
+          {courses.length > 0 ? (
+            courses.map((obj) => (
+              <CourseCard
+                key={obj.course.id}
+                courseID={obj.course.id}
+                percentage={obj.progressPercentage}
+              />
+            ))
+          ) : (
+            <p style={content.style}>No courses found!</p>
+          )}
         </Panel>
         <Panel value={value} index={1}>
-          <p style={content.style}>No courses found!</p>
+          {courses.length > 0 ? (
+            courses.map((obj) => (
+              <CourseCard
+                key={obj.course.id}
+                courseID={obj.course.id}
+                status={obj.status}
+              />
+            ))
+          ) : (
+            <p style={content.style}>No courses found!</p>
+          )}
         </Panel>
       </Box>
     </>

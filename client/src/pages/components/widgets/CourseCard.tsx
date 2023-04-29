@@ -8,28 +8,32 @@ import { useQuery } from "@apollo/client"
 const CourseCard = ({
   courseID,
   percentage,
+  status,
 }: {
   courseID: string
-  percentage: number
+  percentage?: number
+  status?: string
 }) => {
-  const { data } = useQuery(GET_COURSE_BY_ID, {
+  const { error, data } = useQuery(GET_COURSE_BY_ID, {
     variables: {
       getCourseByIdId: courseID,
     },
   })
-  console.log(data)
-
+  if (!data || error) {
+    return <p style={content.style}>No course found!</p>
+  }
   return (
     <div className="courseCard">
       <div className="name">
-        {/* <h3 style={heading.style}>{data.getCourseById.name}</h3>
-        <p style={content.style}>By {data.getCourseById.teacher.name}</p> */}
+        <h3 style={heading.style}>{data.getCourseById.name}</h3>
+        <p style={content.style}>By {data.getCourseById.teacher.name}</p>
       </div>
       <div>
-        <ProgressPercentage value={Math.round(percentage)} />
+        {percentage && <ProgressPercentage value={Math.round(percentage)} />}
+        {status && <ProgressPercentage status={status} />}
       </div>
       <div>
-        <Button title="Continue" />
+        <Button title="Continue" link={`/${courseID}`} />
       </div>
     </div>
   )

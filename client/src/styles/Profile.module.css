@@ -10,18 +10,3 @@
 .teaching {
   margin-top: 8px;
 }
-.profileInfo {
-  table {
-    width: 100%;
-    margin-top: 8px;
-  }
-  th {
-    text-align: left;
-    padding-block: 8px;
-    width: 20%;
-  }
-  td {
-    text-align: left;
-    padding-bottom: 8px;
-  }
-}

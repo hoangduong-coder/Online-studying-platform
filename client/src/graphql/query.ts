@@ -12,7 +12,6 @@ export const GET_STUDENT = gql`
       email
       id
       name
-      role
       studyProgress {
         course {
           id
@@ -28,21 +27,37 @@ export const GET_STUDENT = gql`
 export const GET_COURSE_BY_ID = gql`
 query Query($getCourseByIdId: ID!) {
   getCourseById(id: $getCourseByIdId) {
-    category
-    description
-    estimateTime
     id
     name
+    category
     teacher {
-      email
-      name
-      organization
-      role
       id
+      name
+      email
+      organization
     }
+    description
+    estimateTime
     lessons {
       id
+      title
+      content
+      quiz {
+        id
+        question
+        choices
+      }
     }
+  }
+}
+`
+export const GET_TEACHER_BY_ID = gql`
+query Query($userId: ID!) {
+  getTeacher(userID: $userId) {
+    name
+    email
+    organization
+    role
   }
 }
 `
