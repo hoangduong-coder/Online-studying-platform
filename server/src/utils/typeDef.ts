@@ -75,7 +75,6 @@ const typeDefs = `#graphql
     teacher: Teacher!
     description: String!
     lessons: [Lesson!]
-    
     # calculate in hours
     estimateTime: Float
   }

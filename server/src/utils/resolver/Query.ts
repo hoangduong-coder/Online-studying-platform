@@ -41,13 +41,13 @@ export const Query = {
     if (
       contextValue.currentUser &&
       contextValue.currentUser.studyProgress.find(
-        (obj: any) => obj.course.toString() === args.id
+        (obj: any) => obj.course._id.toString() === args.id
       )
     ) {
-      console.log("here");
-      return await CourseModel.findOne({ _id: args.id }).populate("lessons");
+      return await CourseModel.findOne({ _id: args.id }).populate(["teacher", {
+        path: "lessons", populate: "quiz"
+      }]);
     } else {
-      console.log("there");
       return await CourseModel.findOne({ _id: args.id }).populate("teacher");
     }
   },
