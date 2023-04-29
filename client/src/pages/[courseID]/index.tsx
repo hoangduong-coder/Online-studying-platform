@@ -1,9 +1,9 @@
+import { ENROLL_COURSE, GET_COURSE_BY_ID } from "@/graphql/query"
 import { content, heading } from "@/styles/font"
+import { useMutation, useQuery } from "@apollo/client"
 
-import { GET_COURSE_BY_ID } from "@/graphql/query"
 import Head from "next/head"
 import LessonList from "./LessonList"
-import { useQuery } from "@apollo/client"
 import { useRouter } from "next/router"
 
 export default function Course() {
@@ -12,6 +12,19 @@ export default function Course() {
   const { loading, error, data } = useQuery(GET_COURSE_BY_ID, {
     variables: { getCourseByIdId: courseID },
   })
+  const [enrollCourse] = useMutation(ENROLL_COURSE, {
+    refetchQueries: [
+      { query: GET_COURSE_BY_ID, variables: { getCourseByIdId: courseID } },
+    ],
+    onError: (error) =>
+      alert(
+        `Enrollment failed, due to error ${error.graphQLErrors[0].message}`
+      ),
+    onCompleted: (mess) => {
+      alert(`${mess.enrollCourse}`)
+    },
+  })
+  console.log(data)
   return (
     <>
       <Head>
@@ -70,7 +83,13 @@ export default function Course() {
             <p style={content.style}>{data.getCourseById.description}</p>
             <div className="lessonList">
               {!data.getCourseById.lessons ? (
-                <button className="button">
+                <button
+                  className="button"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    enrollCourse({ variables: { courseId: courseID } })
+                  }}
+                >
                   <span style={content.style}>Enroll</span>
                 </button>
               ) : (

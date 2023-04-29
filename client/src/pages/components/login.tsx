@@ -2,6 +2,7 @@ import { content, heading } from "@/styles/font"
 
 import Head from "next/head"
 import { LOGIN } from "@/graphql/query"
+import SubmitButton from "./widgets/SubmitButton"
 import TextField from "@mui/material/TextField"
 import styles from "@/styles/Login.module.scss"
 import { useMutation } from "@apollo/client"
@@ -60,9 +61,7 @@ const LoginPage = ({ setToken }: { setToken: any }) => {
               onChange={({ target }) => setPassword(target.value)}
             />
           </div>
-          <button className="button" type="submit">
-            <span style={content.style}>Submit</span>
-          </button>
+          <SubmitButton title="Submit" />
         </form>
       </div>
     </>

@@ -13,7 +13,7 @@ export type Quiz = {
 };
 
 export type Comment = {
-  quiz: Types.ObjectId,
+  quizID: string,
   answer: string,
   comment: string
 };
@@ -22,6 +22,7 @@ export type StudyProgress = {
   course: Types.ObjectId
   status: "PASSED" | "FAILED" | "ONGOING"
   finishedDate?: string
+  overallPoint: number
   progressPercentage: number
   lessonCompleted: Array<{
     lesson: Types.ObjectId,

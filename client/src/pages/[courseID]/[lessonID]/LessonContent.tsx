@@ -1,6 +1,7 @@
 import { content, heading } from "@/styles/font"
 
 import Logo from "@/pages/components/widgets/Logo"
+import { unicodeConverter } from "@/helper/htmlCodeConverter"
 
 const LessonContent = ({
   title,
@@ -25,7 +26,7 @@ const LessonContent = ({
             </h2>
           ) : (
             <p key={obj} style={content.style}>
-              {obj}
+              {unicodeConverter(obj)}
             </p>
           )
         )}

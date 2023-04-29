@@ -21,7 +21,22 @@
     margin-left: -20px;
   }
 
+  .reminder,
   .lessonContent {
     margin-bottom: 10px;
+  }
+
+  .quiz {
+    background-color: var(--medium);
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    :nth-child(n) {
+      margin-block: 5px;
+    }
+
+    #choices {
+      margin-right: 20px;
+    }
   }
 }

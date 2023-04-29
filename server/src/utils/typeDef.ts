@@ -8,14 +8,14 @@ const typeDefs = `#graphql
   type StudyProgress {
     course: Course!
     status: Status!
-    overallPoint: Int
+    overallPoint: Float
     finishedDate: String
     progressPercentage: Float!
     lessonCompleted: [LessonCompleted!]
   }
 
   type Comment {
-    quiz: Quiz!
+    quizID: String!
     answer: String!
     comment: String!
   }
@@ -74,7 +74,7 @@ const typeDefs = `#graphql
     category: [String!]!
     teacher: Teacher!
     description: String!
-    lessons: [Lesson!]
+    lessons: [Lesson]
     # calculate in hours
     estimateTime: Float
   }
@@ -83,9 +83,9 @@ const typeDefs = `#graphql
     getStudent: Student
     getTeacher(userID: ID!): Teacher
     allCourses(name: String, category: String): [Course!]
-    getCourseById(id: ID!): Course!
+    getCourseById(id: ID!): Course
     getUserCourses(userID: ID!): [Course!]
-    getOverallResult(courseID: ID!): Float
+    getOverallResult(courseID: ID!): StudyProgress
   }
 
   type Mutation {

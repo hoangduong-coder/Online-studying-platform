@@ -7,8 +7,6 @@
 
 import { CourseModel, StudentModel, TeacherModel } from "../../models";
 
-import helper from "../helper";
-
 export const Query = {
   getStudent: (_root: any, _args: any, contextValue: { currentUser?: any }) => {
     if (contextValue.currentUser) {
@@ -20,7 +18,8 @@ export const Query = {
   },
   allCourses: async (
     _root: any,
-    args: { name?: string; category?: string }
+    args: { name?: string; category?: string },
+    contextValue: { currentUser?: any }
   ) => {
     if (args.name) {
       return await CourseModel.find({ name: { $in: args.name } }).populate(
@@ -30,8 +29,16 @@ export const Query = {
       return await CourseModel.find({
         category: { $in: args.category },
       }).populate("teacher");
+    } else {
+      let courseIDList: any[] = [];
+      if (contextValue.currentUser) {
+        for (const obj of contextValue.currentUser.studyProgress) {
+          courseIDList = courseIDList.concat(obj.course._id.toString());
+        }
+        return await CourseModel.find({ _id: { $nin: courseIDList } }).populate("teacher");
+      }
+      return await CourseModel.find({}).populate("teacher");
     }
-    return await CourseModel.find({}).populate("teacher");
   },
   getCourseById: async (
     _root: any,
@@ -47,9 +54,17 @@ export const Query = {
       return await CourseModel.findOne({ _id: args.id }).populate(["teacher", {
         path: "lessons", populate: "quiz"
       }]);
-    } else {
-      return await CourseModel.findOne({ _id: args.id }).populate("teacher");
     }
+    const course = await CourseModel.findOne({ _id: args.id }).populate("teacher");
+    return {
+      id: course?._id,
+      name: course?.name,
+      lesson: [],
+      teacher: course?.teacher,
+      description: course?.description,
+      estimateTime: course?.estimateTime,
+      category: course?.category
+    };
   },
   getUserCourses: async (_root: any, args: { userID: string }) => {
     const teacher = await TeacherModel.findById(args.userID);
@@ -71,30 +86,16 @@ export const Query = {
       return result;
     }
   },
-  getOverallResult: async (
+  getOverallResult: (
     _root: any,
     args: { courseID: string },
     contextValue: { currentUser?: any }
   ) => {
     if (contextValue.currentUser) {
-      const selectedCourse = contextValue.currentUser.studyProgress.find(
+      return contextValue.currentUser.studyProgress.find(
         //@ts-ignore
-        (obj) => obj.course.toString() === args.courseID
+        (obj) => obj.course._id.toString() === args.courseID
       );
-      if (selectedCourse && selectedCourse.progressPercentage === 100) {
-        const index = contextValue.currentUser.studyProgress.indexOf(selectedCourse);
-        const overallPoint = helper.overallPointCalculation(
-          contextValue.currentUser.studyProgress[index].lessonCompleted
-        );
-        if (overallPoint >= 5) {
-          contextValue.currentUser.studyProgress[index].status === "PASSED";
-        }
-        else {
-          contextValue.currentUser.studyProgress[index].status === "FAILED";
-        }
-        await contextValue.currentUser.save();
-        return overallPoint;
-      }
     }
   },
 };

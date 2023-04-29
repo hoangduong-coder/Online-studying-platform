@@ -1,12 +1,8 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Typography,
-} from "@mui/material"
+import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material"
 
 import ContinueLink from "../components/widgets/ContinueLink"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
+import { heading } from "@/styles/font"
 
 const LessonList = ({ id, list }: { id: any; list: any[] }) => {
   return (
@@ -14,7 +10,7 @@ const LessonList = ({ id, list }: { id: any; list: any[] }) => {
       {list.map((obj: any, index: number) => (
         <Accordion key={obj.id}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>{`${index + 1}. ${obj.title}`}</Typography>
+            <h3 style={heading.style}>{`${index + 1}. ${obj.title}`}</h3>
           </AccordionSummary>
           <AccordionDetails>
             <ContinueLink

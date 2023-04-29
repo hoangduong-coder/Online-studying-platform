@@ -60,7 +60,7 @@ const start = async () => {
             decodedToken.id
           ).populate({
             path: "studyProgress",
-            populate: ["course", "lessonCompleted"],
+            populate: ["course", { path: "lessonCompleted", populate: ["comments", "lesson"] }],
           });
           return { currentUser };
         } else return { currentUser: null };

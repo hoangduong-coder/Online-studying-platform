@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import { Comment } from 'types/helper';
@@ -15,7 +16,7 @@ const quizPoints = async (params: {
   data: Array<StudentAnswer>
 }) => {
   let finalPoint = 0;
-  let comments: { quiz: Types.ObjectId, answer: string, comment: string }[] = [];
+  let comments: { quizID: string, answer: string, comment: string }[] = [];
 
   for (const obj of params.data) {
     const quiz = await QuizModel.findById(obj.quizID);
@@ -30,13 +31,13 @@ const quizPoints = async (params: {
     if (obj.answer === quiz.answer) {
       finalPoint += 1;
       comments = comments.concat({
-        quiz: quiz._id,
+        quizID: quiz._id.toString(),
         answer: obj.answer,
         comment: `Your answer is correct!`
       });
     } else {
       comments = comments.concat({
-        quiz: quiz._id,
+        quizID: quiz._id.toString(),
         answer: obj.answer,
         comment: `Your answer is wrong, the correct one is ${quiz.answer}`
       });

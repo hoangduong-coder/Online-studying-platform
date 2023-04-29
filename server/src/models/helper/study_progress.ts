@@ -15,6 +15,7 @@ const schema = new Schema({
     enum: ["ONGOING", "PASSED", "FAILED"],
     required: true
   },
+  overallPoint: Number,
   finishedDate: String,
   progressPercentage: Number,
   lessonCompleted: [{
@@ -24,10 +25,7 @@ const schema = new Schema({
     },
     point: Number,
     comments: [{
-      quiz: {
-        type: Schema.Types.ObjectId,
-        ref: "Quiz"
-      },
+      quizID: String,
       answer: String,
       comment: String
     }]

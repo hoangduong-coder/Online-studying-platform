@@ -1,5 +1,6 @@
+import { GET_COURSE_BY_ID, GET_STUDENT } from "@/graphql/query"
+
 import ContinueLink from "@/pages/components/widgets/ContinueLink"
-import { GET_COURSE_BY_ID } from "@/graphql/query"
 import Head from "next/head"
 import { KeyboardArrowRight } from "@mui/icons-material"
 import LessonContent from "./LessonContent"
@@ -14,6 +15,7 @@ const Lesson = () => {
   const { loading, error, data } = useQuery(GET_COURSE_BY_ID, {
     variables: { getCourseByIdId: courseID },
   })
+  const student = useQuery(GET_STUDENT)
   //@ts-ignore
   const lesson = data.getCourseById.lessons.find((obj) => obj.id === lessonID)
   const index = data.getCourseById.lessons.indexOf(lesson)
@@ -26,13 +28,13 @@ const Lesson = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="lesson">
-        {loading && (
+        {(loading || student.loading) && (
           <p style={content.style}>The page is loading. Please wait!</p>
         )}
-        {(error || !lesson) && (
+        {(error || !lesson || student.error) && (
           <p style={content.style}>Some errors occurs! Try again</p>
         )}
-        {data && (
+        {data && student.data && (
           <>
             <div className="lessonNavBar">
               <ContinueLink
@@ -50,7 +52,10 @@ const Lesson = () => {
                 lessonContent={lesson.content}
               />
             ) : (
-              <LessonQuiz />
+              <LessonQuiz
+                title={`${index + 1} ${lesson.title}`}
+                quizzes={lesson.quiz}
+              />
             )}
           </>
         )}

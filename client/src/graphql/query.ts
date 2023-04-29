@@ -61,3 +61,24 @@ query Query($userId: ID!) {
   }
 }
 `
+
+export const ENROLL_COURSE = gql`
+mutation Mutation($courseId: ID!) {
+  enrollCourse(courseID: $courseId)
+}
+`
+export const ALL_COURSES = gql`
+query Query($name: String, $category: String) {
+  allCourses(name: $name, category: $category) {
+    id
+    name
+    category
+    teacher {
+      id
+      name
+    }
+    description
+    estimateTime
+  }
+}
+`

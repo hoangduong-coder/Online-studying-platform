@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -19,16 +20,12 @@ export const Mutation = {
   enrollCourse: async (
     _root: any,
     args: { courseID: string },
-    contextValue: { token?: string }
+    contextValue: { currentUser?: any }
   ) => {
     const course = await CourseModel.findById(args.courseID).populate(
       "teacher"
     );
-    const requestedStudent = contextValue.token
-      ? //@ts-ignore
-      await StudentModel.findById(contextValue.token.id)
-      : null;
-    if (!course || !requestedStudent) {
+    if (!course || !contextValue.currentUser) {
       throw new GraphQLError("No course or student found", {
         extensions: {
           code: "BAD_USER_INPUT",
@@ -37,7 +34,8 @@ export const Mutation = {
       });
     }
     if (
-      requestedStudent.studyProgress.find(
+      contextValue.currentUser.studyProgress.find(
+        //@ts-ignore
         (obj) => obj.course.toString() === course._id.toString()
       )
     ) {
@@ -51,13 +49,14 @@ export const Mutation = {
       course: course._id,
       status: "ONGOING",
       progressPercentage: 0,
-      lessonCompleted: []
+      lessonCompleted: [],
+      overallPoint: 0
     };
     try {
-      requestedStudent.studyProgress = requestedStudent.studyProgress.concat([
+      contextValue.currentUser.studyProgress = contextValue.currentUser.studyProgress.concat([
         newProgress,
       ]);
-      await requestedStudent.save();
+      await contextValue.currentUser.save();
     } catch (error) {
       throw new GraphQLError("Enrollment failed", {
         extensions: {
@@ -265,31 +264,38 @@ export const Mutation = {
         answer: string
       }>
     },
-    contextValue: { token?: string }
+    contextValue: { currentUser?: any }
   ) => {
-    const user = contextValue.token
-      //@ts-ignore
-      ? await StudentModel.findById(contextValue.token.id)
-      : null;
     const lesson = await LessonModel.findById(args.lessonID);
     //Check if user has enrolled the course
     //@ts-ignore
-    const course = user.studyProgress.find((obj) => obj.course.toString() === args.courseID);
-    if (!(user && lesson && course)) {
+    const course = contextValue.currentUser.studyProgress.find((obj) => obj.course.toString() === args.courseID);
+    if (!(contextValue.currentUser && lesson && course)) {
       throw new GraphQLError("No result found", {
         extensions: { code: "BAD_USER_INPUT" },
       });
     }
-    const index = user.studyProgress.indexOf(course);
+    const index = contextValue.currentUser.studyProgress.indexOf(course);
     try {
       const result = await helper.quizPoints({ data: args.answers });
-      user.studyProgress[index].lessonCompleted = user.studyProgress[index].lessonCompleted.concat({
+      contextValue.currentUser.studyProgress[index].lessonCompleted = contextValue.currentUser.studyProgress[index].lessonCompleted.concat({
         lesson: lesson._id,
         point: result.point,
         comments: result.commentArray
       });
-      user.studyProgress[index].progressPercentage = await helper.progressCalculation(result.commentArray, args.courseID);
-      await user.save();
+      contextValue.currentUser.studyProgress[index].progressPercentage = await helper.progressCalculation(result.commentArray, args.courseID);
+      if (contextValue.currentUser.studyProgress[index].progressPercentage === 100) {
+        const overallPoint = helper.overallPointCalculation(
+          contextValue.currentUser.studyProgress[index].lessonCompleted
+        );
+        if (overallPoint >= 5) {
+          contextValue.currentUser.studyProgress[index].status === "PASSED";
+        }
+        else {
+          contextValue.currentUser.studyProgress[index].status === "FAILED";
+        }
+      }
+      await contextValue.currentUser.save();
     } catch (error) {
       throw new GraphQLError("Error in updating study progress", {
         extensions: {
