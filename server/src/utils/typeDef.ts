@@ -79,12 +79,13 @@ const typeDefs = `#graphql
     estimateTime: Float
   }
 
+  union User = Student | Teacher
+
   type Query {
-    getStudent: Student
+    getUser: User
     getTeacher(userID: ID!): Teacher
-    allCourses(name: String, category: String): [Course!]
+    searchCourses(name: String, category: String, teacherID: ID!): [Course!]
     getCourseById(id: ID!): Course
-    getUserCourses(userID: ID!): [Course!]
     getOverallResult(courseID: ID!): StudyProgress
   }
 

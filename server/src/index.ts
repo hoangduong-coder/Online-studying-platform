@@ -5,9 +5,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
+import { StudentModel, TeacherModel } from "./models";
+
 import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import { StudentModel } from "./models";
 import config from "./utils/config";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -62,6 +63,12 @@ const start = async () => {
             path: "studyProgress",
             populate: ["course", { path: "lessonCompleted", populate: ["comments", "lesson"] }],
           });
+          if (!currentUser) {
+            const teacher = await TeacherModel.findById(
+              //@ts-ignore
+              decodedToken.id);
+            return { currentUser: teacher };
+          }
           return { currentUser };
         } else return { currentUser: null };
       },

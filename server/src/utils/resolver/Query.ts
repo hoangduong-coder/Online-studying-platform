@@ -5,10 +5,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { CourseModel, StudentModel, TeacherModel } from "../../models";
+import { CourseModel, TeacherModel } from "../../models";
 
 export const Query = {
-  getStudent: (_root: any, _args: any, contextValue: { currentUser?: any }) => {
+  getUser: (_root: any, _args: any, contextValue: { currentUser?: any }) => {
     if (contextValue.currentUser) {
       return contextValue.currentUser;
     }
@@ -16,9 +16,9 @@ export const Query = {
   getTeacher: async (_root: any, args: { userID: string }) => {
     return await TeacherModel.findById(args.userID);
   },
-  allCourses: async (
+  searchCourses: async (
     _root: any,
-    args: { name?: string; category?: string },
+    args: { name?: string; category?: string, teacherID?: string },
     contextValue: { currentUser?: any }
   ) => {
     if (args.name) {
@@ -29,15 +29,22 @@ export const Query = {
       return await CourseModel.find({
         category: { $in: args.category },
       }).populate("teacher");
-    } else {
-      let courseIDList: any[] = [];
-      if (contextValue.currentUser) {
-        for (const obj of contextValue.currentUser.studyProgress) {
-          courseIDList = courseIDList.concat(obj.course._id.toString());
+    } else if (args.teacherID) {
+      const teacher = await TeacherModel.findById(args.teacherID);
+      if (teacher) {
+        return await CourseModel.find({ teacher: args.teacherID }).populate(
+          "teacher"
+        );
+      } else {
+        let courseIDList: any[] = [];
+        if (contextValue.currentUser) {
+          for (const obj of contextValue.currentUser.studyProgress) {
+            courseIDList = courseIDList.concat(obj.course._id.toString());
+          }
+          return await CourseModel.find({ _id: { $nin: courseIDList } }).populate("teacher");
         }
-        return await CourseModel.find({ _id: { $nin: courseIDList } }).populate("teacher");
+        return await CourseModel.find({}).populate("teacher");
       }
-      return await CourseModel.find({}).populate("teacher");
     }
   },
   getCourseById: async (
@@ -65,26 +72,6 @@ export const Query = {
       estimateTime: course?.estimateTime,
       category: course?.category
     };
-  },
-  getUserCourses: async (_root: any, args: { userID: string }) => {
-    const teacher = await TeacherModel.findById(args.userID);
-    if (teacher) {
-      return await CourseModel.find({ teacher: args.userID }).populate(
-        "teacher"
-      );
-    } else {
-      const result: any[] = [];
-      const user = await StudentModel.findById(args.userID).populate(
-        "studyProgress"
-      );
-      if (user && user.studyProgress) {
-        user.studyProgress.forEach((progress) => {
-          const course = CourseModel.findById(progress.course.toString());
-          result.push(course);
-        });
-      }
-      return result;
-    }
   },
   getOverallResult: (
     _root: any,
