@@ -2,7 +2,7 @@ import { content, heading } from "@/styles/font"
 
 import { GET_STUDENT } from "@/graphql/query"
 import Head from "next/head"
-import StudyCourseTable from "./components/profile/StudyCourseTable"
+import StudyCourseTable from "@/components/profile/StudyCourseTable"
 import styles from "@/styles/Profile.module.css"
 import { useQuery } from "@apollo/client"
 

@@ -1,11 +1,11 @@
 import { content, heading } from "@/styles/font"
 
-import ContinueLink from "./components/widgets/ContinueLink"
-import CourseCard from "./components/widgets/CourseCard"
+import ContinueLink from "@/components/widgets/ContinueLink"
+import CourseCard from "@/components/widgets/CourseCard"
 import { GET_STUDENT } from "@/graphql/query"
 import Head from "next/head"
-import SuggestedCourses from "./components/dashboard/SuggestedCourses"
-import TopicList from "./components/dashboard/TopicList"
+import SuggestedCourses from "@/components/dashboard/SuggestedCourses"
+import TopicList from "@/components/dashboard/TopicList"
 import styles from "@/styles/Home.module.scss"
 import { useQuery } from "@apollo/client"
 

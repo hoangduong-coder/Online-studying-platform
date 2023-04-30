@@ -6,7 +6,7 @@ import "@/styles/CourseAndLesson.scss"
 
 import { ApolloProvider } from "@apollo/client"
 import type { AppProps } from "next/app"
-import Layout from "./components/layouts/layout"
+import Layout from "@/components/layouts/layout"
 import client from "@/graphql/client"
 
 export default function App({ Component, pageProps }: AppProps) {
