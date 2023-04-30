@@ -1,6 +1,6 @@
 import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material"
 
-import ContinueLink from "../components/widgets/ContinueLink"
+import ContinueLink from "@/components/widgets/ContinueLink"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import { heading } from "@/styles/font"
 

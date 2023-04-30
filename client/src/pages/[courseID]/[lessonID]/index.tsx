@@ -1,6 +1,6 @@
 import { GET_COURSE_BY_ID, GET_STUDENT } from "@/graphql/query"
 
-import ContinueLink from "@/pages/components/widgets/ContinueLink"
+import ContinueLink from "@/components/widgets/ContinueLink"
 import Head from "next/head"
 import { KeyboardArrowRight } from "@mui/icons-material"
 import LessonContent from "./LessonContent"

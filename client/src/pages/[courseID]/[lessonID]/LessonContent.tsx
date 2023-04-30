@@ -1,6 +1,6 @@
 import { content, heading } from "@/styles/font"
 
-import Logo from "@/pages/components/widgets/Logo"
+import Logo from "@/components/widgets/Logo"
 import { unicodeConverter } from "@/helper/htmlCodeConverter"
 
 const LessonContent = ({

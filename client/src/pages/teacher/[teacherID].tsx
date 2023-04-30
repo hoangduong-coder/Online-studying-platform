@@ -2,7 +2,7 @@ import { GET_STUDENT, GET_TEACHER_BY_ID } from "@/graphql/query"
 import { content, heading } from "@/styles/font"
 
 import Head from "next/head"
-import TeachingCourseTable from "../components/profile/TeachingCourseTable"
+import TeachingCourseTable from "@/components/profile/TeachingCourseTable"
 import styles from "@/styles/Profile.module.scss"
 import { useQuery } from "@apollo/client"
 import { useRouter } from "next/router"

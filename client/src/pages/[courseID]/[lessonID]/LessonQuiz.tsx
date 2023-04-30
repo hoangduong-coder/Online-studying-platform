@@ -1,8 +1,8 @@
 import { content, heading } from "@/styles/font"
 
-import Logo from "@/pages/components/widgets/Logo"
+import Logo from "@/components/widgets/Logo"
 import Quiz from "./Quiz"
-import SubmitButton from "@/pages/components/widgets/SubmitButton"
+import SubmitButton from "@/components/widgets/SubmitButton"
 
 const LessonQuiz = ({ title, quizzes }: { title: string; quizzes: any[] }) => {
   const [number, ...rest] = title.split(" ")
