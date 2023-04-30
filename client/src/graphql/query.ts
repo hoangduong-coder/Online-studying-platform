@@ -1,3 +1,4 @@
+import { BASIC_DETAILS } from "./query_fragment"
 import { gql } from "@apollo/client"
 
 export const LOGIN = gql`
@@ -6,12 +7,10 @@ export const LOGIN = gql`
   }
 `
 
-export const GET_STUDENT = gql`
+export const GET_STUDENT_USER = gql`
   query Query {
-    getStudent {
-      email
-      id
-      name
+    getUser {
+      ...BasicDetails
       studyProgress {
         course {
           id
@@ -22,7 +21,19 @@ export const GET_STUDENT = gql`
         progressPercentage
       }
     }
-  }`
+  }
+  ${BASIC_DETAILS}
+`
+
+export const GET_TEACHER_USER = gql`
+  query Query {
+    getUser {
+      ...BasicDetails
+      organization
+    }
+  }
+  ${BASIC_DETAILS}
+`
 
 export const GET_COURSE_BY_ID = gql`
 query Query($getCourseByIdId: ID!) {
@@ -31,10 +42,7 @@ query Query($getCourseByIdId: ID!) {
     name
     category
     teacher {
-      id
-      name
-      email
-      organization
+      ...BasicDetails
     }
     description
     estimateTime
@@ -50,8 +58,9 @@ query Query($getCourseByIdId: ID!) {
     }
   }
 }
+${BASIC_DETAILS}
 `
-export const GET_TEACHER_BY_ID = gql`
+export const GET_OTHER_TEACHER_BY_ID = gql`
 query Query($userId: ID!) {
   getTeacher(userID: $userId) {
     name
@@ -68,8 +77,8 @@ mutation Mutation($courseId: ID!) {
 }
 `
 export const ALL_COURSES = gql`
-query Query($name: String, $category: String) {
-  allCourses(name: $name, category: $category) {
+query SearchCourses($teacherId: ID!, $category: String, $name: String) {
+  searchCourses(teacherID: $teacherId, category: $category, name: $name) {
     id
     name
     category
@@ -80,5 +89,11 @@ query Query($name: String, $category: String) {
     description
     estimateTime
   }
+}
+`
+
+export const ANSWER_QUIZ = gql`
+mutation Mutation($courseId: ID!, $lessonId: ID!, $answers: [StudentAnswer!]!) {
+  answerQuiz(courseID: $courseId, lessonID: $lessonId, answers: $answers)
 }
 `
