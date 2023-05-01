@@ -1,4 +1,4 @@
-export const unicodeConverter = (str: string) => {
+export const htmlcodeConverter = (str: string) => {
   return str.replace(/&#[0-9]+;/i,
     (match) => {
       const newString = new DOMParser().parseFromString(match, "text/html");

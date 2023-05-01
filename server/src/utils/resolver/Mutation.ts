@@ -22,9 +22,7 @@ export const Mutation = {
     args: { courseID: string },
     contextValue: { currentUser?: any }
   ) => {
-    const course = await CourseModel.findById(args.courseID).populate(
-      "teacher"
-    );
+    const course = await CourseModel.findById(args.courseID).populate("teacher");
     if (!course || !contextValue.currentUser) {
       throw new GraphQLError("No course or student found", {
         extensions: {
@@ -50,12 +48,12 @@ export const Mutation = {
       status: "ONGOING",
       progressPercentage: 0,
       lessonCompleted: [],
-      overallPoint: 0
+      overallPoint: 0,
+      finishedDate: ""
     };
     try {
-      contextValue.currentUser.studyProgress = contextValue.currentUser.studyProgress.concat([
-        newProgress,
-      ]);
+      contextValue.currentUser.studyProgress =
+        contextValue.currentUser.studyProgress.concat([newProgress]);
       await contextValue.currentUser.save();
     } catch (error) {
       throw new GraphQLError("Enrollment failed", {
@@ -105,9 +103,14 @@ export const Mutation = {
     }
     return course;
   },
-  createStudent: async (
+  createUser: async (
     _root: any,
-    args: { name: string; email: string; password: string }
+    args: {
+      name: string
+      email: string
+      password: string
+      organization?: string
+    }
   ) => {
     if (
       args.password.length < 8 ||
@@ -126,62 +129,23 @@ export const Mutation = {
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(args.password, saltRounds);
     const { name, email } = args;
-    const newUser = new StudentModel({
-      name,
-      email,
-      role: "STUDENT",
-      passwordHash,
-      studyProgress: [],
-    });
-    try {
-      await newUser.save();
-    } catch (error) {
-      throw new GraphQLError("Create new student failed!", {
-        extensions: {
-          code: "GRAPHQL_VALIDATION_FAILED",
-          error,
-        },
+    const newUser = !args.organization
+      ? new StudentModel({
+        name,
+        email,
+        passwordHash,
+        studyProgress: [],
+      })
+      : new TeacherModel({
+        name,
+        email,
+        passwordHash,
+        organization: args.organization,
       });
-    }
-    return newUser;
-  },
-  createTeacher: async (
-    _root: any,
-    args: {
-      name: string
-      email: string
-      organization: string
-      password: string
-    }
-  ) => {
-    if (
-      args.password.length < 8 ||
-      !/\d/.test(args.password) ||
-      !/[a-zA-Z]/.test(args.password)
-    ) {
-      throw new GraphQLError(
-        "Wrong password format (>=8 and contains at least 1 letter and 1 digit)",
-        {
-          extensions: {
-            code: "GRAPHQL_VALIDATION_FAILED",
-          },
-        }
-      );
-    }
-    const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(args.password, saltRounds);
-    const { name, email, organization } = args;
-    const newUser = new TeacherModel({
-      name,
-      email,
-      role: "TEACHER",
-      organization,
-      passwordHash,
-    });
     try {
       await newUser.save();
     } catch (error) {
-      throw new GraphQLError("Create new teacher failed!", {
+      throw new GraphQLError("Create new user failed!", {
         extensions: {
           code: "GRAPHQL_VALIDATION_FAILED",
           error,
@@ -192,11 +156,9 @@ export const Mutation = {
   },
   addLesson: async (
     _root: any,
-    args: { courseID: string; title: string, content: string }
+    args: { courseID: string; title: string; content: string }
   ) => {
-    const course = await CourseModel.findById(args.courseID).populate(
-      "lessons"
-    );
+    const course = await CourseModel.findById(args.courseID).populate("lessons");
     if (!course)
       throw new GraphQLError("No course found", {
         extensions: {
@@ -225,7 +187,12 @@ export const Mutation = {
   },
   addQuiz: async (
     _root: any,
-    args: { lessonID: string; question: string; choices: string[]; answer: string }
+    args: {
+      lessonID: string
+      question: string
+      choices: string[]
+      answer: string
+    }
   ) => {
     const lesson = await LessonModel.findById(args.lessonID);
     if (!lesson)
@@ -238,7 +205,7 @@ export const Mutation = {
     const newQuestion = new QuizModel({
       question: args.question,
       choices: args.choices,
-      answer: args.answer
+      answer: args.answer,
     });
     try {
       await newQuestion.save();
@@ -268,32 +235,47 @@ export const Mutation = {
   ) => {
     const lesson = await LessonModel.findById(args.lessonID);
     //Check if user has enrolled the course
-    //@ts-ignore
-    const course = contextValue.currentUser.studyProgress.find((obj) => obj.course.toString() === args.courseID);
+    const course = contextValue.currentUser.studyProgress.find(
+      //@ts-ignore
+      (obj) => obj.course._id.toString() === args.courseID
+    );
     if (!(contextValue.currentUser && lesson && course)) {
       throw new GraphQLError("No result found", {
         extensions: { code: "BAD_USER_INPUT" },
       });
     }
     const index = contextValue.currentUser.studyProgress.indexOf(course);
+    const result = await helper.quizPoints({ data: args.answers });
+
+    const lessonCompletedStatus = {
+      lesson: lesson,
+      point: result.point,
+      comments: result.commentArray,
+    };
     try {
-      const result = await helper.quizPoints({ data: args.answers });
-      contextValue.currentUser.studyProgress[index].lessonCompleted = contextValue.currentUser.studyProgress[index].lessonCompleted.concat({
-        lesson: lesson._id,
-        point: result.point,
-        comments: result.commentArray
-      });
-      contextValue.currentUser.studyProgress[index].progressPercentage = await helper.progressCalculation(result.commentArray, args.courseID);
-      if (contextValue.currentUser.studyProgress[index].progressPercentage === 100) {
+      contextValue.currentUser.studyProgress[index].lessonCompleted =
+        contextValue.currentUser.studyProgress[index].lessonCompleted.concat(
+          lessonCompletedStatus
+        );
+      contextValue.currentUser.studyProgress[index].progressPercentage =
+        await helper.progressCalculation(
+          contextValue.currentUser.studyProgress[index].lessonCompleted,
+          args.courseID
+        );
+      if (
+        contextValue.currentUser.studyProgress[index].progressPercentage === 100
+      ) {
         const overallPoint = helper.overallPointCalculation(
           contextValue.currentUser.studyProgress[index].lessonCompleted
         );
         if (overallPoint >= 5) {
-          contextValue.currentUser.studyProgress[index].status === "PASSED";
+          contextValue.currentUser.studyProgress[index].overallPoint = overallPoint;
+          contextValue.currentUser.studyProgress[index].status = "PASSED";
+        } else {
+          contextValue.currentUser.studyProgress[index].overallPoint = overallPoint;
+          contextValue.currentUser.studyProgress[index].status = "FAILED";
         }
-        else {
-          contextValue.currentUser.studyProgress[index].status === "FAILED";
-        }
+        contextValue.currentUser.studyProgress[index].finishedDate = new Date();
       }
       await contextValue.currentUser.save();
     } catch (error) {
@@ -304,6 +286,7 @@ export const Mutation = {
         },
       });
     }
+    return lessonCompletedStatus;
   },
   login: async (_root: any, args: { email: string; password: string }) => {
     const findTeacher = await TeacherModel.findOne({ email: args.email });

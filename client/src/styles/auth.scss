@@ -1,0 +1,45 @@
+.auth-content {
+  display: flex;
+  justify-content: center;
+
+  .loginForm {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    :nth-child(n) {
+      margin-bottom: 5px;
+    }
+
+    h4 {
+      align-self: flex-end;
+      &:hover {
+        text-decoration: underline;
+        transition: 0.2s;
+      }
+    }
+  }
+
+  .signupForm {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+
+    :nth-child(n) {
+      margin-bottom: 3px;
+    }
+
+    h4 {
+      align-self: flex-end;
+      &:hover {
+        text-decoration: underline;
+        transition: 0.2s;
+      }
+    }
+  }
+}

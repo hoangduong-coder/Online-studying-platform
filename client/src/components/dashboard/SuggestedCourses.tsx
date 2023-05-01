@@ -14,7 +14,7 @@ const SuggestedCourses = () => {
       {data && (
         <>
           <div className="list">
-            {data.allCourses.map((obj) => (
+            {data.searchCourses.map((obj: any) => (
               <NewCourseCard
                 key={obj.id}
                 id={obj.id}

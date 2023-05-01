@@ -1,9 +1,11 @@
 import { Box, Tab, Tabs } from "@mui/material"
 import { ReactNode, SyntheticEvent, useState } from "react"
+import { content, heading } from "@/styles/font"
 
+import { ALL_COURSES } from "@/graphql/query"
 import Button from "../widgets/Button"
-import CourseCard from "../widgets/CourseCard"
-import { heading } from "@/styles/font"
+import TeacherCourseCard from "../widgets/TeacherCourseCard"
+import { useQuery } from "@apollo/client"
 
 const Panel = ({
   children,
@@ -21,12 +23,17 @@ const Panel = ({
   )
 }
 
-const TeachingCourseTable = () => {
+const TeachingCourseTable = ({ teacherID }: any) => {
   const [value, setValue] = useState<number>(0)
   const tabs = ["Current", "Create"]
   const handleChange = (event: SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
+
+  const { data } = useQuery(ALL_COURSES, {
+    variables: { teacherId: teacherID },
+  })
+
   return (
     <>
       <h2 style={heading.style}>My teaching</h2>
@@ -49,10 +56,20 @@ const TeachingCourseTable = () => {
           </Tabs>
         </Box>
         <Panel value={value} index={0}>
-          <CourseCard />
+          {data && data.searchCourses.length > 0 ? (
+            data.searchCourses.map((obj: any) => (
+              <TeacherCourseCard
+                key={obj.id}
+                courseID={obj.id}
+                name={obj.name}
+              />
+            ))
+          ) : (
+            <p style={content.style}>No courses found!</p>
+          )}
         </Panel>
         <Panel value={value} index={1}>
-          <Button title="Create new course" />
+          <Button title="Create new course" link={"/"} />
         </Panel>
       </Box>
     </>

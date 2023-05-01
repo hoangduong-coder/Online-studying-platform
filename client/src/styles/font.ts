@@ -1,7 +1,7 @@
-import { Chakra_Petch, Poppins, Roboto } from 'next/font/google'
+import { Chakra_Petch, Poppins } from 'next/font/google'
 
 export const content = Poppins({
-  weight: '400',
+  weight: '300',
   subsets: ['latin']
 })
 

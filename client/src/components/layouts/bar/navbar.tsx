@@ -8,7 +8,8 @@ const NavBar = () => {
         <Notifications />
       </div>
       <div>
-        <Avatar>HD</Avatar>
+        {" "}
+        <Avatar />{" "}
       </div>
     </div>
   )

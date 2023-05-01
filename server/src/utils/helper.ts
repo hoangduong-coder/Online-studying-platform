@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
@@ -49,17 +50,23 @@ const quizPoints = async (params: {
   };
 };
 
-const progressCalculation = async (finished: Comment[], courseID: string) => {
+const progressCalculation = async (finished: any[], courseID: string) => {
   const course = await CourseModel.findById(courseID).populate("lessons");
   if (course) {
     let quizNumber = 0;
+    let completedQuiz = 0;
     for (const obj of course.lessons) {
       const lesson = await LessonModel.findById(obj._id);
       if (lesson && lesson.quiz.length > 0) {
         quizNumber += lesson.quiz.length;
       }
     }
-    return finished.length * 100 / quizNumber;
+    for (const obj of finished) {
+      if (obj.comments) {
+        completedQuiz += obj.comments.length;
+      }
+    }
+    return completedQuiz * 100 / quizNumber;
   }
   else return 0;
 };

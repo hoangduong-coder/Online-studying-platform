@@ -3,7 +3,6 @@ import { StudyProgress } from "./helper";
 export interface User {
   name: string,
   email: string,
-  role: "TEACHER" | "STUDENT",
   passwordHash: string
 }
 

@@ -1,0 +1,36 @@
+.heading,
+.searchForm,
+.courseList {
+  margin-bottom: 10px;
+}
+.searchForm {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px;
+  background-color: var(--medium);
+  border-radius: var(--border-radius);
+  padding: 20px;
+
+  .searchBox {
+    flex-grow: 8;
+    margin-right: 5px;
+  }
+  .options {
+    margin-right: 5px;
+  }
+  .searchButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+.courseList {
+  width: 100%;
+  .container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+}

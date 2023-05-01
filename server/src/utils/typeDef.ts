@@ -25,11 +25,6 @@ const typeDefs = `#graphql
     point: Float!
     comments: [Comment!]
   }
-  
-  enum Role {
-    TEACHER
-    STUDENT
-  }
 
   type Teacher {
     id: ID!
@@ -37,7 +32,6 @@ const typeDefs = `#graphql
     email: String!
     passwordHash: String!
     organization: String
-    role: Role!
   }
 
   type Student {
@@ -45,7 +39,6 @@ const typeDefs = `#graphql
     name: String!
     email: String!
     passwordHash: String!
-    role: Role!
     studyProgress: [StudyProgress!]
   }
 
@@ -84,20 +77,14 @@ const typeDefs = `#graphql
   type Query {
     getUser: User
     getTeacher(userID: ID!): Teacher
-    searchCourses(name: String, category: String, teacherID: ID!): [Course!]
+    searchCourses(name: String, category: String, teacherID: ID): [Course!]
     getCourseById(id: ID!): Course
     getOverallResult(courseID: ID!): StudyProgress
   }
 
   type Mutation {
     enrollCourse(courseID: ID!): String
-    createStudent(name: String!, email: String!, password: String!): Student
-    createTeacher(
-      name: String!, 
-      email: String!, 
-      organization: String,
-      password: String!
-    ): Teacher
+    createUser(name: String!, email: String!, password: String!, organization: String): User
     addCourse(
       name: String!, 
       category: [String!]!, 
@@ -112,7 +99,7 @@ const typeDefs = `#graphql
       choices: [String!],
       answer: String!
     ): Quiz
-    answerQuiz(courseID: ID!, lessonID: ID!, answers: [StudentAnswer!]!): Float
+    answerQuiz(courseID: ID!, lessonID: ID!, answers: [StudentAnswer!]!): LessonCompleted
     login(email: String!, password: String!): String!
   }
 `;

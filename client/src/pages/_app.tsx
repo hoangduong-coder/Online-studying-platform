@@ -2,6 +2,7 @@ import "@/styles/globals.css"
 import "@/styles/bar.scss"
 import "@/styles/widget.scss"
 import "@/styles/dashboard.scss"
+import "@/styles/auth.scss"
 import "@/styles/CourseAndLesson.scss"
 
 import { ApolloProvider } from "@apollo/client"

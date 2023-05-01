@@ -1,13 +1,14 @@
 import { content, heading } from "@/styles/font"
 
-import { GET_STUDENT } from "@/graphql/query"
+import { GET_USER } from "@/graphql/query"
 import Head from "next/head"
 import StudyCourseTable from "@/components/profile/StudyCourseTable"
+import TeachingCourseTable from "@/components/profile/TeachingCourseTable"
 import styles from "@/styles/Profile.module.css"
 import { useQuery } from "@apollo/client"
 
 export default function Profile() {
-  const { loading, error, data } = useQuery(GET_STUDENT)
+  const { loading, error, data } = useQuery(GET_USER)
 
   return (
     <>
@@ -25,30 +26,42 @@ export default function Profile() {
         )}
         {error && (
           <div>
-            <p style={content.style}>{`There is an error: ${error.message}`}</p>
+            <p
+              style={content.style}
+            >{`There is an error in loading your profile: ${error.message}`}</p>
           </div>
         )}
         {data && (
           <>
             <div className={styles.header}>
-              <h1 style={heading.style}>{data.getStudent.name}</h1>
+              <h1 style={heading.style}>{data.getUser.name}</h1>
             </div>
             <div className="informationTable">
               <table>
                 <tbody>
                   <tr>
                     <th style={heading.style}>Roles</th>
-                    <td style={content.style}>Student</td>
+                    <td style={content.style}>{data.getUser.__typename}</td>
                   </tr>
                   <tr>
                     <th style={heading.style}>Email</th>
-                    <td style={content.style}>{data.getStudent.email}</td>
+                    <td style={content.style}>{data.getUser.email}</td>
                   </tr>
+                  {data.getUser.__typename === "Teacher" && (
+                    <tr>
+                      <th style={heading.style}>Organization</th>
+                      <td style={content.style}>{data.getUser.organization}</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
             <div className={styles.study}>
-              <StudyCourseTable progress={data.getStudent.studyProgress} />
+              {data.getUser.__typename === "Student" ? (
+                <StudyCourseTable progress={data.getUser.studyProgress} />
+              ) : (
+                <TeachingCourseTable teacherID={data.getUser.id} />
+              )}
             </div>
           </>
         )}

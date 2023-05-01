@@ -1,6 +1,44 @@
-import Head from "next/head"
+import { MenuItem, Select, TextField } from "@mui/material"
+import { content, heading } from "@/styles/font"
+import { useEffect, useState } from "react"
+import { useLazyQuery, useQuery } from "@apollo/client"
 
+import { ALL_COURSES } from "@/graphql/query"
+import Head from "next/head"
+import NewCourseCard from "@/components/dashboard/NewCourseCard"
+import SubmitButton from "@/components/widgets/SubmitButton"
+import styles from "@/styles/Categories.module.scss"
+
+const selection = [
+  { label: "By course name", value: "name" },
+  { label: "By topic", value: "category" },
+]
 export default function Categories() {
+  const [keyword, setKeyword] = useState<string>("")
+  const [value, setValue] = useState<string>("name")
+
+  const [courseList, setCourseList] = useState([])
+  const { loading, error, data } = useQuery(ALL_COURSES)
+  const [getCourses, searchResult] = useLazyQuery(ALL_COURSES, {
+    fetchPolicy: "network-only",
+  })
+
+  useEffect(() => {
+    if (data) {
+      setCourseList(data.searchCourses)
+    }
+  }, [data])
+
+  useEffect(() => {
+    if (searchResult.data) {
+      setCourseList(searchResult.data.searchCourses)
+    }
+  }, [searchResult.data])
+
+  const onSubmit = () => {
+    getCourses({ variables: { value: keyword } })
+  }
+
   return (
     <>
       <Head>
@@ -10,8 +48,61 @@ export default function Categories() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div>
-        <div>
-          <h1>More courses</h1>
+        <h1 style={heading.style} className={styles.heading}>
+          Explore more courses
+        </h1>
+        <form onSubmit={onSubmit} className={styles.searchForm}>
+          <div className={styles.searchBox}>
+            <TextField
+              value={keyword}
+              required
+              color="warning"
+              onChange={({ target }) => setKeyword(target.value)}
+              fullWidth
+            />
+          </div>
+          <div className={styles.options}>
+            <Select
+              fullWidth
+              value={value}
+              onChange={({ target }) => setValue(target.value)}
+            >
+              {selection.map((obj) => (
+                <MenuItem value={obj.value} key={obj.label}>
+                  {obj.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </div>
+          <div className={styles.searchButton}>
+            <SubmitButton title="Search" />
+          </div>
+        </form>
+        <div className={styles.courseList}>
+          {loading && <p style={content.style}>Loading, please wait ...</p>}
+          {error && (
+            <p style={content.style}>
+              Error in loading course. Please try again!
+            </p>
+          )}
+          {courseList.length > 0 ? (
+            <div className={styles.container}>
+              {courseList.map((obj: any) => (
+                <NewCourseCard
+                  key={obj.id}
+                  id={obj.id}
+                  name={obj.name}
+                  category={obj.category}
+                  teacher={obj.teacher}
+                  estimateTime={obj.estimateTime}
+                />
+              ))}
+            </div>
+          ) : (
+            <div>
+              <p style={content.style}>No course found!</p>
+            </div>
+          )}
         </div>
       </div>
     </>

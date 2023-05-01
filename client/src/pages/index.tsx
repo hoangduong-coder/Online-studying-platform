@@ -1,16 +1,17 @@
 import { content, heading } from "@/styles/font"
 
-import ContinueLink from "@/components/widgets/ContinueLink"
-import CourseCard from "@/components/widgets/CourseCard"
-import { GET_STUDENT } from "@/graphql/query"
+import Button from "@/components/widgets/Button"
+import { GET_USER } from "@/graphql/query"
 import Head from "next/head"
+import StudentCourseBoard from "@/components/dashboard/StudentCourseBoard"
 import SuggestedCourses from "@/components/dashboard/SuggestedCourses"
+import TeacherCourseBoard from "@/components/dashboard/TeacherCourseBoard"
 import TopicList from "@/components/dashboard/TopicList"
 import styles from "@/styles/Home.module.scss"
 import { useQuery } from "@apollo/client"
 
 export default function Home() {
-  const { loading, error, data } = useQuery(GET_STUDENT)
+  const { loading, error, data } = useQuery(GET_USER)
   return (
     <>
       <Head>
@@ -32,27 +33,25 @@ export default function Home() {
       {data && (
         <div>
           <div className={styles.welcome}>
-            <h1 style={heading.style}>Hello {data.getStudent.name}!</h1>
+            <h1 style={heading.style}>Hello {data.getUser.name}!</h1>
             <p style={content.style}>It&#39;s nice to see you again!</p>
           </div>
           <div className={styles.currentCourses}>
-            <h2 style={heading.style}>Ready to jump back on?</h2>
-            <div>
-              {data.getStudent.studyProgress.map(
-                (obj: any) =>
-                  obj.status === "ONGOING" && (
-                    <CourseCard
-                      key={obj.course.id}
-                      courseID={obj.course.id}
-                      percentage={obj.progressPercentage}
-                    />
-                  )
-              )}
-            </div>
-            <ContinueLink url="/profile" title="View more &#8594;" />
+            {data.getUser.__typename === "Student" ? (
+              <StudentCourseBoard studyProgress={data.getUser.studyProgress} />
+            ) : (
+              <TeacherCourseBoard id={data.getUser.id} />
+            )}
           </div>
           <TopicList />
-          <SuggestedCourses />
+          {data.getUser.__typename === "Student" ? (
+            <SuggestedCourses />
+          ) : (
+            <div>
+              <h2 style={heading.style}>Create a new course</h2>
+              <Button title="Start" link="/profile/newCourse" />
+            </div>
+          )}
         </div>
       )}
     </>

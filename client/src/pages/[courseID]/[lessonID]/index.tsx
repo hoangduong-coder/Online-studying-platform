@@ -1,4 +1,4 @@
-import { GET_COURSE_BY_ID, GET_STUDENT } from "@/graphql/query"
+import { GET_COURSE_BY_ID, GET_USER } from "@/graphql/query"
 
 import ContinueLink from "@/components/widgets/ContinueLink"
 import Head from "next/head"
@@ -15,7 +15,8 @@ const Lesson = () => {
   const { loading, error, data } = useQuery(GET_COURSE_BY_ID, {
     variables: { getCourseByIdId: courseID },
   })
-  const student = useQuery(GET_STUDENT)
+  const fetchUser = useQuery(GET_USER)
+
   //@ts-ignore
   const lesson = data.getCourseById.lessons.find((obj) => obj.id === lessonID)
   const index = data.getCourseById.lessons.indexOf(lesson)
@@ -28,13 +29,13 @@ const Lesson = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="lesson">
-        {(loading || student.loading) && (
+        {(loading || fetchUser.loading) && (
           <p style={content.style}>The page is loading. Please wait!</p>
         )}
-        {(error || !lesson || student.error) && (
+        {(error || !lesson || fetchUser.error) && (
           <p style={content.style}>Some errors occurs! Try again</p>
         )}
-        {data && student.data && (
+        {data && fetchUser.data && (
           <>
             <div className="lessonNavBar">
               <ContinueLink
@@ -55,6 +56,8 @@ const Lesson = () => {
               <LessonQuiz
                 title={`${index + 1} ${lesson.title}`}
                 quizzes={lesson.quiz}
+                courseID={courseID}
+                lessonID={lessonID}
               />
             )}
           </>

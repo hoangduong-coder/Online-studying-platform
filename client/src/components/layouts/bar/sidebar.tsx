@@ -13,7 +13,7 @@ const Sidebar = ({ logout }: { logout: () => void }) => {
         </li>
         <li>
           <SideBarSelection
-            url="/profile"
+            url="/profile/myprofile"
             icon={<AccountBox />}
             title="Profile"
           />

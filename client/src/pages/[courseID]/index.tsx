@@ -1,9 +1,15 @@
-import { ENROLL_COURSE, GET_COURSE_BY_ID } from "@/graphql/query"
+import {
+  ENROLL_COURSE,
+  GET_COURSE_BY_ID,
+  GET_OVERALL_RESULT,
+} from "@/graphql/query"
 import { content, heading } from "@/styles/font"
 import { useMutation, useQuery } from "@apollo/client"
 
+import CongratulationCard from "./Congratulation"
 import Head from "next/head"
 import LessonList from "./LessonList"
+import Link from "next/link"
 import { useRouter } from "next/router"
 
 export default function Course() {
@@ -24,7 +30,6 @@ export default function Course() {
       alert(`${mess.enrollCourse}`)
     },
   })
-  console.log(data)
   return (
     <>
       <Head>
@@ -61,7 +66,9 @@ export default function Course() {
                   <tr>
                     <th style={heading.style}>Teacher</th>
                     <td style={content.style}>
-                      {data.getCourseById.teacher.name}
+                      <Link href={`/profile/${data.getCourseById.teacher.id}`}>
+                        {data.getCourseById.teacher.name}
+                      </Link>
                     </td>
                   </tr>
                   <tr>
@@ -99,6 +106,7 @@ export default function Course() {
                 </>
               )}
             </div>
+            <CongratulationCard courseID={courseID} />
           </div>
         )}
       </div>

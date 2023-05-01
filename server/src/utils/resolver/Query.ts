@@ -19,13 +19,12 @@ export const Query = {
   searchCourses: async (
     _root: any,
     args: { name?: string; category?: string, teacherID?: string },
-    contextValue: { currentUser?: any }
   ) => {
     if (args.name) {
       return await CourseModel.find({ name: { $in: args.name } }).populate(
         "teacher"
       );
-    } else if (args.category) {
+    } if (args.category) {
       return await CourseModel.find({
         category: { $in: args.category },
       }).populate("teacher");
@@ -36,16 +35,11 @@ export const Query = {
           "teacher"
         );
       } else {
-        let courseIDList: any[] = [];
-        if (contextValue.currentUser) {
-          for (const obj of contextValue.currentUser.studyProgress) {
-            courseIDList = courseIDList.concat(obj.course._id.toString());
-          }
-          return await CourseModel.find({ _id: { $nin: courseIDList } }).populate("teacher");
-        }
         return await CourseModel.find({}).populate("teacher");
       }
     }
+    return await CourseModel.find({}).populate("teacher");
+
   },
   getCourseById: async (
     _root: any,

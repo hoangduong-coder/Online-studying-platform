@@ -39,4 +39,44 @@
       margin-right: 20px;
     }
   }
+
+  .point {
+    background: rgba(211, 47, 47, 0.3);
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    :nth-child(n) {
+      margin-block: 5px;
+    }
+  }
+
+  .comment {
+    background: rgba(76, 175, 80, 0.3);
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    :nth-child(n) {
+      margin-block: 5px;
+    }
+  }
+}
+
+.failedMessage {
+  background: rgba(211, 47, 47, 0.3);
+  border-radius: 10px;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  :nth-child(n) {
+    margin-block: 5px;
+  }
+}
+
+.passedMessage {
+  background: rgba(76, 175, 80, 0.3);
+  border-radius: 10px;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  :nth-child(n) {
+    margin-block: 5px;
+  }
 }
