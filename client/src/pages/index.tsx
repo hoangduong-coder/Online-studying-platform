@@ -1,7 +1,7 @@
 import { content, heading } from "@/styles/font"
 
 import Button from "@/components/widgets/Button"
-import { GET_USER } from "@/graphql/query"
+import { GET_USER } from "@/graphql/user_query"
 import Head from "next/head"
 import StudentCourseBoard from "@/components/dashboard/StudentCourseBoard"
 import SuggestedCourses from "@/components/dashboard/SuggestedCourses"

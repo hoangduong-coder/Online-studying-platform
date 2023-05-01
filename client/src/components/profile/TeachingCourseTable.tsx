@@ -2,7 +2,7 @@ import { Box, Tab, Tabs } from "@mui/material"
 import { ReactNode, SyntheticEvent, useState } from "react"
 import { content, heading } from "@/styles/font"
 
-import { ALL_COURSES } from "@/graphql/query"
+import { ALL_COURSES } from "@/graphql/course_query"
 import Button from "../widgets/Button"
 import TeacherCourseCard from "../widgets/TeacherCourseCard"
 import { useQuery } from "@apollo/client"
@@ -32,6 +32,7 @@ const TeachingCourseTable = ({ teacherID }: any) => {
 
   const { data } = useQuery(ALL_COURSES, {
     variables: { teacherId: teacherID },
+    pollInterval: 2000,
   })
 
   return (
@@ -69,7 +70,10 @@ const TeachingCourseTable = ({ teacherID }: any) => {
           )}
         </Panel>
         <Panel value={value} index={1}>
-          <Button title="Create new course" link={"/"} />
+          <Button
+            title="Create new course"
+            link={`/profile/new?tid=${teacherID}`}
+          />
         </Panel>
       </Box>
     </>

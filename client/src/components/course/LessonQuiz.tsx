@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { ANSWER_QUIZ, GET_OVERALL_RESULT } from "@/graphql/query"
+import { ANSWER_QUIZ, GET_OVERALL_RESULT } from "@/graphql/course_query"
 import { content, heading } from "@/styles/font"
 import { useMutation, useQuery } from "@apollo/client"
 

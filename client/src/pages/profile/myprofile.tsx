@@ -1,6 +1,6 @@
 import { content, heading } from "@/styles/font"
 
-import { GET_USER } from "@/graphql/query"
+import { GET_USER } from "@/graphql/user_query"
 import Head from "next/head"
 import StudyCourseTable from "@/components/profile/StudyCourseTable"
 import TeachingCourseTable from "@/components/profile/TeachingCourseTable"

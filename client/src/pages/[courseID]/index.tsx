@@ -1,14 +1,10 @@
-import {
-  ENROLL_COURSE,
-  GET_COURSE_BY_ID,
-  GET_OVERALL_RESULT,
-} from "@/graphql/query"
+import { ENROLL_COURSE, GET_COURSE_BY_ID } from "@/graphql/course_query"
 import { content, heading } from "@/styles/font"
 import { useMutation, useQuery } from "@apollo/client"
 
-import CongratulationCard from "./Congratulation"
+import CongratulationCard from "@/components/course/Congratulation"
 import Head from "next/head"
-import LessonList from "./LessonList"
+import LessonList from "@/components/course/LessonList"
 import Link from "next/link"
 import { useRouter } from "next/router"
 
@@ -106,7 +102,10 @@ export default function Course() {
                 </>
               )}
             </div>
-            <CongratulationCard courseID={courseID} />
+            <CongratulationCard
+              courseID={courseID}
+              teacher={data.getCourseById.teacher.name}
+            />
           </div>
         )}
       </div>

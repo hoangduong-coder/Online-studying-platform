@@ -1,10 +1,10 @@
-import { GET_COURSE_BY_ID, GET_USER } from "@/graphql/query"
+import { GET_COURSE_BY_ID, GET_USER } from "@/graphql/course_query"
 
 import ContinueLink from "@/components/widgets/ContinueLink"
 import Head from "next/head"
 import { KeyboardArrowRight } from "@mui/icons-material"
-import LessonContent from "./LessonContent"
-import LessonQuiz from "./LessonQuiz"
+import LessonContent from "@/components/course/LessonContent"
+import LessonQuiz from "@/components/course/LessonQuiz"
 import { content } from "@/styles/font"
 import { useQuery } from "@apollo/client"
 import { useRouter } from "next/router"

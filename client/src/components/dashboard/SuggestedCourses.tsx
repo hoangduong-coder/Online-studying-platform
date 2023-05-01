@@ -1,12 +1,14 @@
 import { content, heading } from "@/styles/font"
 
-import { ALL_COURSES } from "@/graphql/query"
+import { ALL_COURSES } from "@/graphql/course_query"
 import ContinueLink from "../widgets/ContinueLink"
 import NewCourseCard from "./NewCourseCard"
 import { useQuery } from "@apollo/client"
 
 const SuggestedCourses = () => {
-  const { loading, data } = useQuery(ALL_COURSES)
+  const { loading, data } = useQuery(ALL_COURSES, {
+    pollInterval: 2000,
+  })
   return (
     <div className="suggestedCourses">
       <h2 style={heading.style}>More courses for you</h2>

@@ -1,6 +1,6 @@
 import { content, heading } from "@/styles/font"
 
-import { ALL_COURSES } from "@/graphql/query"
+import { ALL_COURSES } from "@/graphql/course_query"
 import ContinueLink from "../widgets/ContinueLink"
 import TeacherCourseCard from "../widgets/TeacherCourseCard"
 import { useQuery } from "@apollo/client"

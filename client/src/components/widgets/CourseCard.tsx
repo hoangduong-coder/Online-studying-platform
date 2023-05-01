@@ -1,7 +1,7 @@
 import { content, heading } from "@/styles/font"
 
 import Button from "./Button"
-import { GET_COURSE_BY_ID } from "@/graphql/query"
+import { GET_COURSE_BY_ID } from "@/graphql/course_query"
 import ProgressPercentage from "./ProgressPercentage"
 import { useQuery } from "@apollo/client"
 

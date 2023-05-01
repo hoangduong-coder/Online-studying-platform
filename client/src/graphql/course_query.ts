@@ -1,39 +1,5 @@
 import { gql } from "@apollo/client"
 
-export const LOGIN = gql`
-  mutation Mutation($email: String!, $password: String!) {
-    login(email: $email, password: $password)
-  }
-`
-
-export const GET_USER = gql`
-  query Query {
-    getUser {
-      __typename
-      ... on Student {
-        studyProgress {
-          course {
-            id
-          }
-          status
-          overallPoint
-          finishedDate
-          progressPercentage
-        }
-        id
-        name
-        email
-      }
-      ... on Teacher {
-        organization
-        id
-        name
-        email
-      }
-    }
-  }
-`
-
 export const GET_COURSE_BY_ID = gql`
   query Query($getCourseByIdId: ID!) {
     getCourseById(id: $getCourseByIdId) {
@@ -60,15 +26,7 @@ export const GET_COURSE_BY_ID = gql`
     }
   }
 `
-export const GET_OTHER_TEACHER_BY_ID = gql`
-  query Query($userId: ID!) {
-    getTeacher(userID: $userId) {
-      name
-      email
-      organization
-    }
-  }
-`
+
 
 export const ENROLL_COURSE = gql`
   mutation Mutation($courseId: ID!) {
@@ -132,30 +90,9 @@ export const GET_OVERALL_RESULT = gql`
     }
   }
 `
-export const SIGN_UP = gql`
-  mutation Mutation(
-    $name: String!
-    $email: String!
-    $password: String!
-    $organization: String
-  ) {
-    createUser(
-      name: $name
-      email: $email
-      password: $password
-      organization: $organization
-    ) {
-      ... on Student {
-        email
-        id
-        name
-      }
-      ... on Teacher {
-        email
-        id
-        name
-        organization
-      }
-    }
+export const ADD_COURSE = gql`
+mutation Mutation($name: String!, $category: [String!]!, $teacherId: ID!, $description: String!, $estimateTime: Float) {
+  addCourse(name: $name, category: $category, teacherID: $teacherId, description: $description, estimateTime: $estimateTime) {
+    id
   }
-`
+}`

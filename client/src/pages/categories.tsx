@@ -3,7 +3,7 @@ import { content, heading } from "@/styles/font"
 import { useEffect, useState } from "react"
 import { useLazyQuery, useQuery } from "@apollo/client"
 
-import { ALL_COURSES } from "@/graphql/query"
+import { ALL_COURSES } from "@/graphql/course_query"
 import Head from "next/head"
 import NewCourseCard from "@/components/dashboard/NewCourseCard"
 import SubmitButton from "@/components/widgets/SubmitButton"

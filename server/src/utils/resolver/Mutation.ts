@@ -31,6 +31,7 @@ export const Mutation = {
         },
       });
     }
+
     if (
       contextValue.currentUser.studyProgress.find(
         //@ts-ignore

@@ -2,7 +2,7 @@ import { MenuItem, TextField } from "@mui/material"
 import { content, heading } from "@/styles/font"
 
 import Head from "next/head"
-import { SIGN_UP } from "@/graphql/query"
+import { SIGN_UP } from "@/graphql/user_query"
 import SubmitButton from "@/components/widgets/SubmitButton"
 import { useMutation } from "@apollo/client"
 import { useState } from "react"

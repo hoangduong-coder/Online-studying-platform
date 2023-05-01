@@ -1,7 +1,7 @@
 import { content, heading } from "@/styles/font"
 
 import Head from "next/head"
-import { LOGIN } from "@/graphql/query"
+import { LOGIN } from "@/graphql/user_query"
 import SubmitButton from "@/components/widgets/SubmitButton"
 import TextField from "@mui/material/TextField"
 import { useMutation } from "@apollo/client"
