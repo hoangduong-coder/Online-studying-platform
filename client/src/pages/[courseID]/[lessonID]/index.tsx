@@ -1,6 +1,5 @@
 import ContinueLink from "@/components/widgets/ContinueLink"
 import { GET_COURSE_FULL } from "@/graphql/course_query"
-import { GET_CURRENT_USER } from "@/graphql/user_query"
 import Head from "next/head"
 import { KeyboardArrowRight } from "@mui/icons-material"
 import LessonContent from "@/components/course/LessonContent"
@@ -13,13 +12,12 @@ const Lesson = () => {
   const router = useRouter()
   const { courseID, lessonID, which } = router.query
   const { loading, error, data } = useQuery(GET_COURSE_FULL, {
-    variables: { getCourseByIdId: courseID },
+    variables: { getFullCourseId: courseID },
+    pollInterval: 5000,
   })
-  const fetchUser = useQuery(GET_CURRENT_USER)
-
   //@ts-ignore
-  const lesson = data.getCourseById.lessons.find((obj) => obj.id === lessonID)
-  const index = data.getCourseById.lessons.indexOf(lesson)
+  const lesson = data?.getFullCourse?.lessons.find((obj) => obj.id === lessonID)
+  const index = data?.getFullCourse?.lessons.indexOf(lesson)
   return (
     <>
       <Head>
@@ -29,18 +27,17 @@ const Lesson = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="lesson">
-        {(loading || fetchUser.loading) && (
+        {loading && (
           <p style={content.style}>The page is loading. Please wait!</p>
         )}
-        {(error || !lesson || fetchUser.error) && (
-          <p style={content.style}>Some errors occurs! Try again</p>
-        )}
-        {data && fetchUser.data && (
+        {!lesson && <p style={content.style}>Some errors occurs! Try again</p>}
+        {error && <p style={content.style}>Error: ${error.message}</p>}
+        {data && (
           <>
             <div className="lessonNavBar">
               <ContinueLink
                 url={`/${courseID}`}
-                title={`${data.getCourseById.name}`}
+                title={`${data.getFullCourse.name}`}
               />{" "}
               <KeyboardArrowRight />{" "}
               <p style={content.style}>{`${lesson.title}`}</p>{" "}

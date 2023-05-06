@@ -1,3 +1,4 @@
+import { Box } from "@mui/material"
 import ContinueLink from "../widgets/ContinueLink"
 import CourseCard from "../widgets/SmallCourseCard"
 import { heading } from "@/styles/font"
@@ -18,7 +19,9 @@ const StudentCourseBoard = ({ studyProgress }: { studyProgress: any[] }) => {
             )
         )}
       </div>
-      <ContinueLink url="/profile/myprofile" title="View more &#8594;" />
+      <Box sx={{ width: "100%" }}>
+        <ContinueLink url="/profile/myprofile" title="View more &#8594;" />
+      </Box>
     </>
   )
 }

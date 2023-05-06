@@ -58,7 +58,7 @@ const NewContentForm = () => {
       </Head>
       <div>
         <div className="header">
-          <h1 style={heading.style}>Create course</h1>
+          <h1 style={heading.style}>Create new lesson</h1>
         </div>
         <form onSubmit={submit} className="creationForm">
           <div>
@@ -80,7 +80,7 @@ const NewContentForm = () => {
               <h3 style={heading.style}>Course content</h3>
             </span>
             <textarea
-              className="description"
+              className="content"
               style={content.style}
               value={lessonContent}
               required

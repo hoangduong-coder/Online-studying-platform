@@ -1,6 +1,5 @@
 import { content, heading } from "@/styles/font"
 
-import { ALL_COURSES } from "@/graphql/course_query"
 import Button from "@/components/widgets/Button"
 import ContinueLink from "@/components/widgets/ContinueLink"
 import { GET_CURRENT_USER } from "@/graphql/user_query"
@@ -21,9 +20,14 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {(user.loading || !user.data.getUser) && (
+      {user.loading && (
         <div>
           <p style={content.style}>Loading, please wait ...</p>
+        </div>
+      )}
+      {user.data && !user.data.getUser && (
+        <div>
+          <p style={content.style}>Cannot load the page! Please try again!</p>
         </div>
       )}
       {user.error && (
@@ -45,14 +49,14 @@ export default function Home() {
                 studyProgress={user.data.getUser.studyProgress}
               />
             ) : (
-              <div>
+              <>
                 <h2 style={heading.style}>Your own courses</h2>
                 <TeacherCourseBoard ownCourses={user.data.getUser.ownCourses} />
                 <ContinueLink
                   url="/profile/myprofile"
                   title="View more &#8594;"
                 />
-              </div>
+              </>
             )}
           </div>
           {user.data.getUser.__typename === "Student" ? (

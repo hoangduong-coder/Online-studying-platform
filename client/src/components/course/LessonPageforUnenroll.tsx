@@ -2,6 +2,7 @@ import { content, heading } from "@/styles/font"
 
 import { GET_COURSE_BASIC } from "@/graphql/course_query"
 import Link from "next/link"
+import SubmitButton from "../widgets/SubmitButton"
 import { useQuery } from "@apollo/client"
 
 const LessonPageforUnenroll = ({ courseID, enrollCourse }: any) => {
@@ -60,9 +61,7 @@ const LessonPageforUnenroll = ({ courseID, enrollCourse }: any) => {
           <h2 style={heading.style}>Description</h2>
           <p style={content.style}>{data.getFullCourse.description}</p>
           <div className="lessonList">
-            <button className="button" onClick={enrollCourse}>
-              <span style={content.style}>Enroll</span>
-            </button>
+            <SubmitButton title="Enroll" onClick={enrollCourse} />
           </div>
         </div>
       )}

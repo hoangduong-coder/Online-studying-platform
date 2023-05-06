@@ -16,7 +16,7 @@ const NewCourse = () => {
     passed: boolean
     message: string
   }>({
-    passed: true,
+    passed: false,
     message: "",
   })
   const [categoryItem, setCategoryItem] = useState<string>("")
@@ -134,16 +134,17 @@ const NewCourse = () => {
                 color="warning"
                 onChange={({ target }) =>
                   //@ts-ignore
-                  setCourseInfo({ ...courseInfo, estimateTime: target.value })
+                  setCourseInfo({
+                    ...courseInfo,
+                    estimateTime: parseInt(target.value),
+                  })
                 }
                 fullWidth
                 size="small"
               />
             </div>
           </div>
-          {notification.message.length === 0 ? (
-            <SubmitButton title="Create" />
-          ) : (
+          {notification.message.length > 0 && (
             <div
               className={
                 notification.passed ? "passedMessage" : "failedMessage"
@@ -153,7 +154,10 @@ const NewCourse = () => {
                 <p style={content.style}>
                   {notification.message}
                   <span>
-                    <ContinueLink url={`/profile/${tid}`} title="this link" />
+                    <ContinueLink
+                      url={`/profile/myprofile`}
+                      title="this link"
+                    />
                   </span>
                 </p>
               ) : (
@@ -161,6 +165,7 @@ const NewCourse = () => {
               )}
             </div>
           )}
+          {!notification.passed && <SubmitButton title="Create" />}{" "}
         </form>
       </div>
     </>
