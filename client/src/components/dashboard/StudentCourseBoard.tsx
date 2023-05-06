@@ -1,5 +1,5 @@
 import ContinueLink from "../widgets/ContinueLink"
-import CourseCard from "../widgets/CourseCard"
+import CourseCard from "../widgets/SmallCourseCard"
 import { heading } from "@/styles/font"
 
 const StudentCourseBoard = ({ studyProgress }: { studyProgress: any[] }) => {
@@ -18,7 +18,7 @@ const StudentCourseBoard = ({ studyProgress }: { studyProgress: any[] }) => {
             )
         )}
       </div>
-      <ContinueLink url="/profile" title="View more &#8594;" />
+      <ContinueLink url="/profile/myprofile" title="View more &#8594;" />
     </>
   )
 }

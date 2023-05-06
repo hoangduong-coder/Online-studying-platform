@@ -9,7 +9,7 @@ const SubmitButton = ({ title, onClick }: { title: string; onClick?: any }) => {
     )
   }
   return (
-    <button className="button" type="submit" onClick={onClick}>
+    <button className="button" type="button" onClick={onClick}>
       <span style={content.style}>{title}</span>
     </button>
   )

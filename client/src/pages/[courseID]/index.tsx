@@ -1,29 +1,28 @@
-import { ENROLL_COURSE, GET_COURSE_BY_ID } from "@/graphql/course_query"
-import { content, heading } from "@/styles/font"
+import { ENROLL_COURSE, GET_COURSE_FULL } from "@/graphql/course_query"
 import { useMutation, useQuery } from "@apollo/client"
 
-import CongratulationCard from "@/components/course/Congratulation"
+import { GET_CURRENT_USER } from "@/graphql/user_query"
 import Head from "next/head"
-import LessonList from "@/components/course/LessonList"
-import Link from "next/link"
+import LessonPageforEnroll from "@/components/course/LessonPageforEnroll"
+import LessonPageforTeacher from "@/components/course/LessonPageforTeacher"
+import LessonPageforUnenroll from "@/components/course/LessonPageforUnenroll"
+import { content } from "@/styles/font"
 import { useRouter } from "next/router"
 
 export default function Course() {
   const router = useRouter()
   const { courseID } = router.query
-  const { loading, error, data } = useQuery(GET_COURSE_BY_ID, {
-    variables: { getCourseByIdId: courseID },
-  })
+  const { data } = useQuery(GET_CURRENT_USER)
   const [enrollCourse] = useMutation(ENROLL_COURSE, {
     refetchQueries: [
-      { query: GET_COURSE_BY_ID, variables: { getCourseByIdId: courseID } },
+      { query: GET_COURSE_FULL, variables: { getFullCourseId: courseID } },
     ],
     onError: (error) =>
       alert(
         `Enrollment failed, due to error ${error.graphQLErrors[0].message}`
       ),
     onCompleted: (mess) => {
-      alert(`${mess.enrollCourse}`)
+      alert(`${mess.enrollCourse}. Refresh page to see details`)
     },
   })
   return (
@@ -35,79 +34,34 @@ export default function Course() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div>
-        {loading && (
+        {!data.getUser && (
           <div>
-            <p style={content.style}>Loading, please wait ...</p>
+            <p style={content.style}>{`There is an error`}</p>
           </div>
         )}
-        {error && (
-          <div>
-            <p style={content.style}>{`There is an error: ${error.message}`}</p>
-          </div>
+        {data.getUser.__typename === "Teacher" && (
+          <LessonPageforTeacher
+            courseID={courseID}
+            teacherData={data.getUser}
+          />
         )}
-        {data && (
-          <div className="course">
-            <div className="header">
-              <h1 style={heading.style}>{data.getCourseById.name}</h1>
-            </div>
-            <div className="informationTable">
-              <table>
-                <tbody>
-                  <tr>
-                    <th style={heading.style}>Categories</th>
-                    <td style={content.style}>
-                      {data.getCourseById.category.join(", ")}
-                    </td>
-                  </tr>
-                  <tr>
-                    <th style={heading.style}>Teacher</th>
-                    <td style={content.style}>
-                      <Link href={`/profile/${data.getCourseById.teacher.id}`}>
-                        {data.getCourseById.teacher.name}
-                      </Link>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th style={heading.style}>Teacher&apos;s email</th>
-                    <td style={content.style}>
-                      {data.getCourseById.teacher.email}
-                    </td>
-                  </tr>
-                  <tr>
-                    <th style={heading.style}>Estimated time</th>
-                    <td style={content.style}>
-                      {data.getCourseById.estimateTime} hours
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <h2 style={heading.style}>Description</h2>
-            <p style={content.style}>{data.getCourseById.description}</p>
-            <div className="lessonList">
-              {!data.getCourseById.lessons ? (
-                <button
-                  className="button"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    enrollCourse({ variables: { courseId: courseID } })
-                  }}
-                >
-                  <span style={content.style}>Enroll</span>
-                </button>
-              ) : (
-                <>
-                  <h2 style={heading.style}>Content</h2>
-                  <LessonList id={courseID} list={data.getCourseById.lessons} />
-                </>
-              )}
-            </div>
-            <CongratulationCard
+        {data.getUser.studyProgress &&
+          !data.getUser.studyProgress.find(
+            (obj) => obj.course.id === courseID
+          ) && (
+            <LessonPageforUnenroll
               courseID={courseID}
-              teacher={data.getCourseById.teacher.name}
+              enrollCourse={(e: any) => {
+                e.preventDefault()
+                enrollCourse({ variables: { courseId: courseID } })
+              }}
             />
-          </div>
-        )}
+          )}
+
+        {data.getUser.studyProgress &&
+          data.getUser.studyProgress.find(
+            (obj) => obj.course.id === courseID
+          ) && <LessonPageforEnroll courseID={courseID} />}
       </div>
     </>
   )

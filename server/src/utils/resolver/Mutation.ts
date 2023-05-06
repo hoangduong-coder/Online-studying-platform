@@ -88,7 +88,6 @@ export const Mutation = {
     const course = new CourseModel({
       ...args,
       teacher: teacherData,
-      students: [],
       lessons: [],
     });
     try {

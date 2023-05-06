@@ -32,6 +32,7 @@ const typeDefs = `#graphql
     email: String!
     passwordHash: String!
     organization: String
+    ownCourses: [Course!]
   }
 
   type Student {
@@ -76,9 +77,10 @@ const typeDefs = `#graphql
 
   type Query {
     getUser: User
-    getTeacher(userID: ID!): Teacher
-    searchCourses(name: String, category: String, teacherID: ID): [Course!]
-    getCourseById(id: ID!): Course
+    getOtherUser(userID: ID!): User
+    allCourses: [Course!]
+    getFullCourse(id: ID!): Course
+    getQuizResult(courseID: ID!, lessonID: ID!): LessonCompleted
     getOverallResult(courseID: ID!): StudyProgress
   }
 

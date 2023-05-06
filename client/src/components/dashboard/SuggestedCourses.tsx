@@ -1,23 +1,31 @@
 import { content, heading } from "@/styles/font"
 
 import { ALL_COURSES } from "@/graphql/course_query"
+import BigCourseCard from "../widgets/BigCourseCard"
 import ContinueLink from "../widgets/ContinueLink"
-import NewCourseCard from "./NewCourseCard"
 import { useQuery } from "@apollo/client"
 
 const SuggestedCourses = () => {
-  const { loading, data } = useQuery(ALL_COURSES, {
-    pollInterval: 2000,
-  })
+  const { loading, data, error } = useQuery(ALL_COURSES, { pollInterval: 5000 })
   return (
     <div className="suggestedCourses">
       <h2 style={heading.style}>More courses for you</h2>
-      {loading && <p style={content.style}>Loading, please wait ...</p>}
-      {data && (
-        <>
-          <div className="list">
-            {data.searchCourses.map((obj: any) => (
-              <NewCourseCard
+      {(loading || !data || !data.allCourses) && (
+        <div>
+          <p style={content.style}>Loading, please wait ...</p>
+        </div>
+      )}
+      {error && (
+        <div>
+          <p style={content.style}>{`There is an error: ${error.message}`}</p>
+        </div>
+      )}
+
+      {data && data.allCourses && (
+        <div className="list">
+          {data.allCourses.length > 0 ? (
+            data.allCourses.map((obj: any) => (
+              <BigCourseCard
                 key={obj.id}
                 id={obj.id}
                 name={obj.name}
@@ -25,11 +33,14 @@ const SuggestedCourses = () => {
                 teacher={obj.teacher}
                 estimateTime={obj.estimateTime}
               />
-            ))}
-          </div>
-          <ContinueLink url="/categories" title="View more &#8594;" />
-        </>
+            ))
+          ) : (
+            <p style={content.style}>No courses to show!</p>
+          )}
+        </div>
       )}
+
+      <ContinueLink url="/categories" title="View more &#8594;" />
     </div>
   )
 }

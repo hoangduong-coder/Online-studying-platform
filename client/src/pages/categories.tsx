@@ -5,7 +5,7 @@ import { useLazyQuery, useQuery } from "@apollo/client"
 
 import { ALL_COURSES } from "@/graphql/course_query"
 import Head from "next/head"
-import NewCourseCard from "@/components/dashboard/NewCourseCard"
+import NewCourseCard from "@/components/widgets/BigCourseCard"
 import SubmitButton from "@/components/widgets/SubmitButton"
 import styles from "@/styles/Categories.module.scss"
 
@@ -18,25 +18,31 @@ export default function Categories() {
   const [value, setValue] = useState<string>("name")
 
   const [courseList, setCourseList] = useState([])
-  const { loading, error, data } = useQuery(ALL_COURSES)
-  const [getCourses, searchResult] = useLazyQuery(ALL_COURSES, {
-    fetchPolicy: "network-only",
-  })
+  const { loading, error, data } = useQuery(ALL_COURSES, { pollInterval: 2000 })
 
   useEffect(() => {
     if (data) {
-      setCourseList(data.searchCourses)
+      setCourseList(data.allCourses)
     }
   }, [data])
 
-  useEffect(() => {
-    if (searchResult.data) {
-      setCourseList(searchResult.data.searchCourses)
+  const onSubmit = (e: any) => {
+    e.preventDefault()
+    if (value === "name") {
+      setCourseList(
+        //@ts-ignore
+        data.allCourses.filter((obj) =>
+          obj.name.toLowerCase().includes(keyword.toLowerCase())
+        )
+      )
     }
-  }, [searchResult.data])
-
-  const onSubmit = () => {
-    getCourses({ variables: { value: keyword } })
+    if (value === "category") {
+      setCourseList(
+        //@ts-ignore
+        data.allCourses.filter((obj) => obj.category.includes(keyword))
+      )
+    }
+    setKeyword("")
   }
 
   return (

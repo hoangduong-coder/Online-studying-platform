@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
+import { CourseModel } from '../../models';
 import { Mutation } from './Mutation';
 import { Query } from './Query';
 
@@ -13,7 +16,13 @@ const resolvers = {
       return null;
     }
   },
-  Query, Mutation
+  Query,
+  Teacher: {
+    ownCourses: async (root: any) => {
+      return await CourseModel.find({ "teacher": root.id }).populate("teacher");
+    }
+  },
+  Mutation
 };
 
 export default resolvers;

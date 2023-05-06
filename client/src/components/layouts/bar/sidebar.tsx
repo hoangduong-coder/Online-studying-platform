@@ -1,12 +1,20 @@
 import { AccountBox, Category, Dashboard, Logout } from "@mui/icons-material"
 
+import Link from "next/link"
 import Logo from "../../widgets/Logo"
 import SideBarSelection from "./sidebar-selection"
+import { logo } from "@/styles/font"
 
 const Sidebar = ({ logout }: { logout: () => void }) => {
   return (
     <div className="sidebar">
-      <Logo content="HD" theme="light" />
+      <Logo theme="light">
+        <Link style={{ textDecoration: "none" }} href="/">
+          <p style={logo.style} className="lightLogoContent">
+            HD
+          </p>
+        </Link>
+      </Logo>
       <ul>
         <li>
           <SideBarSelection url="/" icon={<Dashboard />} title="Dashboard" />

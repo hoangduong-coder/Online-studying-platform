@@ -108,21 +108,37 @@
     margin-bottom: 2px;
   }
 
-  .description {
-    width: 100%;
+  .description,
+  .answerArea,
+  .choiceBox {
+    width: 90%;
     height: 10ch;
     resize: none;
     padding: 5px 10px;
   }
+
   .categoryBody {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-around;
+  }
+  .choiceBody {
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
-  .categoryList {
+  .categoryList,
+  .choiceList {
     display: flex;
     p {
       margin-left: 10px;
     }
   }
+}
+
+.buttonForm {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 10px;
+  width: 100%;
 }

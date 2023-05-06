@@ -1,13 +1,13 @@
 import { content, heading } from "@/styles/font"
 
 import { AccessTimeFilled } from "@mui/icons-material"
-import ContinueLink from "../widgets/ContinueLink"
+import ContinueLink from "./ContinueLink"
 
-const NewCourseCard = ({ id, name, teacher, category, estimateTime }: any) => {
+const BigCourseCard = ({ id, name, teacher, category, estimateTime }: any) => {
   return (
     <div className="newCourseCard">
       <h3 style={heading.style}>{name}</h3>
-      <p style={content.style}>By {teacher.name}</p>
+      {teacher && <p style={content.style}>By {teacher.name}</p>}
       <div className="timing">
         <AccessTimeFilled />
         <p style={content.style}>{estimateTime} hours</p>
@@ -27,4 +27,4 @@ const NewCourseCard = ({ id, name, teacher, category, estimateTime }: any) => {
   )
 }
 
-export default NewCourseCard
+export default BigCourseCard

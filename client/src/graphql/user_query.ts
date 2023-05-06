@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from "@apollo/client"
 
 export const SIGN_UP = gql`
   mutation Mutation(
@@ -34,7 +34,7 @@ export const LOGIN = gql`
   }
 `
 
-export const GET_USER = gql`
+export const GET_CURRENT_USER = gql`
   query Query {
     getUser {
       __typename
@@ -57,16 +57,37 @@ export const GET_USER = gql`
         id
         name
         email
+        ownCourses {
+          id
+          name
+          category
+          estimateTime
+        }
       }
     }
   }
 `
-export const GET_OTHER_TEACHER_BY_ID = gql`
+export const GET_OTHER_USER_BY_ID = gql`
   query Query($userId: ID!) {
-    getTeacher(userID: $userId) {
-      name
-      email
-      organization
+    getOtherTeacher(userID: $userId) {
+      __typename
+      ... on Student {
+        id
+        name
+        email
+      }
+      ... on Teacher {
+        organization
+        id
+        name
+        email
+        ownCourses {
+          id
+          name
+          category
+          estimateTime
+        }
+      }
     }
   }
 `

@@ -1,8 +1,25 @@
 import { gql } from "@apollo/client"
 
-export const GET_COURSE_BY_ID = gql`
-  query Query($getCourseByIdId: ID!) {
-    getCourseById(id: $getCourseByIdId) {
+export const GET_COURSE_BASIC = gql`
+  query Query($getFullCourseId: ID!) {
+    getFullCourse(id: $getFullCourseId) {
+      id
+      name
+      category
+      teacher {
+        id
+        name
+        email
+      }
+      description
+      estimateTime
+    }
+  }
+`
+
+export const GET_COURSE_FULL = gql`
+  query Query($getFullCourseId: ID!) {
+    getFullCourse(id: $getFullCourseId) {
       id
       name
       category
@@ -27,15 +44,14 @@ export const GET_COURSE_BY_ID = gql`
   }
 `
 
-
 export const ENROLL_COURSE = gql`
   mutation Mutation($courseId: ID!) {
     enrollCourse(courseID: $courseId)
   }
 `
 export const ALL_COURSES = gql`
-  query SearchCourses($teacherId: ID, $category: String, $name: String) {
-    searchCourses(teacherID: $teacherId, category: $category, name: $name) {
+  query Query {
+    allCourses {
       id
       name
       category
@@ -69,6 +85,19 @@ export const ANSWER_QUIZ = gql`
   }
 `
 
+export const GET_QUIZ_RESULT = gql`
+  query GetQuizResult($courseId: ID!, $lessonId: ID!) {
+    getQuizResult(courseID: $courseId, lessonID: $lessonId) {
+      comments {
+        quizID
+        answer
+        comment
+      }
+      point
+    }
+  }
+`
+
 export const GET_OVERALL_RESULT = gql`
   query GetOverallResult($courseId: ID!) {
     getOverallResult(courseID: $courseId) {
@@ -91,8 +120,47 @@ export const GET_OVERALL_RESULT = gql`
   }
 `
 export const ADD_COURSE = gql`
-mutation Mutation($name: String!, $category: [String!]!, $teacherId: ID!, $description: String!, $estimateTime: Float) {
-  addCourse(name: $name, category: $category, teacherID: $teacherId, description: $description, estimateTime: $estimateTime) {
-    id
+  mutation Mutation(
+    $name: String!
+    $category: [String!]!
+    $teacherId: ID!
+    $description: String!
+    $estimateTime: Float
+  ) {
+    addCourse(
+      name: $name
+      category: $category
+      teacherID: $teacherId
+      description: $description
+      estimateTime: $estimateTime
+    ) {
+      id
+    }
   }
-}`
+`
+
+export const ADD_LESSON = gql`
+  mutation Mutation($courseId: ID!, $title: String!, $content: String!) {
+    addLesson(courseID: $courseId, title: $title, content: $content) {
+      id
+    }
+  }
+`
+
+export const ADD_QUIZ = gql`
+  mutation Mutation(
+    $lessonId: ID!
+    $question: String!
+    $answer: String!
+    $choices: [String!]
+  ) {
+    addQuiz(
+      lessonID: $lessonId
+      question: $question
+      answer: $answer
+      choices: $choices
+    ) {
+      id
+    }
+  }
+`

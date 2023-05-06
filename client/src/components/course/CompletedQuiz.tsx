@@ -15,7 +15,6 @@ const CompletedQuiz = ({
   quizzes: any[]
   point: any
 }) => {
-  console.log(result)
   return (
     <div>
       <div className="point">

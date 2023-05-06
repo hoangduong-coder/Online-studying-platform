@@ -1,7 +1,8 @@
-import { ADD_COURSE, ALL_COURSES } from "@/graphql/course_query"
 import { content, heading } from "@/styles/font"
 
+import { ADD_COURSE } from "@/graphql/course_query"
 import ContinueLink from "@/components/widgets/ContinueLink"
+import { GET_CURRENT_USER } from "@/graphql/user_query"
 import Head from "next/head"
 import SubmitButton from "@/components/widgets/SubmitButton"
 import { TextField } from "@mui/material"
@@ -11,7 +12,13 @@ import { useState } from "react"
 
 const NewCourse = () => {
   const { tid } = useRouter().query
-  const [notification, setNotification] = useState<string>()
+  const [notification, setNotification] = useState<{
+    passed: boolean
+    message: string
+  }>({
+    passed: true,
+    message: "",
+  })
   const [categoryItem, setCategoryItem] = useState<string>("")
   const [courseInfo, setCourseInfo] = useState<{
     name: string
@@ -19,10 +26,19 @@ const NewCourse = () => {
     category: string[]
     estimateTime: number
   }>({ name: "", description: "", category: [], estimateTime: 0 })
-  const [createCourse] = useMutation(ADD_COURSE, {
-    onError: (error) => setNotification(error.message),
-    refetchQueries: [{ query: ALL_COURSES }],
-    onCompleted: (result) => setNotification(result.addCourse.id),
+  const [addCourse] = useMutation(ADD_COURSE, {
+    onError: (error) =>
+      setNotification({
+        passed: false,
+        message: error.message,
+      }),
+    onCompleted: () =>
+      setNotification({
+        passed: true,
+        message:
+          "Create new course done, return to the profile and see the result",
+      }),
+    refetchQueries: [{ query: GET_CURRENT_USER }],
   })
 
   const addCategory = () => {
@@ -33,8 +49,9 @@ const NewCourse = () => {
     setCategoryItem("")
   }
 
-  const submit = () => {
-    createCourse({
+  const submit = (e: any) => {
+    e.preventDefault()
+    addCourse({
       variables: {
         ...courseInfo,
         teacherId: tid,
@@ -124,12 +141,24 @@ const NewCourse = () => {
               />
             </div>
           </div>
-          {!notification ? (
+          {notification.message.length === 0 ? (
             <SubmitButton title="Create" />
           ) : (
-            <div className="passedMessage">
-              You course has been created. Start by{" "}
-              <ContinueLink url={notification} title="this link" />{" "}
+            <div
+              className={
+                notification.passed ? "passedMessage" : "failedMessage"
+              }
+            >
+              {notification.passed ? (
+                <p style={content.style}>
+                  {notification.message}
+                  <span>
+                    <ContinueLink url={`/profile/${tid}`} title="this link" />
+                  </span>
+                </p>
+              ) : (
+                <p style={content.style}>{notification.message}</p>
+              )}
             </div>
           )}
         </form>

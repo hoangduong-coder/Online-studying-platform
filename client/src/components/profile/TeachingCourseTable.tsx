@@ -2,10 +2,8 @@ import { Box, Tab, Tabs } from "@mui/material"
 import { ReactNode, SyntheticEvent, useState } from "react"
 import { content, heading } from "@/styles/font"
 
-import { ALL_COURSES } from "@/graphql/course_query"
+import BigCourseCard from "../widgets/BigCourseCard"
 import Button from "../widgets/Button"
-import TeacherCourseCard from "../widgets/TeacherCourseCard"
-import { useQuery } from "@apollo/client"
 
 const Panel = ({
   children,
@@ -23,17 +21,12 @@ const Panel = ({
   )
 }
 
-const TeachingCourseTable = ({ teacherID }: any) => {
+const TeachingCourseTable = ({ courseList, teacherID }: any) => {
   const [value, setValue] = useState<number>(0)
   const tabs = ["Current", "Create"]
   const handleChange = (event: SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
-
-  const { data } = useQuery(ALL_COURSES, {
-    variables: { teacherId: teacherID },
-    pollInterval: 2000,
-  })
 
   return (
     <>
@@ -57,23 +50,29 @@ const TeachingCourseTable = ({ teacherID }: any) => {
           </Tabs>
         </Box>
         <Panel value={value} index={0}>
-          {data && data.searchCourses.length > 0 ? (
-            data.searchCourses.map((obj: any) => (
-              <TeacherCourseCard
-                key={obj.id}
-                courseID={obj.id}
-                name={obj.name}
-              />
-            ))
-          ) : (
-            <p style={content.style}>No courses found!</p>
-          )}
+          <Box sx={{ display: "flex", marginTop: "10px", flexWrap: "wrap" }}>
+            {courseList && courseList.length > 0 ? (
+              courseList.map((obj: any) => (
+                <BigCourseCard
+                  key={obj.id}
+                  id={obj.id}
+                  name={obj.name}
+                  category={obj.category}
+                  estimateTime={obj.estimateTime}
+                />
+              ))
+            ) : (
+              <p style={content.style}>No courses found!</p>
+            )}
+          </Box>
         </Panel>
         <Panel value={value} index={1}>
-          <Button
-            title="Create new course"
-            link={`/profile/new?tid=${teacherID}`}
-          />
+          <Box sx={{ display: "flex", marginTop: "10px", flexWrap: "wrap" }}>
+            <Button
+              title="Create new course"
+              link={`/profile/new_course?tid=${teacherID}`}
+            />
+          </Box>
         </Panel>
       </Box>
     </>

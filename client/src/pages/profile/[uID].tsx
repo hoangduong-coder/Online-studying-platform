@@ -1,18 +1,16 @@
 import { content, heading } from "@/styles/font"
 
-import { GET_OTHER_TEACHER_BY_ID } from "@/graphql/user_query"
+import { GET_OTHER_USER_BY_ID } from "@/graphql/user_query"
 import Head from "next/head"
-import StudyCourseTable from "@/components/profile/StudyCourseTable"
-import TeachingCourseTable from "@/components/profile/TeachingCourseTable"
-import error from "next/error"
+import TeacherCourseBoard from "@/components/dashboard/TeacherCourseBoard"
 import styles from "@/styles/Profile.module.css"
 import { useQuery } from "@apollo/client"
 import { useRouter } from "next/router"
 
 export default function Profile() {
-  const { teacherID } = useRouter().query
-  const { loading, error, data } = useQuery(GET_OTHER_TEACHER_BY_ID, {
-    variables: { userID: teacherID },
+  const { uID } = useRouter().query
+  const { loading, error, data } = useQuery(GET_OTHER_USER_BY_ID, {
+    variables: { userID: uID },
   })
 
   return (
@@ -39,14 +37,14 @@ export default function Profile() {
         {data && (
           <>
             <div className={styles.header}>
-              <h1 style={heading.style}>{data.getTeacher.name}</h1>
+              <h1 style={heading.style}>{data.getUser.name}</h1>
             </div>
             <div className="informationTable">
               <table>
                 <tbody>
                   <tr>
                     <th style={heading.style}>Roles</th>
-                    <td style={content.style}>Teacher</td>
+                    <td style={content.style}>{data.getUser.__typename}</td>
                   </tr>
                   <tr>
                     <th style={heading.style}>Email</th>
@@ -63,6 +61,12 @@ export default function Profile() {
                 </tbody>
               </table>
             </div>
+            {data.getUser.__typename === "Teacher" && (
+              <div>
+                <h2 style={heading.style}>Courses</h2>
+                <TeacherCourseBoard ownCourses={data.getUser.ownCourses} />
+              </div>
+            )}
           </>
         )}
       </div>

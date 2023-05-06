@@ -1,4 +1,4 @@
-import { content, heading } from "@/styles/font"
+import { content, heading, logo } from "@/styles/font"
 
 import Logo from "@/components/widgets/Logo"
 import { htmlcodeConverter } from "@/helper/htmlCodeConverter"
@@ -15,7 +15,11 @@ const LessonContent = ({
   return (
     <div>
       <div className="lessonHeader">
-        <Logo content={splitTitle[0]} theme="dark" />
+        <Logo theme="dark">
+          <p style={logo.style} className="darkLogoContent">
+            {splitTitle[0]}
+          </p>
+        </Logo>
         <h1 style={heading.style}>{splitTitle[1]}</h1>
       </div>
       <div className="lessonContent">

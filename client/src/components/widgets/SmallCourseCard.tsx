@@ -1,11 +1,11 @@
 import { content, heading } from "@/styles/font"
 
 import Button from "./Button"
-import { GET_COURSE_BY_ID } from "@/graphql/course_query"
+import { GET_COURSE_BASIC } from "@/graphql/course_query"
 import ProgressPercentage from "./ProgressPercentage"
 import { useQuery } from "@apollo/client"
 
-const CourseCard = ({
+const SmallCourseCard = ({
   courseID,
   percentage,
   status,
@@ -14,9 +14,9 @@ const CourseCard = ({
   percentage?: number
   status?: string
 }) => {
-  const { error, data } = useQuery(GET_COURSE_BY_ID, {
+  const { error, data } = useQuery(GET_COURSE_BASIC, {
     variables: {
-      getCourseByIdId: courseID,
+      getFullCourseId: courseID,
     },
   })
   if (!data || error) {
@@ -25,8 +25,8 @@ const CourseCard = ({
   return (
     <div className="courseCard">
       <div className="name">
-        <h3 style={heading.style}>{data.getCourseById.name}</h3>
-        <p style={content.style}>By {data.getCourseById.teacher.name}</p>
+        <h3 style={heading.style}>{data.getFullCourse.name}</h3>
+        <p style={content.style}>By {data.getFullCourse.teacher.name}</p>
       </div>
       <div>
         {percentage && <ProgressPercentage value={Math.round(percentage)} />}
@@ -39,4 +39,4 @@ const CourseCard = ({
   )
 }
 
-export default CourseCard
+export default SmallCourseCard

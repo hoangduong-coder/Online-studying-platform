@@ -2,7 +2,7 @@ import { Box, Tab, Tabs } from "@mui/material"
 import { ReactNode, SyntheticEvent, useState } from "react"
 import { content, heading } from "@/styles/font"
 
-import CourseCard from "../widgets/CourseCard"
+import CourseCard from "../widgets/SmallCourseCard"
 
 const Panel = ({
   children,

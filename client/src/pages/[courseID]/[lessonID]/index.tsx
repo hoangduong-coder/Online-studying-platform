@@ -1,6 +1,6 @@
-import { GET_COURSE_BY_ID, GET_USER } from "@/graphql/course_query"
-
 import ContinueLink from "@/components/widgets/ContinueLink"
+import { GET_COURSE_FULL } from "@/graphql/course_query"
+import { GET_CURRENT_USER } from "@/graphql/user_query"
 import Head from "next/head"
 import { KeyboardArrowRight } from "@mui/icons-material"
 import LessonContent from "@/components/course/LessonContent"
@@ -12,10 +12,10 @@ import { useRouter } from "next/router"
 const Lesson = () => {
   const router = useRouter()
   const { courseID, lessonID, which } = router.query
-  const { loading, error, data } = useQuery(GET_COURSE_BY_ID, {
+  const { loading, error, data } = useQuery(GET_COURSE_FULL, {
     variables: { getCourseByIdId: courseID },
   })
-  const fetchUser = useQuery(GET_USER)
+  const fetchUser = useQuery(GET_CURRENT_USER)
 
   //@ts-ignore
   const lesson = data.getCourseById.lessons.find((obj) => obj.id === lessonID)

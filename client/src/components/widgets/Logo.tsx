@@ -1,19 +1,13 @@
 import { logo } from "@/styles/font"
 
 const Logo = ({
-  content,
+  children,
   theme,
 }: {
-  content: string
+  children: any
   theme: "light" | "dark"
 }) => {
-  return (
-    <div className={`${theme}Logo`}>
-      <p style={logo.style} className={`${theme}LogoContent`}>
-        {content}
-      </p>
-    </div>
-  )
+  return <div className={`${theme}Logo`}>{children}</div>
 }
 
 export default Logo

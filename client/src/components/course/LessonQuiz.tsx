@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { ANSWER_QUIZ, GET_OVERALL_RESULT } from "@/graphql/course_query"
-import { content, heading } from "@/styles/font"
+import { ANSWER_QUIZ, GET_QUIZ_RESULT } from "@/graphql/course_query"
+import { content, heading, logo } from "@/styles/font"
 import { useMutation, useQuery } from "@apollo/client"
 
 import CompletedQuiz from "./CompletedQuiz"
@@ -27,16 +27,10 @@ const LessonQuiz = ({
 }) => {
   const [number, ...rest] = title.split(" ")
 
-  const overallResult = useQuery(GET_OVERALL_RESULT, {
-    variables: { courseId: courseID },
+  const overallResult = useQuery(GET_QUIZ_RESULT, {
+    variables: { courseId: courseID, lessonId: lessonID },
     pollInterval: 2000,
   })
-
-  let completedLesson = overallResult.data
-    ? overallResult.data.getOverallResult.lessonCompleted.find(
-        (obj: any) => obj.lesson.id === lessonID
-      )
-    : null
 
   const [answerList, setAnswerList] = useState<QuizAnswer[]>([])
 
@@ -84,7 +78,11 @@ const LessonQuiz = ({
   return (
     <div>
       <div className="lessonHeader">
-        <Logo content={number} theme="dark" />
+        <Logo theme="dark">
+          <p style={logo.style} className="darkLogoContent">
+            {number}
+          </p>
+        </Logo>
         <h1 style={heading.style}>{rest.join(" ")}</h1>
       </div>
       <div className="reminder">
@@ -104,11 +102,11 @@ const LessonQuiz = ({
         {overallResult.error && (
           <p style={content.style}>Something went wrong</p>
         )}
-        {overallResult.data && completedLesson ? (
+        {overallResult.data ? (
           <CompletedQuiz
-            result={completedLesson.comments}
+            result={overallResult.data.getQuizResult.comments}
             quizzes={quizzes}
-            point={completedLesson.point}
+            point={overallResult.data.getQuizResult.point}
           />
         ) : (
           <UncompletedLessonQuiz
