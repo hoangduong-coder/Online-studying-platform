@@ -57,13 +57,8 @@ const start = async () => {
         const auth = req ? req.headers.authorization : null;
         if (auth && auth.startsWith("Bearer ")) {
           const decodedToken = jwt.verify(auth.substring(7), SECRET);
-          const currentUser = await StudentModel.findById(
-            //@ts-ignore
-            decodedToken.id
-          ).populate({
-            path: "studyProgress",
-            populate: ["course", { path: "lessonCompleted", populate: ["comments", "lesson"] }],
-          });
+          //@ts-ignore
+          const currentUser = await StudentModel.findById(decodedToken.id);
           if (!currentUser) {
             const teacher = await TeacherModel.findById(
               //@ts-ignore

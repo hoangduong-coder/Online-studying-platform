@@ -1,7 +1,6 @@
 import { Document, Schema, model } from "mongoose";
 
 import { Student } from "types/user";
-import StudyProgress from "./helper/study_progress";
 import mongooseUniqueValidator from "mongoose-unique-validator";
 
 export type StudentDocument = Student & Document;
@@ -20,8 +19,7 @@ const schema = new Schema({
   passwordHash: {
     type: String,
     required: true,
-  },
-  studyProgress: [StudyProgress.schema]
+  }
 });
 
 schema.plugin(mongooseUniqueValidator);

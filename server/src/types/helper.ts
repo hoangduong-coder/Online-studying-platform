@@ -8,7 +8,7 @@ export type Lesson = {
 
 export type Quiz = {
   question: string
-  choices: Array<string>
+  choices?: Array<string>
   answer: string
 };
 
@@ -19,14 +19,17 @@ export type Comment = {
 };
 
 export type StudyProgress = {
+  student: Types.ObjectId
   course: Types.ObjectId
+  startDate: Date
   status: "PASSED" | "FAILED" | "ONGOING"
-  finishedDate?: string
+  finishedDate?: Date
   overallPoint: number
   progressPercentage: number
   lessonCompleted: Array<{
     lesson: Types.ObjectId,
     point: number,
     comments: Array<Comment>
+
   }>
 };

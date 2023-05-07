@@ -6,7 +6,9 @@ const typeDefs = `#graphql
   }
 
   type StudyProgress {
+    student: Student
     course: Course!
+    startDate: String!
     status: Status!
     overallPoint: Float
     finishedDate: String
@@ -69,8 +71,8 @@ const typeDefs = `#graphql
     teacher: Teacher!
     description: String!
     lessons: [Lesson]
-    # calculate in hours
     estimateTime: Float
+    students: [StudyProgress!]
   }
 
   union User = Student | Teacher
@@ -86,7 +88,12 @@ const typeDefs = `#graphql
 
   type Mutation {
     enrollCourse(courseID: ID!): String
-    createUser(name: String!, email: String!, password: String!, organization: String): User
+    createUser(
+      name: String!, 
+      email: String!, 
+      password: String!, 
+      organization: String
+    ): User
     addCourse(
       name: String!, 
       category: [String!]!, 

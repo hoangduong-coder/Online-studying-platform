@@ -5,12 +5,16 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { CourseModel, StudentModel, TeacherModel } from "../../models";
+import {
+  CourseModel,
+  StudentModel,
+  StudyProgressModel,
+  TeacherModel,
+} from "../../models";
 
 import { GraphQLError } from "graphql";
 import LessonModel from "../../models/helper/lesson";
 import QuizModel from "../../models/helper/quiz";
-import { StudyProgress } from "types/helper";
 import bcrypt from "bcrypt";
 import config from "../config";
 import helper from "../helper";
@@ -32,30 +36,30 @@ export const Mutation = {
       });
     }
 
-    if (
-      contextValue.currentUser.studyProgress.find(
-        //@ts-ignore
-        (obj) => obj.course.toString() === course._id.toString()
-      )
-    ) {
+    const studyProgress = await StudyProgressModel.find({
+      course: course._id,
+      status: { $in: ["PASSED", "ONGOING"] },
+    });
+    if (studyProgress) {
       throw new GraphQLError("Student has already enrolled", {
         extensions: {
           code: "BAD_USER_INPUT",
         },
       });
     }
-    const newProgress: StudyProgress = {
+
+    const newProgress = new StudyProgressModel({
+      student: contextValue.currentUser._id,
       course: course._id,
       status: "ONGOING",
+      startDate: new Date(),
       progressPercentage: 0,
       lessonCompleted: [],
       overallPoint: 0,
-      finishedDate: ""
-    };
+      finishedDate: "",
+    });
     try {
-      contextValue.currentUser.studyProgress =
-        contextValue.currentUser.studyProgress.concat([newProgress]);
-      await contextValue.currentUser.save();
+      await newProgress.save();
     } catch (error) {
       throw new GraphQLError("Enrollment failed", {
         extensions: {
@@ -89,6 +93,7 @@ export const Mutation = {
       ...args,
       teacher: teacherData,
       lessons: [],
+      students: [],
     });
     try {
       await course.save();
@@ -190,7 +195,7 @@ export const Mutation = {
     args: {
       lessonID: string
       question: string
-      choices: string[]
+      choices?: string[]
       answer: string
     }
   ) => {
@@ -204,7 +209,7 @@ export const Mutation = {
       });
     const newQuestion = new QuizModel({
       question: args.question,
-      choices: args.choices,
+      choices: args.choices ? args.choices : [],
       answer: args.answer,
     });
     try {
@@ -234,50 +239,43 @@ export const Mutation = {
     contextValue: { currentUser?: any }
   ) => {
     const lesson = await LessonModel.findById(args.lessonID);
+
     //Check if user has enrolled the course
-    const course = contextValue.currentUser.studyProgress.find(
-      //@ts-ignore
-      (obj) => obj.course._id.toString() === args.courseID
-    );
-    if (!(contextValue.currentUser && lesson && course)) {
+    const progress = await StudyProgressModel.findOne({
+      "course._id": args.courseID,
+    });
+
+    if (!(contextValue.currentUser && lesson && progress)) {
       throw new GraphQLError("No result found", {
         extensions: { code: "BAD_USER_INPUT" },
       });
     }
-    const index = contextValue.currentUser.studyProgress.indexOf(course);
+
     const result = await helper.quizPoints({ data: args.answers });
 
-    const lessonCompletedStatus = {
-      lesson: lesson,
+    const returnedQuizResult = {
+      lesson: lesson._id,
       point: result.point,
       comments: result.commentArray,
     };
+
     try {
-      contextValue.currentUser.studyProgress[index].lessonCompleted =
-        contextValue.currentUser.studyProgress[index].lessonCompleted.concat(
-          lessonCompletedStatus
-        );
-      contextValue.currentUser.studyProgress[index].progressPercentage =
-        await helper.progressCalculation(
-          contextValue.currentUser.studyProgress[index].lessonCompleted,
-          args.courseID
-        );
-      if (
-        contextValue.currentUser.studyProgress[index].progressPercentage === 100
-      ) {
+      progress.lessonCompleted =
+        progress.lessonCompleted.concat(returnedQuizResult);
+      progress.progressPercentage = await helper.progressCalculation(
+        progress.lessonCompleted,
+        args.courseID
+      );
+      if (progress.progressPercentage === 100) {
         const overallPoint = helper.overallPointCalculation(
-          contextValue.currentUser.studyProgress[index].lessonCompleted
+          progress.lessonCompleted
         );
-        if (overallPoint >= 5) {
-          contextValue.currentUser.studyProgress[index].overallPoint = overallPoint;
-          contextValue.currentUser.studyProgress[index].status = "PASSED";
-        } else {
-          contextValue.currentUser.studyProgress[index].overallPoint = overallPoint;
-          contextValue.currentUser.studyProgress[index].status = "FAILED";
-        }
-        contextValue.currentUser.studyProgress[index].finishedDate = new Date();
+        progress.overallPoint = overallPoint;
+        progress.status = overallPoint >= 5 ? "PASSED" : "FAILED";
+
+        progress.finishedDate = new Date();
       }
-      await contextValue.currentUser.save();
+      await progress.save();
     } catch (error) {
       throw new GraphQLError("Error in updating study progress", {
         extensions: {
@@ -286,7 +284,7 @@ export const Mutation = {
         },
       });
     }
-    return lessonCompletedStatus;
+    return returnedQuizResult;
   },
   login: async (_root: any, args: { email: string; password: string }) => {
     const findTeacher = await TeacherModel.findOne({ email: args.email });

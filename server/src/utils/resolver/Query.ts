@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { CourseModel, StudentModel, TeacherModel } from "../../models";
+import { CourseModel, StudentModel, StudyProgressModel, TeacherModel } from "../../models";
 
 export const Query = {
   getUser: async (_root: any, _args: any, contextValue: { currentUser?: any }) => {
@@ -33,37 +33,31 @@ export const Query = {
         path: "lessons",
         populate: "quiz",
       },
+      "students",
     ]);
   },
-  getQuizResult: (
+  getQuizResult: async (
     _root: any,
     args: { courseID: string; lessonID: string },
     contextValue: { currentUser?: any }
   ) => {
     if (contextValue.currentUser) {
-      const progress = contextValue.currentUser.studyProgress.find(
-        //@ts-ignore
-        (obj) => obj.course._id.toString() === args.courseID
-      );
+      const progress = await StudyProgressModel.findOne({ "course._id": args.courseID });
       return progress
-        ?
-        progress.lessonCompleted.find(
+        ? progress.lessonCompleted.find(
           //@ts-ignore
           (obj) => obj.lesson._id.toString() === args.lessonID
         )
         : null;
     }
   },
-  getOverallResult: (
+  getOverallResult: async (
     _root: any,
     args: { courseID: string },
     contextValue: { currentUser?: any }
   ) => {
     if (contextValue.currentUser) {
-      return contextValue.currentUser.studyProgress.find(
-        //@ts-ignore
-        (obj) => obj.course._id.toString() === args.courseID
-      );
+      return await StudyProgressModel.findOne({ "course._id": args.courseID });
     }
-  },
+  }
 };
