@@ -32,8 +32,7 @@ export const Query = {
       {
         path: "lessons",
         populate: "quiz",
-      },
-      "students",
+      }
     ]);
   },
   getQuizResult: async (

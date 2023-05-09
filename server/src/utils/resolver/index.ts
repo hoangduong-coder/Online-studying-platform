@@ -12,10 +12,10 @@ const resolvers = {
       if (user.organization) {
         return "Teacher";
       }
-      if (user.studyProgress) {
+      else if (user) {
         return "Student";
       }
-      return null;
+      else return null;
     },
   },
   Teacher: {

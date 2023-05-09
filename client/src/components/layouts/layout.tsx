@@ -15,7 +15,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     client.resetStore()
   }
 
-  if (!token) {
+  if (!token && typeof window !== "undefined") {
     if (newUser) {
       return (
         <main className={styles.main}>

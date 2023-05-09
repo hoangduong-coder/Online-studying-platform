@@ -3,14 +3,13 @@ import { content, heading } from "@/styles/font"
 
 import LessonList from "./LessonList"
 import Link from "next/link"
+import StudentList from "./StudentList"
 import { useQuery } from "@apollo/client"
 
 const LessonPageforTeacher = ({ courseID, teacherData }: any) => {
   const { loading, error, data } = useQuery(
-    teacherData.ownCourses.find(
-      //@ts-ignore
-      (obj) => obj.id === courseID
-    )
+    //@ts-ignore
+    teacherData.ownCourses.find((obj) => obj.id === courseID)
       ? GET_COURSE_FULL
       : GET_COURSE_BASIC,
     {
@@ -76,6 +75,7 @@ const LessonPageforTeacher = ({ courseID, teacherData }: any) => {
               </>
             ) : (
               <>
+                <StudentList list={data.getFullCourse.students} />
                 <h2 style={heading.style}>Content</h2>
                 <LessonList
                   id={courseID}

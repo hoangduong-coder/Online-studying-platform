@@ -1,15 +1,13 @@
-import { StudyProgress } from "./helper";
 
-export interface User {
+export interface Student {
   name: string,
   email: string,
   passwordHash: string
 }
 
-export interface Teacher extends User {
+export interface Teacher {
+  name: string,
+  email: string,
+  passwordHash: string
   organization: string,
-}
-
-export interface Student extends User {
-  studyProgress: Array<StudyProgress>
 }

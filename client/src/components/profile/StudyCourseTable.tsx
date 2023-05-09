@@ -2,7 +2,7 @@ import { Box, Tab, Tabs } from "@mui/material"
 import { ReactNode, SyntheticEvent, useState } from "react"
 import { content, heading } from "@/styles/font"
 
-import CourseCard from "../widgets/SmallCourseCard"
+import SmallCourseCard from "../widgets/SmallCourseCard"
 
 const Panel = ({
   children,
@@ -58,7 +58,7 @@ const StudyCourseTable = ({ progress }: { progress: any[] }) => {
         <Panel value={value} index={0}>
           {courses.length > 0 ? (
             courses.map((obj) => (
-              <CourseCard
+              <SmallCourseCard
                 key={obj.course.id}
                 courseID={obj.course.id}
                 percentage={obj.progressPercentage}
@@ -71,7 +71,7 @@ const StudyCourseTable = ({ progress }: { progress: any[] }) => {
         <Panel value={value} index={1}>
           {courses.length > 0 ? (
             courses.map((obj) => (
-              <CourseCard
+              <SmallCourseCard
                 key={obj.course.id}
                 courseID={obj.course.id}
                 status={obj.status}

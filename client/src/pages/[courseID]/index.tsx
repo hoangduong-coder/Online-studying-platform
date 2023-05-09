@@ -12,7 +12,7 @@ import { useRouter } from "next/router"
 export default function Course() {
   const router = useRouter()
   const { courseID } = router.query
-  const { data } = useQuery(GET_CURRENT_USER)
+  const { loading, error, data } = useQuery(GET_CURRENT_USER)
   const [enrollCourse] = useMutation(ENROLL_COURSE, {
     refetchQueries: [
       { query: GET_COURSE_FULL, variables: { getFullCourseId: courseID } },
@@ -34,9 +34,14 @@ export default function Course() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div>
-        {!data.getUser && (
+        {loading && (
           <div>
-            <p style={content.style}>{`There is an error`}</p>
+            <p style={content.style}>Loading, please wait</p>
+          </div>
+        )}
+        {(error || !data || !data.getUser) && (
+          <div>
+            <p style={content.style}>There is an error</p>
           </div>
         )}
         {data.getUser.__typename === "Teacher" && (

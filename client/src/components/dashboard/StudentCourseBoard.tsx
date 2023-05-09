@@ -1,6 +1,6 @@
 import { Box } from "@mui/material"
 import ContinueLink from "../widgets/ContinueLink"
-import CourseCard from "../widgets/SmallCourseCard"
+import SmallCourseCard from "../widgets/SmallCourseCard"
 import { heading } from "@/styles/font"
 
 const StudentCourseBoard = ({ studyProgress }: { studyProgress: any[] }) => {
@@ -11,7 +11,7 @@ const StudentCourseBoard = ({ studyProgress }: { studyProgress: any[] }) => {
         {studyProgress.map(
           (obj: any) =>
             obj.status === "ONGOING" && (
-              <CourseCard
+              <SmallCourseCard
                 key={obj.course.id}
                 courseID={obj.course.id}
                 percentage={obj.progressPercentage}

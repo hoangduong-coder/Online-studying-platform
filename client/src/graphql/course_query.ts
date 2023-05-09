@@ -40,6 +40,16 @@ export const GET_COURSE_FULL = gql`
           choices
         }
       }
+      students {
+        student {
+          name
+          id
+        }
+        startDate
+        finishedDate
+        status
+        progressPercentage
+      }
     }
   }
 `
