@@ -3,9 +3,9 @@ import { useMutation, useQuery } from "@apollo/client"
 
 import { GET_CURRENT_USER } from "@/graphql/user_query"
 import Head from "next/head"
-import LessonPageforEnroll from "@/components/course/LessonPageforEnroll"
-import LessonPageforTeacher from "@/components/course/LessonPageforTeacher"
-import LessonPageforUnenroll from "@/components/course/LessonPageforUnenroll"
+import LessonPageforEnroll from "@/components/course/lesson_page/LessonPageforEnroll"
+import LessonPageforTeacher from "@/components/course/lesson_page/LessonPageforTeacher"
+import LessonPageforUnenroll from "@/components/course/lesson_page/LessonPageforUnenroll"
 import { content } from "@/styles/font"
 import { useRouter } from "next/router"
 

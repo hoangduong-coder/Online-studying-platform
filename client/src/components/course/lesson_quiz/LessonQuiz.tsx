@@ -5,7 +5,9 @@ import { content, heading, logo } from "@/styles/font"
 import { useMutation, useQuery } from "@apollo/client"
 
 import CompletedQuiz from "./CompletedQuiz"
+import { GET_CURRENT_USER } from "@/graphql/user_query"
 import Logo from "@/components/widgets/Logo"
+import TeacherQuiz from "./TeacherQuiz"
 import UncompletedLessonQuiz from "./UncompletedLessonQuiz"
 import { useState } from "react"
 
@@ -31,6 +33,7 @@ const LessonQuiz = ({
     variables: { courseId: courseID, lessonId: lessonID },
     pollInterval: 2000,
   })
+  const user = useQuery(GET_CURRENT_USER, { pollInterval: 3000 })
 
   const [answerList, setAnswerList] = useState<QuizAnswer[]>([])
 
@@ -96,13 +99,24 @@ const LessonQuiz = ({
         </h3>
       </div>
       <div className="lessonContent">
-        {overallResult.loading && (
+        {(overallResult.loading ||
+          user.loading ||
+          (user.data && !user.data.getUser)) && (
           <p style={content.style}>The server is loading ...</p>
         )}
         {overallResult.error && (
-          <p style={content.style}>Something went wrong</p>
+          <p style={content.style}>
+            Something went wrong: ${overallResult.error.message}
+          </p>
         )}
-        {overallResult.data ? (
+        {user.error && (
+          <p style={content.style}>
+            Something went wrong about getting User: ${user.error.message}
+          </p>
+        )}
+        {user.data.getUser.__typename === "Teacher" ? (
+          <TeacherQuiz quizzes={quizzes} />
+        ) : overallResult.data ? (
           <CompletedQuiz
             result={overallResult.data.getQuizResult.comments}
             quizzes={quizzes}

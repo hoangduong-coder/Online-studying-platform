@@ -11,7 +11,7 @@ import styles from "@/styles/Home.module.scss"
 import { useQuery } from "@apollo/client"
 
 export default function Home() {
-  const user = useQuery(GET_CURRENT_USER)
+  const user = useQuery(GET_CURRENT_USER, { pollInterval: 3000 })
   return (
     <>
       <Head>
@@ -20,14 +20,9 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {user.loading && (
+      {(user.loading || (user.data && !user.data.getUser)) && (
         <div>
           <p style={content.style}>Loading, please wait ...</p>
-        </div>
-      )}
-      {user.data && !user.data.getUser && (
-        <div>
-          <p style={content.style}>Cannot load the page! Please try again!</p>
         </div>
       )}
       {user.error && (

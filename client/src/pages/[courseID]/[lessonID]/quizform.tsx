@@ -84,7 +84,7 @@ const NewQuizForm = () => {
           </div>
           <div>
             <span>
-              <h3 style={heading.style}>Category</h3>
+              <h3 style={heading.style}>Choices</h3>
             </span>
             <div className="choiceBody">
               <textarea

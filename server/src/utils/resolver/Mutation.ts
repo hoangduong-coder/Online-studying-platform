@@ -139,7 +139,6 @@ export const Mutation = {
         name,
         email,
         passwordHash,
-        studyProgress: [],
       })
       : new TeacherModel({
         name,
@@ -305,4 +304,7 @@ export const Mutation = {
     const token = jwt.sign({ id: user._id, email: user.email }, config.SECRET);
     return `Bearer ${token}`;
   },
+  // deleteQuiz: async ({ lessonID, quizID }: { lessonID: any, quizID: any }) => {
+
+  // }
 };

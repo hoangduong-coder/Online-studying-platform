@@ -1,7 +1,7 @@
 import { content, heading } from "@/styles/font"
 
 import { GET_COURSE_FULL } from "@/graphql/course_query"
-import LessonList from "./LessonList"
+import LessonList from "../LessonList"
 import Link from "next/link"
 import { useQuery } from "@apollo/client"
 

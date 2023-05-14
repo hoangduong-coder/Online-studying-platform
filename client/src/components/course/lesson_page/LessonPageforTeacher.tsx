@@ -1,16 +1,23 @@
+import { GET_COURSE_BASIC, GET_COURSE_FULL } from "@/graphql/course_query"
 import { content, heading } from "@/styles/font"
 
-import { GET_COURSE_BASIC } from "@/graphql/course_query"
+import LessonList from "../LessonList"
 import Link from "next/link"
-import SubmitButton from "../widgets/SubmitButton"
+import StudentList from "../StudentList"
 import { useQuery } from "@apollo/client"
 
-const LessonPageforUnenroll = ({ courseID, enrollCourse }: any) => {
-  const { loading, error, data } = useQuery(GET_COURSE_BASIC, {
-    variables: { getFullCourseId: courseID },
-  })
+const LessonPageforTeacher = ({ courseID, teacherData }: any) => {
+  const { loading, error, data } = useQuery(
+    //@ts-ignore
+    teacherData.ownCourses.find((obj) => obj.id === courseID)
+      ? GET_COURSE_FULL
+      : GET_COURSE_BASIC,
+    {
+      variables: { getFullCourseId: courseID },
+    }
+  )
   return (
-    <div>
+    <div className="course">
       {loading && (
         <div>
           <p style={content.style}>Loading, please wait ...</p>
@@ -22,7 +29,7 @@ const LessonPageforUnenroll = ({ courseID, enrollCourse }: any) => {
         </div>
       )}
       {data && (
-        <div className="course">
+        <>
           <div className="header">
             <h1 style={heading.style}>{data.getFullCourse.name}</h1>
           </div>
@@ -61,11 +68,26 @@ const LessonPageforUnenroll = ({ courseID, enrollCourse }: any) => {
           <h2 style={heading.style}>Description</h2>
           <p style={content.style}>{data.getFullCourse.description}</p>
           <div className="lessonList">
-            <SubmitButton title="Enroll" onClick={enrollCourse} />
+            {!data.getFullCourse.lessons ? (
+              <>
+                <h2 style={heading.style}>Content</h2>
+                <p style={content.style}>You cannot view this course content</p>
+              </>
+            ) : (
+              <>
+                <StudentList list={data.getFullCourse.students} />
+                <h2 style={heading.style}>Content</h2>
+                <LessonList
+                  id={courseID}
+                  list={data.getFullCourse.lessons}
+                  role="TEACHER"
+                />
+              </>
+            )}
           </div>
-        </div>
+        </>
       )}
     </div>
   )
 }
-export default LessonPageforUnenroll
+export default LessonPageforTeacher

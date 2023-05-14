@@ -113,3 +113,8 @@ const typeDefs = `#graphql
   }
 `;
 export default typeDefs;
+
+//  deleteQuiz(
+// lessonID: ID!,
+//   quizID: ID!
+//     ): String
