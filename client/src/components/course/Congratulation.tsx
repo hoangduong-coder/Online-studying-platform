@@ -25,7 +25,7 @@ const CongratulationCard = ({ courseID, teacher }: any) => {
           <div className="footer">
             <div className="signature">
               <p style={content.style}>{moment().format("DD.MM.YY")}</p>
-              <h3 style={heading.style}>{teacher}</h3>
+              <h3 style={heading.style}>{teacher.name}</h3>
             </div>
           </div>
         </div>

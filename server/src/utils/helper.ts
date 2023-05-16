@@ -4,49 +4,48 @@
 
 import { Comment } from 'types/helper';
 import { CourseModel } from '../../src/models';
-import { GraphQLError } from 'graphql';
 import LessonModel from "../../src/models/helper/lesson";
-import QuizModel from "../../src/models/helper/quiz";
 import { Types } from 'mongoose';
 
 interface StudentAnswer {
   quizID: string; answer: string
 }
 
-const quizPoints = async (params: {
-  data: Array<StudentAnswer>
+const quizPoints = (params: {
+  data: Array<StudentAnswer>, lesson: any
 }) => {
   let finalPoint = 0;
   let comments: { quizID: string, answer: string, comment: string }[] = [];
 
-  for (const obj of params.data) {
-    const quiz = await QuizModel.findById(obj.quizID);
-    if (!quiz) {
-      throw new GraphQLError("No quiz found", {
-        extensions: {
-          code: "BAD_USER_INPUT",
-          invalidArgs: obj.quizID,
-        }
-      });
-    }
-    if (obj.answer === quiz.answer) {
-      finalPoint += 1;
-      comments = comments.concat({
-        quizID: quiz._id.toString(),
-        answer: obj.answer,
-        comment: `Your answer is correct!`
-      });
+  for (const obj of params.lesson.quiz) {
+    const quiz = params.data.find(ans => ans.quizID === obj._id.toString());
+    if (quiz) {
+      if (obj.answer === quiz.answer) {
+        finalPoint += 1;
+        comments = comments.concat({
+          quizID: obj._id.toString(),
+          answer: obj.answer,
+          comment: `Your answer is correct!`
+        });
+      }
+      else {
+        comments = comments.concat({
+          quizID: obj._id.toString(),
+          answer: obj.answer,
+          comment: `Your answer is wrong, the correct one is ${obj.answer}`
+        });
+      }
     } else {
       comments = comments.concat({
-        quizID: quiz._id.toString(),
-        answer: obj.answer,
-        comment: `Your answer is wrong, the correct one is ${quiz.answer}`
+        quizID: obj._id.toString(),
+        answer: "",
+        comment: `You have not answer this question!, the correct one is ${obj.answer}`
       });
     }
   }
 
   return {
-    point: finalPoint * 10 / params.data.length, commentArray: comments
+    point: finalPoint * 10 / params.lesson.quiz.length, commentArray: comments
   };
 };
 

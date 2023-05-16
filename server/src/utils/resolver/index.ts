@@ -20,23 +20,23 @@ const resolvers = {
   },
   Teacher: {
     ownCourses: async (root: any) => {
-      return await CourseModel.find({ teacher: root.id }).populate("teacher");
+      return await CourseModel.find({ teacher: root._id }).populate("teacher");
     },
   },
   Student: {
     studyProgress: async (root: any) => {
-      return await StudyProgressModel.find({ studentID: root.id }).populate({
+      return await StudyProgressModel.find({ student: root._id }).populate(["course", {
         path: "lessonCompleted",
         populate: ["comments", "lesson"],
-      });
+      }]);
     },
   },
   Course: {
     students: async (root: any) => {
-      return await StudyProgressModel.find({ courseID: root.id }).populate({
+      return await StudyProgressModel.find({ course: root._id }).populate(["student", {
         path: "lessonCompleted",
         populate: ["comments", "lesson"],
-      });
+      }]);
     },
   },
   Query,

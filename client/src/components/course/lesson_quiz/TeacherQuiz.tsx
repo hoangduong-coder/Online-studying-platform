@@ -9,20 +9,21 @@ const TeacherQuiz = ({ quizzes }: { quizzes: any[] }) => {
         <div key={obj.id}>
           <div className="quiz">
             <h3 style={heading.style}>{obj.question}</h3>
-            {obj.choices.map((choice: any) => (
-              <div key={choice}>
-                <input
-                  type="radio"
-                  id="choices"
-                  value={choice}
-                  name="choice"
-                  disabled
-                />
-                <label htmlFor={choice} style={content.style}>
-                  {htmlcodeConverter(choice)}
-                </label>
-              </div>
-            ))}
+            {obj.choices.length > 0 &&
+              obj.choices.map((choice: any) => (
+                <div key={choice}>
+                  <input
+                    type="radio"
+                    id="choices"
+                    value={choice}
+                    name="choice"
+                    disabled
+                  />
+                  <label htmlFor={choice} style={content.style}>
+                    {htmlcodeConverter(choice)}
+                  </label>
+                </div>
+              ))}
           </div>
           <div className="comment">
             <h3 style={heading.style}>

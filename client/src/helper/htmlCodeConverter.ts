@@ -1,5 +1,5 @@
 export const htmlcodeConverter = (str: string) => {
-  return str.replace(/&#[0-9]+;/i,
+  return str.replaceAll(/&#[0-9]+;/ig,
     (match) => {
       const newString = new DOMParser().parseFromString(match, "text/html");
       if (newString.documentElement.textContent)

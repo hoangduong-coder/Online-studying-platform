@@ -1,20 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { ANSWER_QUIZ, GET_QUIZ_RESULT } from "@/graphql/course_query"
 import { content, heading, logo } from "@/styles/font"
-import { useMutation, useQuery } from "@apollo/client"
 
-import CompletedQuiz from "./CompletedQuiz"
 import { GET_CURRENT_USER } from "@/graphql/user_query"
 import Logo from "@/components/widgets/Logo"
+import StudentQuiz from "./StudentQuiz"
 import TeacherQuiz from "./TeacherQuiz"
-import UncompletedLessonQuiz from "./UncompletedLessonQuiz"
-import { useState } from "react"
-
-interface QuizAnswer {
-  quizID: string
-  answer: string
-}
+import { useQuery } from "@apollo/client"
 
 const LessonQuiz = ({
   title,
@@ -29,55 +21,7 @@ const LessonQuiz = ({
 }) => {
   const [number, ...rest] = title.split(" ")
 
-  const overallResult = useQuery(GET_QUIZ_RESULT, {
-    variables: { courseId: courseID, lessonId: lessonID },
-    pollInterval: 2000,
-  })
-  const user = useQuery(GET_CURRENT_USER, { pollInterval: 3000 })
-
-  const [answerList, setAnswerList] = useState<QuizAnswer[]>([])
-
-  const [answerQuiz] = useMutation(ANSWER_QUIZ, {
-    onError: (error) => alert(`Something went wrong ${error.message}`),
-  })
-
-  const onChangeAnswer = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const haveQuizId = answerList.find((obj) => obj.quizID === e.target.name)
-    if (!haveQuizId) {
-      setAnswerList(
-        answerList.concat({
-          quizID: e.target.name,
-          answer: e.target.value,
-        })
-      )
-    } else {
-      setAnswerList(
-        answerList.map((obj) => {
-          return obj.quizID === e.target.name
-            ? { quizID: e.target.name, answer: e.target.value }
-            : obj
-        })
-      )
-    }
-    console.log(answerList)
-  }
-
-  const onSubmit = (e: any) => {
-    e.preventDefault()
-    for (const obj of quizzes) {
-      if (!answerList.find((ans) => ans.quizID === obj.id)) {
-        setAnswerList(answerList.concat({ quizID: obj.id, answer: "" }))
-      }
-    }
-    answerQuiz({
-      variables: {
-        courseId: courseID,
-        lessonId: lessonID,
-        answers: answerList,
-      },
-    })
-  }
-
+  const user = useQuery(GET_CURRENT_USER, { pollInterval: 2000 })
   return (
     <div>
       <div className="lessonHeader">
@@ -99,35 +43,26 @@ const LessonQuiz = ({
         </h3>
       </div>
       <div className="lessonContent">
-        {(overallResult.loading ||
-          user.loading ||
-          (user.data && !user.data.getUser)) && (
-          <p style={content.style}>The server is loading ...</p>
-        )}
-        {overallResult.error && (
-          <p style={content.style}>
-            Something went wrong: ${overallResult.error.message}
-          </p>
-        )}
+        {user.loading && <p style={content.style}>The server is loading ...</p>}
         {user.error && (
           <p style={content.style}>
             Something went wrong about getting User: ${user.error.message}
           </p>
         )}
-        {user.data.getUser.__typename === "Teacher" ? (
-          <TeacherQuiz quizzes={quizzes} />
-        ) : overallResult.data ? (
-          <CompletedQuiz
-            result={overallResult.data.getQuizResult.comments}
-            quizzes={quizzes}
-            point={overallResult.data.getQuizResult.point}
-          />
+        {user.data && user.data.getUser ? (
+          <div>
+            {user.data.getUser.__typename === "Teacher" ? (
+              <TeacherQuiz quizzes={quizzes} />
+            ) : (
+              <StudentQuiz
+                quizzes={quizzes}
+                courseID={courseID}
+                lessonID={lessonID}
+              />
+            )}
+          </div>
         ) : (
-          <UncompletedLessonQuiz
-            quizzes={quizzes}
-            onChange={onChangeAnswer}
-            onSubmit={onSubmit}
-          />
+          <p style={content.style}>The server is loading ...</p>
         )}
       </div>
     </div>

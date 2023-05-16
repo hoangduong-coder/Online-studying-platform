@@ -21,7 +21,7 @@ export type Comment = {
 export type StudyProgress = {
   student: Types.ObjectId
   course: Types.ObjectId
-  startDate: Date
+  startDate: string
   status: "PASSED" | "FAILED" | "ONGOING"
   finishedDate?: Date
   overallPoint: number

@@ -1,3 +1,5 @@
+import { CourseModel, StudentModel, StudyProgressModel, TeacherModel } from "../../models";
+
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -5,7 +7,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { CourseModel, StudentModel, StudyProgressModel, TeacherModel } from "../../models";
+
 
 export const Query = {
   getUser: async (_root: any, _args: any, contextValue: { currentUser?: any }) => {
@@ -41,7 +43,9 @@ export const Query = {
     contextValue: { currentUser?: any }
   ) => {
     if (contextValue.currentUser) {
-      const progress = await StudyProgressModel.findOne({ "course._id": args.courseID });
+      const progress = await StudyProgressModel.findOne({ course: args.courseID }).populate({
+        path: "lessonCompleted", populate: "lesson"
+      });
       return progress
         ? progress.lessonCompleted.find(
           //@ts-ignore
@@ -56,7 +60,7 @@ export const Query = {
     contextValue: { currentUser?: any }
   ) => {
     if (contextValue.currentUser) {
-      return await StudyProgressModel.findOne({ "course._id": args.courseID });
+      return await StudyProgressModel.findOne({ course: args.courseID });
     }
   }
 };

@@ -36,7 +36,8 @@ export const Mutation = {
       });
     }
 
-    const studyProgress = await StudyProgressModel.find({
+    const studyProgress = await StudyProgressModel.findOne({
+      student: contextValue.currentUser._id,
       course: course._id,
       status: { $in: ["PASSED", "ONGOING"] },
     });
@@ -56,7 +57,6 @@ export const Mutation = {
       progressPercentage: 0,
       lessonCompleted: [],
       overallPoint: 0,
-      finishedDate: "",
     });
     try {
       await newProgress.save();
@@ -237,11 +237,11 @@ export const Mutation = {
     },
     contextValue: { currentUser?: any }
   ) => {
-    const lesson = await LessonModel.findById(args.lessonID);
+    const lesson = await LessonModel.findById(args.lessonID).populate("quiz");
 
     //Check if user has enrolled the course
     const progress = await StudyProgressModel.findOne({
-      "course._id": args.courseID,
+      course: args.courseID,
     });
 
     if (!(contextValue.currentUser && lesson && progress)) {
@@ -250,7 +250,7 @@ export const Mutation = {
       });
     }
 
-    const result = await helper.quizPoints({ data: args.answers });
+    const result = helper.quizPoints({ data: args.answers, lesson: lesson });
 
     const returnedQuizResult = {
       lesson: lesson._id,

@@ -38,6 +38,7 @@ export const GET_COURSE_FULL = gql`
           id
           question
           choices
+          answer
         }
       }
       students {
@@ -87,9 +88,6 @@ export const ANSWER_QUIZ = gql`
         comment
         quizID
       }
-      lesson {
-        id
-      }
       point
     }
   }
@@ -111,17 +109,6 @@ export const GET_QUIZ_RESULT = gql`
 export const GET_OVERALL_RESULT = gql`
   query GetOverallResult($courseId: ID!) {
     getOverallResult(courseID: $courseId) {
-      lessonCompleted {
-        comments {
-          answer
-          comment
-          quizID
-        }
-        lesson {
-          id
-        }
-        point
-      }
       status
       progressPercentage
       overallPoint

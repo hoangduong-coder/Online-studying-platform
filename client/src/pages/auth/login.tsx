@@ -26,7 +26,6 @@ const LoginPage = ({
   })
 
   const submit = (event: any) => {
-    console.log(localStorage)
     event.preventDefault()
     loginMutation({ variables: { email, password } })
     setPassword("")

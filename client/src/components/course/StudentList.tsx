@@ -23,16 +23,13 @@ const Panel = ({
 
 const StudentList = ({ list }: { list: any[] }) => {
   const [value, setValue] = useState<number>(0)
-  const [studentList, setStudentList] = useState<any[]>([...list])
-  const tabs = ["Ongoing", "New", "Finished"]
+  const [studentList, setStudentList] = useState<any[]>([
+    ...list.filter((obj) => obj.status == "ONGOING"),
+  ])
+  const tabs = ["Ongoing", "Finished"]
   const handleChange = (event: SyntheticEvent, newValue: number) => {
     setValue(newValue)
     if (newValue === 1) {
-      const today = moment()
-      setStudentList(
-        list.filter((obj) => today.diff(moment(obj.startDate), "days") === 1)
-      )
-    } else if (newValue === 2) {
       setStudentList(list.filter((obj) => obj.status !== "ONGOING"))
     } else {
       setStudentList(list.filter((obj) => obj.status == "ONGOING"))
@@ -74,21 +71,8 @@ const StudentList = ({ list }: { list: any[] }) => {
           )}
         </Panel>
         <Panel value={value} index={1}>
-          {list.length > 0 ? (
-            list.map((obj) => (
-              <StudentCard
-                key={obj.student.id}
-                name={obj.student.name}
-                percentage={obj.progressPercentage}
-              />
-            ))
-          ) : (
-            <p style={content.style}>No list found!</p>
-          )}
-        </Panel>
-        <Panel value={value} index={2}>
-          {list.length > 0 ? (
-            list.map((obj) => (
+          {studentList.length > 0 ? (
+            studentList.map((obj) => (
               <StudentCard
                 key={obj.student.id}
                 name={obj.student.name}

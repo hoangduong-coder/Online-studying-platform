@@ -1,5 +1,6 @@
 import { content, heading } from "@/styles/font"
 
+import CongratulationCard from "../Congratulation"
 import { GET_COURSE_FULL } from "@/graphql/course_query"
 import LessonList from "../LessonList"
 import Link from "next/link"
@@ -68,6 +69,10 @@ const LessonPageforEnroll = ({ courseID }: any) => {
               role="STUDENT"
             />
           </div>
+          <CongratulationCard
+            courseID={courseID}
+            teacher={data.getFullCourse.teacher}
+          />
         </div>
       )}
     </div>

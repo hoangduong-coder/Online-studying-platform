@@ -1,10 +1,11 @@
 import { ADD_QUIZ, GET_COURSE_FULL } from "@/graphql/course_query"
+import { IconButton, MenuItem, TextField } from "@mui/material"
 import { content, heading } from "@/styles/font"
 
 import ContinueLink from "@/components/widgets/ContinueLink"
+import { Delete } from "@mui/icons-material"
 import Head from "next/head"
 import SubmitButton from "@/components/widgets/SubmitButton"
-import { TextField } from "@mui/material"
 import { title } from "process"
 import { useMutation } from "@apollo/client"
 import { useRouter } from "next/router"
@@ -46,14 +47,28 @@ const NewQuizForm = () => {
 
   const submit = (e: any) => {
     e.preventDefault()
-    addQuiz({
-      variables: {
-        lessonId: lessonID,
-        question,
-        choices,
-        answer,
-      },
-    })
+    if (choices.length > 0) {
+      addQuiz({
+        variables: {
+          lessonId: lessonID,
+          question,
+          choices,
+          answer,
+        },
+      })
+    } else {
+      addQuiz({
+        variables: {
+          lessonId: lessonID,
+          question,
+          answer,
+        },
+      })
+    }
+  }
+
+  const deleteChoice = (removeChoice: string) => {
+    setChoices([...choices.filter((choice) => choice !== removeChoice)])
   }
   return (
     <>
@@ -72,14 +87,12 @@ const NewQuizForm = () => {
             <span>
               <h3 style={heading.style}>Question</h3>
             </span>
-            <TextField
+            <textarea
+              className="choiceBox"
               style={content.style}
               value={question}
               required
-              color="warning"
               onChange={({ target }) => setQuestion(target.value)}
-              fullWidth
-              size="small"
             />
           </div>
           <div>
@@ -97,24 +110,55 @@ const NewQuizForm = () => {
               />
               <SubmitButton title="Add" onClick={addChoices} />
             </div>
-            <div className="choiceList">
-              <h3 style={heading.style}>List of question&apos;s choices: </h3>
-              <p style={content.style}>{choices.join(", ")}</p>
-            </div>
+
+            {choices.length > 0 && (
+              <div className="choiceList">
+                <h3 style={heading.style}>List of question&apos;s choices: </h3>
+                {choices.map((c) => (
+                  <p key={c} style={content.style}>
+                    {c}
+                    <span>
+                      <IconButton size="small" onClick={() => deleteChoice(c)}>
+                        <Delete fontSize="inherit" />
+                      </IconButton>
+                    </span>
+                  </p>
+                ))}
+              </div>
+            )}
           </div>
+
           <div>
             <span>
               <h3 style={heading.style}>Correct answer</h3>
             </span>
-            <textarea
-              className="answerArea"
-              value={answer}
-              style={content.style}
-              required
-              onChange={({ target }) => {
-                setAnswer(target.value)
-              }}
-            />
+            {choices.length > 0 ? (
+              <TextField
+                select
+                required
+                value={answer}
+                color="warning"
+                onChange={({ target }) => setAnswer(target.value)}
+                fullWidth
+                size="small"
+              >
+                {choices.map((correctChoice) => (
+                  <MenuItem key={correctChoice} value={correctChoice}>
+                    {correctChoice}
+                  </MenuItem>
+                ))}
+              </TextField>
+            ) : (
+              <textarea
+                className="answerArea"
+                value={answer}
+                style={content.style}
+                required
+                onChange={({ target }) => {
+                  setAnswer(target.value)
+                }}
+              />
+            )}
           </div>
           {notification.message.length === 0 ? (
             <SubmitButton title="Create" />
