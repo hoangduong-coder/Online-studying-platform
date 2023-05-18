@@ -1,15 +1,16 @@
 import { ANSWER_QUIZ, GET_QUIZ_RESULT } from "@/graphql/course_query"
-import { useEffect, useState } from "react"
 import { useMutation, useQuery } from "@apollo/client"
 
 import CompletedQuiz from "./CompletedQuiz"
 import UncompletedLessonQuiz from "./UncompletedLessonQuiz"
 import { content } from "@/styles/font"
+import { useState } from "react"
 
 interface QuizAnswer {
   quizID: string
   answer: string
 }
+
 const StudentQuiz = ({
   quizzes,
   courseID,
@@ -28,7 +29,6 @@ const StudentQuiz = ({
   const [answerQuiz] = useMutation(ANSWER_QUIZ, {
     onError: (error) => alert(`Something went wrong ${error.message}`),
   })
-
   const onChangeAnswer = (e: React.ChangeEvent<HTMLInputElement>) => {
     const haveQuizId = answerList.find((obj) => obj.quizID === e.target.name)
     if (!haveQuizId) {
@@ -47,9 +47,7 @@ const StudentQuiz = ({
         })
       )
     }
-    console.log(answerList)
   }
-
   const onSubmit = (e: any) => {
     e.preventDefault()
     answerQuiz({
@@ -60,7 +58,6 @@ const StudentQuiz = ({
       },
     })
   }
-
   return (
     <>
       {overallResult.loading && (

@@ -43,7 +43,11 @@ export const Query = {
     contextValue: { currentUser?: any }
   ) => {
     if (contextValue.currentUser) {
-      const progress = await StudyProgressModel.findOne({ course: args.courseID }).populate({
+      const course = await CourseModel.findOne({ _id: args.courseID });
+      const progress = await StudyProgressModel.findOne({
+        student: contextValue.currentUser._id,
+        course: course?._id
+      }).populate({
         path: "lessonCompleted", populate: "lesson"
       });
       return progress

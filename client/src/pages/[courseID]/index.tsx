@@ -44,29 +44,35 @@ export default function Course() {
             <p style={content.style}>There is an error</p>
           </div>
         )}
-        {data.getUser.__typename === "Teacher" && (
-          <LessonPageforTeacher
-            courseID={courseID}
-            teacherData={data.getUser}
-          />
-        )}
-        {data.getUser.studyProgress &&
-          !data.getUser.studyProgress.find(
-            (obj) => obj.course.id === courseID
-          ) && (
-            <LessonPageforUnenroll
-              courseID={courseID}
-              enrollCourse={(e: any) => {
-                e.preventDefault()
-                enrollCourse({ variables: { courseId: courseID } })
-              }}
-            />
-          )}
+        {data && data.getUser ? (
+          <>
+            {data.getUser.__typename === "Teacher" && (
+              <LessonPageforTeacher
+                courseID={courseID}
+                teacherData={data.getUser}
+              />
+            )}
+            {data.getUser.studyProgress &&
+              !data.getUser.studyProgress.find(
+                (obj) => obj.course.id === courseID
+              ) && (
+                <LessonPageforUnenroll
+                  courseID={courseID}
+                  enrollCourse={(e: any) => {
+                    e.preventDefault()
+                    enrollCourse({ variables: { courseId: courseID } })
+                  }}
+                />
+              )}
 
-        {data.getUser.studyProgress &&
-          data.getUser.studyProgress.find(
-            (obj) => obj.course.id === courseID
-          ) && <LessonPageforEnroll courseID={courseID} />}
+            {data.getUser.studyProgress &&
+              data.getUser.studyProgress.find(
+                (obj) => obj.course.id === courseID
+              ) && <LessonPageforEnroll courseID={courseID} />}
+          </>
+        ) : (
+          <p style={content.style}>The server is loading ...</p>
+        )}
       </div>
     </>
   )

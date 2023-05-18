@@ -16,22 +16,21 @@ const quizPoints = (params: {
 }) => {
   let finalPoint = 0;
   let comments: { quizID: string, answer: string, comment: string }[] = [];
-
   for (const obj of params.lesson.quiz) {
     const quiz = params.data.find(ans => ans.quizID === obj._id.toString());
     if (quiz) {
-      if (obj.answer === quiz.answer) {
+      if (obj.answer === quiz.answer.trim()) {
         finalPoint += 1;
         comments = comments.concat({
           quizID: obj._id.toString(),
-          answer: obj.answer,
+          answer: quiz.answer,
           comment: `Your answer is correct!`
         });
       }
       else {
         comments = comments.concat({
           quizID: obj._id.toString(),
-          answer: obj.answer,
+          answer: quiz.answer,
           comment: `Your answer is wrong, the correct one is ${obj.answer}`
         });
       }

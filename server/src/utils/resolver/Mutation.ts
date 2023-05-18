@@ -209,7 +209,7 @@ export const Mutation = {
     const newQuestion = new QuizModel({
       question: args.question,
       choices: args.choices ? args.choices : [],
-      answer: args.answer,
+      answer: args.answer.trim(),
     });
     try {
       await newQuestion.save();
@@ -249,7 +249,6 @@ export const Mutation = {
         extensions: { code: "BAD_USER_INPUT" },
       });
     }
-
     const result = helper.quizPoints({ data: args.answers, lesson: lesson });
 
     const returnedQuizResult = {

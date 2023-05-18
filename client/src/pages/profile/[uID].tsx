@@ -10,7 +10,8 @@ import { useRouter } from "next/router"
 export default function Profile() {
   const { uID } = useRouter().query
   const { loading, error, data } = useQuery(GET_OTHER_USER_BY_ID, {
-    variables: { userID: uID },
+    variables: { userId: uID },
+    // pollInterval: 2000,
   })
 
   return (
@@ -22,7 +23,7 @@ export default function Profile() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div>
-        {loading && (
+        {(loading || (data && !data.getOtherUser)) && (
           <div>
             <p style={content.style}>Loading, please wait ...</p>
           </div>
@@ -34,37 +35,39 @@ export default function Profile() {
             >{`There is an error in loading profile: ${error.message}`}</p>
           </div>
         )}
-        {data && (
+        {data && data.getOtherUser && (
           <>
             <div className={styles.header}>
-              <h1 style={heading.style}>{data.getUser.name}</h1>
+              <h1 style={heading.style}>{data.getOtherUser.name}</h1>
             </div>
             <div className="informationTable">
               <table>
                 <tbody>
                   <tr>
                     <th style={heading.style}>Roles</th>
-                    <td style={content.style}>{data.getUser.__typename}</td>
+                    <td style={content.style}>
+                      {data.getOtherUser.__typename}
+                    </td>
                   </tr>
                   <tr>
                     <th style={heading.style}>Email</th>
-                    <td style={content.style}>{data.getTeacher.email}</td>
+                    <td style={content.style}>{data.getOtherUser.email}</td>
                   </tr>
-                  {data.getUser.__typename === "Teacher" && (
+                  {data.getOtherUser.__typename === "Teacher" && (
                     <tr>
                       <th style={heading.style}>Organization</th>
                       <td style={content.style}>
-                        {data.getTeacher.organization}
+                        {data.getOtherUser.organization}
                       </td>
                     </tr>
                   )}
                 </tbody>
               </table>
             </div>
-            {data.getUser.__typename === "Teacher" && (
+            {data.getOtherUser.__typename === "Teacher" && (
               <div>
                 <h2 style={heading.style}>Courses</h2>
-                <TeacherCourseBoard ownCourses={data.getUser.ownCourses} />
+                <TeacherCourseBoard ownCourses={data.getOtherUser.ownCourses} />
               </div>
             )}
           </>

@@ -69,7 +69,7 @@ export const GET_CURRENT_USER = gql`
 `
 export const GET_OTHER_USER_BY_ID = gql`
   query Query($userId: ID!) {
-    getOtherTeacher(userID: $userId) {
+    getOtherUser(userID: $userId) {
       __typename
       ... on Student {
         id

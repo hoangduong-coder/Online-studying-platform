@@ -26,32 +26,30 @@ const UncompletedLessonQuiz = ({
   onSubmit: any
 }) => {
   const [done, setDone] = useState(false)
-  const [shuffledQuiz, setShuffledQuiz] = useState<any[]>([...quizzes])
-  const [fillInBox, setFillInBox] = useState(new Map())
+  const [shuffledQuiz, setShuffledQuiz] = useState<any[]>([])
+  const [answerMap, setAnswerMap] = useState(new Map())
+
   const submitQuiz = (e: any) => {
     onSubmit(e)
     setDone(true)
   }
   useEffect(() => {
-    setShuffledQuiz([...shuffledQuiz, shuffleQuestionAndAnswer(quizzes)])
+    setShuffledQuiz(shuffleQuestionAndAnswer(quizzes))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   useEffect(() => {
-    const newShuffledQuiz = [...shuffledQuiz]
-    for (let quiz of newShuffledQuiz) {
+    let newQuiz = shuffleQuestionAndAnswer(quizzes)
+    for (const quiz of newQuiz) {
+      setAnswerMap(answerMap.set(quiz.id, " "))
       if (quiz.choices.length > 0) {
-        let newChoicesList = [...quiz.choices]
-        setShuffledQuiz(
-          newShuffledQuiz.map((squiz) =>
-            squiz.id === quiz.id
-              ? { ...squiz, choices: shuffleQuestionAndAnswer(newChoicesList) }
-              : squiz
-          )
+        newQuiz = newQuiz.map((squiz) =>
+          squiz.id === quiz.id
+            ? { ...squiz, choices: shuffleQuestionAndAnswer(quiz.choices) }
+            : squiz
         )
-      } else {
-        setFillInBox(fillInBox.set(quiz.id, ""))
       }
     }
+    setShuffledQuiz(newQuiz)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   return (
@@ -64,11 +62,12 @@ const UncompletedLessonQuiz = ({
               <TextField
                 style={content.style}
                 name={obj.id}
-                value={fillInBox.get(obj.id)}
+                value={answerMap.get(obj.id)}
                 color="warning"
                 onChange={({ target }) => {
-                  setFillInBox(fillInBox.set(obj.id, target.value))
-                  onChange(target)
+                  setAnswerMap(answerMap.set(obj.id, target.value))
+                  console.log(target)
+                  onChange({ target })
                 }}
                 fullWidth
                 size="small"
