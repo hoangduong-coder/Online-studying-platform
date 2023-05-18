@@ -1,4 +1,5 @@
-import { MenuItem, TextField } from "@mui/material"
+import { IconButton, InputAdornment, MenuItem, TextField } from "@mui/material"
+import { Visibility, VisibilityOff } from "@mui/icons-material"
 import { content, heading } from "@/styles/font"
 
 import Head from "next/head"
@@ -19,6 +20,7 @@ const SignUpPage = ({ setNewUser }: any) => {
   })
   const [password, setPassword] = useState<string>("")
   const [organization, setOrganization] = useState<string>("")
+  const [showPassword, setShowPassword] = useState(false)
 
   const [notification, setNotification] = useState<string>("")
   const [signUpMutation] = useMutation(SIGN_UP, {
@@ -58,6 +60,8 @@ const SignUpPage = ({ setNewUser }: any) => {
       role: "STUDENT",
     })
   }
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show)
 
   return (
     <>
@@ -106,13 +110,21 @@ const SignUpPage = ({ setNewUser }: any) => {
                 <p style={content.style}>Password:</p>
               </span>
               <TextField
-                type="password"
-                size="small"
+                type={showPassword ? "text" : "password"}
                 value={password}
+                fullWidth
                 required
                 color="warning"
                 onChange={({ target }) => setPassword(target.value)}
-                fullWidth
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleClickShowPassword} edge="end">
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
                 helperText="At least 8 characters, contains both digits and letters"
               />
             </div>

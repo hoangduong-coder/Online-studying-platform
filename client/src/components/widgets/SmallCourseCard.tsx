@@ -28,10 +28,8 @@ const SmallCourseCard = ({
         <h3 style={heading.style}>{data.getFullCourse.name}</h3>
         <p style={content.style}>By {data.getFullCourse.teacher.name}</p>
       </div>
-      <div>
-        {percentage && <ProgressPercentage value={Math.round(percentage)} />}
-        {status && <ProgressPercentage status={status} />}
-      </div>
+      {percentage && <ProgressPercentage value={Math.round(percentage)} />}
+      {status && <ProgressPercentage status={status} />}
       <div>
         <Button title="Continue" link={`/${courseID}`} />
       </div>

@@ -13,7 +13,9 @@ const ProgressPercentage = ({
     <Box
       sx={{
         position: "relative",
-        display: "inline-flex",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       {value && (
@@ -26,14 +28,14 @@ const ProgressPercentage = ({
           />
           <Box
             sx={{
-              top: 0,
-              left: 0,
-              bottom: 0,
-              right: 0,
+              // top: 0,
+              // left: 0,
+              // bottom: 0,
+              // right: 0,
               position: "absolute",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              // display: "flex",
+              // alignItems: "center",
+              // justifyContent: "center",
             }}
           >
             <Typography
@@ -43,7 +45,6 @@ const ProgressPercentage = ({
               style={content.style}
               sx={{
                 fontSize: "var(--caption)",
-                margin: "auto",
               }}
             >{`${Math.round(value)}%`}</Typography>
           </Box>
@@ -55,28 +56,27 @@ const ProgressPercentage = ({
             variant="determinate"
             value={100}
             color={status === "PASSED" ? "success" : "error"}
-            size={60}
+            size={70}
           />
           <Box
             sx={{
-              top: 0,
-              left: 0,
-              bottom: 0,
-              right: 0,
+              // top: 0,
+              // left: 0,
+              // bottom: 0,
+              // right: 0,
               position: "absolute",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              // display: "flex",
+              // alignItems: "center",
+              // justifyContent: "center",
             }}
           >
             <Typography
               variant="caption"
-              component="div"
+              // component="div"
               color={status === "PASSED" ? "text.success" : "text.error"}
               style={content.style}
               sx={{
                 fontSize: "var(--caption)",
-                margin: "auto",
               }}
             >{`${status}`}</Typography>
           </Box>

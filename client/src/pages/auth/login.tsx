@@ -1,3 +1,5 @@
+import { IconButton, InputAdornment } from "@mui/material"
+import { Visibility, VisibilityOff } from "@mui/icons-material"
 import { content, heading } from "@/styles/font"
 
 import Head from "next/head"
@@ -17,6 +19,8 @@ const LoginPage = ({
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
   const [notification, setNotification] = useState<string>("")
+  const [showPassword, setShowPassword] = useState(false)
+
   const [loginMutation] = useMutation(LOGIN, {
     onError: (error) => setNotification(error.message),
     onCompleted: (data) => {
@@ -30,6 +34,8 @@ const LoginPage = ({
     loginMutation({ variables: { email, password } })
     setPassword("")
   }
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show)
 
   return (
     <>
@@ -61,13 +67,21 @@ const LoginPage = ({
                 <p style={content.style}>Password: </p>
               </span>
               <TextField
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 fullWidth
                 required
                 color="warning"
-                id="outlined-required"
                 onChange={({ target }) => setPassword(target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleClickShowPassword} edge="end">
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </div>
             {notification.length > 0 && (

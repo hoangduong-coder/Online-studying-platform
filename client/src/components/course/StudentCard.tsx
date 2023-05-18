@@ -11,7 +11,7 @@ const StudentCard = ({
   status,
 }: any) => {
   return (
-    <div className="courseCard">
+    <div className="studentCard">
       <div className="name">
         <h3 style={heading.style}>{name}</h3>
         {startDate && (
@@ -25,10 +25,8 @@ const StudentCard = ({
           </p>
         )}
       </div>
-      <div>
-        {percentage && <ProgressPercentage value={Math.round(percentage)} />}
-        {status && <ProgressPercentage status={status} />}
-      </div>
+      {percentage && <ProgressPercentage value={Math.round(percentage)} />}
+      {status && <ProgressPercentage status={status} />}
     </div>
   )
 }

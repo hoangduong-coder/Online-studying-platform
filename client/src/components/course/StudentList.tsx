@@ -76,7 +76,7 @@ const StudentList = ({ list }: { list: any[] }) => {
               <StudentCard
                 key={obj.student.id}
                 name={obj.student.name}
-                finishDate={obj.finishDate}
+                finishDate={obj.finishedDate}
                 status={obj.status}
               />
             ))
