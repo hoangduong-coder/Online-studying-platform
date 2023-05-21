@@ -1,7 +1,7 @@
 import { content, heading } from "@/styles/font"
 
 import ProgressPercentage from "../widgets/ProgressPercentage"
-import moment from "moment"
+import { formatDate } from "@/helper/formatDate"
 
 const StudentCard = ({
   name,
@@ -14,15 +14,9 @@ const StudentCard = ({
     <div className="studentCard">
       <div className="name">
         <h3 style={heading.style}>{name}</h3>
-        {startDate && (
-          <p style={content.style}>
-            From {moment(startDate).format("DD.MM.YYYY")}
-          </p>
-        )}
+        {startDate && <p style={content.style}>From {formatDate(startDate)}</p>}
         {finishDate && (
-          <p style={content.style}>
-            Finished on {moment(finishDate).format("DD.MM.YYYY")}
-          </p>
+          <p style={content.style}>Finished on {formatDate(finishDate)}</p>
         )}
       </div>
       {percentage && <ProgressPercentage value={Math.round(percentage)} />}

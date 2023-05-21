@@ -3,7 +3,6 @@ import { ReactNode, SyntheticEvent, useState } from "react"
 import { content, heading } from "@/styles/font"
 
 import StudentCard from "./StudentCard"
-import moment from "moment"
 
 const Panel = ({
   children,

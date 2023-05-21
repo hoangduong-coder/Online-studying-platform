@@ -57,7 +57,7 @@ const UncompletedLessonQuiz = ({
       <form onSubmit={submitQuiz}>
         {shuffledQuiz.map((obj) => (
           <div className="quiz" key={obj.id}>
-            <h3 style={heading.style}>{obj.question}</h3>
+            <h3 style={heading.style}>{htmlcodeConverter(obj.question)}</h3>
             {obj.choices.length === 0 ? (
               <TextField
                 style={content.style}

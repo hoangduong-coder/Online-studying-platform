@@ -8,7 +8,7 @@ const TeacherQuiz = ({ quizzes }: { quizzes: any[] }) => {
       {quizzes.map((obj) => (
         <div key={obj.id}>
           <div className="quiz">
-            <h3 style={heading.style}>{obj.question}</h3>
+            <h3 style={heading.style}>{htmlcodeConverter(obj.question)}</h3>
             {obj.choices.length > 0 &&
               obj.choices.map((choice: any) => (
                 <div key={choice}>

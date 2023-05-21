@@ -25,7 +25,7 @@ const CompletedQuiz = ({
         <div key={obj.quizID}>
           <div className="quiz">
             <h3 style={heading.style}>
-              {returnResult(quizzes, obj.quizID).question}
+              {htmlcodeConverter(returnResult(quizzes, obj.quizID).question)}
             </h3>
             {returnResult(quizzes, obj.quizID).choices.length === 0 ? (
               <TextField

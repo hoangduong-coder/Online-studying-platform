@@ -77,7 +77,7 @@ const SignUpPage = ({ setNewUser }: any) => {
           <form onSubmit={submit}>
             <div>
               <span>
-                <p style={content.style}>Name </p>
+                <p style={content.style}>Name *</p>
               </span>
               <TextField
                 value={user.name}
@@ -92,7 +92,7 @@ const SignUpPage = ({ setNewUser }: any) => {
             </div>
             <div>
               <span>
-                <p style={content.style}>Email: </p>
+                <p style={content.style}>Email *</p>
               </span>
               <TextField
                 value={user.email}
@@ -107,7 +107,7 @@ const SignUpPage = ({ setNewUser }: any) => {
             </div>
             <div>
               <span>
-                <p style={content.style}>Password:</p>
+                <p style={content.style}>Password * </p>
               </span>
               <TextField
                 type={showPassword ? "text" : "password"}
@@ -118,7 +118,7 @@ const SignUpPage = ({ setNewUser }: any) => {
                 onChange={({ target }) => setPassword(target.value)}
                 InputProps={{
                   endAdornment: (
-                    <InputAdornment position="end">
+                    <InputAdornment position="end" sx={{ marginTop: "5px" }}>
                       <IconButton onClick={handleClickShowPassword} edge="end">
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
@@ -130,7 +130,7 @@ const SignUpPage = ({ setNewUser }: any) => {
             </div>
             <div>
               <span>
-                <p style={content.style}>Role:</p>
+                <p style={content.style}>Role *</p>
               </span>
               <TextField
                 select
@@ -153,7 +153,7 @@ const SignUpPage = ({ setNewUser }: any) => {
             {user.role === "TEACHER" && (
               <div>
                 <span>
-                  <p style={content.style}>Your organization:</p>
+                  <p style={content.style}>Your organization *</p>
                 </span>
                 <TextField
                   type="text"

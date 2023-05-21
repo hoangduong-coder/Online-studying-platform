@@ -260,18 +260,21 @@ export const Mutation = {
     try {
       progress.lessonCompleted =
         progress.lessonCompleted.concat(returnedQuizResult);
-      progress.progressPercentage = await helper.progressCalculation(
-        progress.lessonCompleted,
-        args.courseID
-      );
-      if (progress.progressPercentage === 100) {
-        const overallPoint = helper.overallPointCalculation(
-          progress.lessonCompleted
+      if (progress.status === "ONGOING") {
+        progress.progressPercentage = await helper.progressCalculation(
+          progress.lessonCompleted,
+          args.courseID
         );
-        progress.overallPoint = overallPoint;
-        progress.status = overallPoint >= 5 ? "PASSED" : "FAILED";
+        if (progress.progressPercentage === 100) {
+          const overallPoint = helper.overallPointCalculation(
+            progress.lessonCompleted
+          );
+          progress.overallPoint = overallPoint;
+          progress.status = overallPoint >= 5 ? "PASSED" : "FAILED";
 
-        progress.finishedDate = new Date();
+          progress.finishedDate = new Date();
+        }
+
       }
       await progress.save();
     } catch (error) {

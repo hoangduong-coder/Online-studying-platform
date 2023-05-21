@@ -51,20 +51,19 @@ const LoginPage = ({
           <form onSubmit={submit}>
             <div>
               <span>
-                <p style={content.style}>Email: </p>
+                <p style={content.style}>Email *</p>
               </span>
               <TextField
                 value={email}
                 fullWidth
                 required
-                id="outlined-required"
                 color="warning"
                 onChange={({ target }) => setEmail(target.value)}
               />
             </div>
             <div>
               <span>
-                <p style={content.style}>Password: </p>
+                <p style={content.style}>Password *</p>
               </span>
               <TextField
                 type={showPassword ? "text" : "password"}
@@ -75,7 +74,7 @@ const LoginPage = ({
                 onChange={({ target }) => setPassword(target.value)}
                 InputProps={{
                   endAdornment: (
-                    <InputAdornment position="end">
+                    <InputAdornment position="end" sx={{ marginTop: "5px" }}>
                       <IconButton onClick={handleClickShowPassword} edge="end">
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>

@@ -1,6 +1,7 @@
 import { content, heading } from "@/styles/font"
 
 import { GET_OVERALL_RESULT } from "@/graphql/course_query"
+import { formatDate } from "@/helper/formatDate"
 import moment from "moment"
 import { useQuery } from "@apollo/client"
 
@@ -24,7 +25,9 @@ const CongratulationCard = ({ courseID, teacher }: any) => {
           </h3>
           <div className="footer">
             <div className="signature">
-              <p style={content.style}>{moment().format("DD.MM.YY")}</p>
+              <p style={content.style}>
+                {formatDate(fetchResult.data.getOverallResult.finishedDate)}
+              </p>
               <h3 style={heading.style}>{teacher.name}</h3>
             </div>
           </div>
