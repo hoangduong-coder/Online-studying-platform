@@ -18,8 +18,13 @@ const StudentCard = ({
         {finishDate && (
           <p style={content.style}>Finished on {formatDate(finishDate)}</p>
         )}
+        {percentage && percentage === 0 && (
+          <p style={content.style}>No progress made.</p>
+        )}
       </div>
-      {percentage && <ProgressPercentage value={Math.round(percentage)} />}
+      {percentage && percentage > 0 && (
+        <ProgressPercentage value={Math.round(percentage)} />
+      )}
       {status && <ProgressPercentage status={status} />}
     </div>
   )

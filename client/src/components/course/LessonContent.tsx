@@ -10,17 +10,17 @@ const LessonContent = ({
   title: string
   lessonContent: string
 }) => {
-  const splitTitle = title.split(" ")
+  const [number, ...rest] = title.split(" ")
   const modifyString = lessonContent.split("\n")
   return (
     <div>
       <div className="lessonHeader">
         <Logo theme="dark">
           <p style={logo.style} className="darkLogoContent">
-            {splitTitle[0]}
+            {number}
           </p>
         </Logo>
-        <h1 style={heading.style}>{splitTitle[1]}</h1>
+        <h1 style={heading.style}>{rest.join(" ")}</h1>
       </div>
       <div className="lessonContent">
         {modifyString.map((obj) =>
