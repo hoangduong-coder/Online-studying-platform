@@ -54,6 +54,7 @@ export default function Course() {
             )}
             {data.getUser.studyProgress &&
               !data.getUser.studyProgress.find(
+                //@ts-ignore
                 (obj) => obj.course.id === courseID
               ) && (
                 <LessonPageforUnenroll
@@ -67,6 +68,7 @@ export default function Course() {
 
             {data.getUser.studyProgress &&
               data.getUser.studyProgress.find(
+                //@ts-ignore
                 (obj) => obj.course.id === courseID
               ) && <LessonPageforEnroll courseID={courseID} />}
           </>

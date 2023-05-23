@@ -4,17 +4,18 @@ import { setContext } from "@apollo/client/link/context"
 
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem("new-user-token")
-  
+
   return {
     headers: {
       ...headers,
       authorization: token ? token : null,
+      'Content-Type': 'application/json',
     },
   }
 })
 
 const HttpLink = createHttpLink({
-  uri: "http://localhost:4000/",
+  uri: "https://hd-online-studying-platform-api.onrender.com/",
 })
 
 const client = new ApolloClient({
