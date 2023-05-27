@@ -64,7 +64,7 @@ export const Query = {
     contextValue: { currentUser?: any }
   ) => {
     if (contextValue.currentUser) {
-      return await StudyProgressModel.findOne({ course: args.courseID });
+      return await StudyProgressModel.findOne({ student: contextValue.currentUser._id, course: args.courseID });
     }
   }
 };
