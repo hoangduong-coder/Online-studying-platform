@@ -21,15 +21,25 @@ const SignUpPage = ({ setNewUser }: any) => {
   const [password, setPassword] = useState<string>("")
   const [organization, setOrganization] = useState<string>("")
   const [showPassword, setShowPassword] = useState(false)
-
-  const [notification, setNotification] = useState<string>("")
+  const [notification, setNotification] = useState<{
+    passed: boolean
+    message: string
+  }>({
+    passed: false,
+    message: "",
+  })
   const [signUpMutation] = useMutation(SIGN_UP, {
-    onError: (error) => setNotification(error.message),
+    onError: (error) =>
+      setNotification({
+        passed: false,
+        message: error.message,
+      }),
     onCompleted: (data) => {
-      alert(
-        `Welcome ${data.createUser.name} as a ${data.createUser.__typename}`
-      )
-      setNewUser(false)
+      setNotification({
+        passed: true,
+        message: `Welcome ${data.createUser.name} as a ${data.createUser.__typename}. Please check and verify your email`,
+      }),
+        setNewUser(false)
     },
   })
 
@@ -166,12 +176,19 @@ const SignUpPage = ({ setNewUser }: any) => {
                 />
               </div>
             )}
-            {notification.length > 0 && (
-              <div className="notify">
-                <p style={content.style}>Error: {notification}</p>
+            {notification.message.length > 0 && (
+              <div
+                className={
+                  notification.passed ? "passedMessage" : "failedMessage"
+                }
+              >
+                {notification.passed ? (
+                  <p style={content.style}>{notification.message}</p>
+                ) : (
+                  <SubmitButton title="Continue" />
+                )}
               </div>
             )}
-            <SubmitButton title="Continue" />
           </form>
           <h4 style={heading.style} onClick={() => setNewUser(false)}>
             Back to login
