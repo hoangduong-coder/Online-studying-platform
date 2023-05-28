@@ -77,6 +77,12 @@ const typeDefs = `#graphql
 
   union User = Student | Teacher
 
+  type Token {
+    user: User!
+    token: String!
+    createdAt: String!
+  }
+
   type Query {
     getUser: User
     getOtherUser(userID: ID!): User
@@ -87,13 +93,14 @@ const typeDefs = `#graphql
   }
 
   type Mutation {
+    verifyToken(userID: ID!, token: String!, isStudent: Boolean): User
     enrollCourse(courseID: ID!): String
     createUser(
       name: String!, 
       email: String!, 
       password: String!, 
       organization: String
-    ): User
+    ): Token
     addCourse(
       name: String!, 
       category: [String!]!, 

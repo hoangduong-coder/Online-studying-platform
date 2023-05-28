@@ -15,12 +15,61 @@ import {
 import { GraphQLError } from "graphql";
 import LessonModel from "../../models/helper/lesson";
 import QuizModel from "../../models/helper/quiz";
+import VerifyTokenModel from "../../models/helper/token";
 import bcrypt from "bcrypt";
 import config from "../config";
+import crypto from "crypto";
 import helper from "../helper";
 import jwt from "jsonwebtoken";
+import verificationHandler from "../verification";
 
 export const Mutation = {
+  verifyToken: async (
+    _root: any,
+    args: { userID: string; token: string; isStudent: boolean }
+  ) => {
+    const user = args.isStudent
+      ? await StudentModel.findById(args.userID)
+      : await TeacherModel.findById(args.userID);
+    if (!user) {
+      throw new GraphQLError(
+        `No ${args.isStudent ? "student" : "teacher"} found with this ID: ${args.userID
+        }`,
+        {
+          extensions: {
+            code: "GRAPHQL_VALIDATION_FAILED",
+          },
+        }
+      );
+    }
+    const token = await VerifyTokenModel.findOne({
+      user: user._id,
+      token: args.token,
+    });
+    if (!token) {
+      throw new GraphQLError("Invalid token or it has been expired", {
+        extensions: {
+          code: "GRAPHQL_VALIDATION_FAILED",
+        },
+      });
+    }
+    user.verified = true;
+    try {
+      await user.save();
+      await token.deleteOne({
+        user: user._id,
+        token: args.token,
+      });
+    } catch (error) {
+      throw new GraphQLError("Verify email failed", {
+        extensions: {
+          code: "BAD_USER_INPUT",
+          error,
+        },
+      });
+    }
+    return user;
+  },
   enrollCourse: async (
     _root: any,
     args: { courseID: string },
@@ -131,7 +180,7 @@ export const Mutation = {
         }
       );
     }
-    const saltRounds = 10;
+    const saltRounds = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(args.password, saltRounds);
     const { name, email } = args;
     const newUser = !args.organization
@@ -146,8 +195,19 @@ export const Mutation = {
         passwordHash,
         organization: args.organization,
       });
+    const token = new VerifyTokenModel({
+      user: newUser._id,
+      token: crypto.randomBytes(32).toString("hex"),
+      createdAt: new Date(),
+    });
     try {
       await newUser.save();
+      await token.save();
+      await verificationHandler(
+        email,
+        "Verify your email",
+        `${config.BASE_URL}/${newUser._id}/verify`
+      );
     } catch (error) {
       throw new GraphQLError("Create new user failed!", {
         extensions: {
@@ -156,7 +216,7 @@ export const Mutation = {
         },
       });
     }
-    return newUser;
+    return token;
   },
   addLesson: async (
     _root: any,
@@ -274,7 +334,6 @@ export const Mutation = {
 
           progress.finishedDate = new Date();
         }
-
       }
       await progress.save();
     } catch (error) {
@@ -303,10 +362,26 @@ export const Mutation = {
         },
       });
     }
+    if (!user.verified) {
+      let token = await VerifyTokenModel.findOne({
+        user: user._id,
+      });
+      if (!token) {
+        token = new VerifyTokenModel({
+          user: user._id,
+          token: crypto.randomBytes(32).toString("hex"),
+          createdAt: new Date(),
+        });
+        await token.save();
+        await verificationHandler(
+          user.email,
+          "Verify your email",
+          `${config.BASE_URL}/${user._id}/verify`
+        );
+      }
+      return "An email sent to your account, please verify it.";
+    }
     const token = jwt.sign({ id: user._id, email: user.email }, config.SECRET);
     return `Bearer ${token}`;
   },
-  // deleteQuiz: async ({ lessonID, quizID }: { lessonID: any, quizID: any }) => {
-
-  // }
 };

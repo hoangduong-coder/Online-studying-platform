@@ -24,6 +24,11 @@ const schema = new Schema({
     type: String,
     minlength: 2,
   },
+  verified: {
+    type: Boolean,
+    required: true,
+    default: false
+  }
 });
 
 schema.plugin(mongooseUniqueValidator);
